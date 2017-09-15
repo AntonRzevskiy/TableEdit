@@ -1,11 +1,11 @@
 (function ($, window) {
 
-	'use strict';
+    'use strict';
 
     if (!window.jQuery) {
         return;
     }
 
-	$.TableEdid = {};
+    $.TableEdid = {};
 
 })(jQuery, window);
