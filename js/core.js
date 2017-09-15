@@ -27,4 +27,18 @@
 
     });
 
+    $.fn.TableEdid = function( options ) {
+
+        var localDefaults = {},
+            options = options || {},
+            that = $.extend(true,
+                localDefaults,
+                $.TableEdid.defaults,
+                options
+            );
+            
+        return this;
+
+    }
+
 })(jQuery, window);
