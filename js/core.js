@@ -36,7 +36,7 @@
                 $.TableEdid.defaults,
                 options
             );
-            
+
         return this;
 
     }
