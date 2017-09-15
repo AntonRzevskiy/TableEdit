@@ -6,4 +6,6 @@
         return;
     }
 
+	$.TableEdid = {};
+
 })(jQuery, window);
