@@ -8,4 +8,8 @@
 
     $.TableEdid = {};
 
+    Object.defineProperties($.TableEdid, {
+        
+    });
+
 })(jQuery, window);
