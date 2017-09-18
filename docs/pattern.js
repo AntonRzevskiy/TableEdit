@@ -33,4 +33,22 @@ $.TableEdid.defaults = {
             this.methodAfter();
     },
     
+    // functional framework 2 modified
+    _method: function() {
+        var name = 'method';
+        if (
+            this.hasOwnProperty(name + 'Before') 
+            && typeof this[name + 'Before'] == 'function' 
+            && this[name + 'Before']() == true
+            ||
+            ! this.hasOwnProperty(name + 'Before')
+        ) {
+
+            // logic here
+
+        } 
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After']();
+    },
+    
 };
