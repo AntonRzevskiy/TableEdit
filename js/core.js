@@ -41,4 +41,12 @@
 
     }
 
+    if(! Array.prototype.TableEdid) {
+
+        Object.defineProperty(Array.prototype, "TableEdid", {
+            value: $.fn.TableEdid
+        });
+
+    }
+
 })(jQuery, window);
