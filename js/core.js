@@ -122,6 +122,7 @@
                 $tfoot: $('<tfoot/>'),
                 $tbody: $('<tbody/>'),
                 dataTableArray: [],
+                _numberOfColumns: false,
 
             },
             options = options || {},
