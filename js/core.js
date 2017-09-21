@@ -115,7 +115,14 @@
 
     $.fn.TableEdid = function( options ) {
 
-        var localDefaults = {},
+        var localDefaults = {
+
+                $table: $('<table/>'),
+                $thead: $('<thead/>'),
+                $tfoot: $('<tfoot/>'),
+                $tbody: $('<tbody/>'),
+
+            },
             options = options || {},
             that = $.extend(true,
                 localDefaults,
