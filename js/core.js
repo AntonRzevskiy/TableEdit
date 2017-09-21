@@ -121,6 +121,7 @@
                 $thead: $('<thead/>'),
                 $tfoot: $('<tfoot/>'),
                 $tbody: $('<tbody/>'),
+                dataTableArray: [],
 
             },
             options = options || {},
