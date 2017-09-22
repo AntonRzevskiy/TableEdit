@@ -11,4 +11,6 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After' );
 	},
 
+    dataTableDefaultArray: [],
+
 };
