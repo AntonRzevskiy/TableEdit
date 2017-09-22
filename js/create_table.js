@@ -9,7 +9,7 @@ $.TableEdid.defaults = {
         if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
             this[name + 'After']();
         this.doAction( name + 'After' );
-	},
+    },
 
     dataTableDefaultArray: [],
 
