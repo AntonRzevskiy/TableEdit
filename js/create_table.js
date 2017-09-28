@@ -38,4 +38,6 @@ $.TableEdid.defaults = {
 
     topControlsElements: '',
 
+    bottomControlsElements: '',
+
 };
