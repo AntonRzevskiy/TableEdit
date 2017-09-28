@@ -13,4 +13,25 @@ $.TableEdid.defaults = {
 
     dataTableDefaultArray: [],
 
+    _defineType: function( selector ) {
+        var name = 'defineType',
+            params = {selector:selector};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+
+            if( Array.isArray( params.selector ) ) {
+                try {
+                    this.dataTableArray = params.selector;
+                } catch (e) {
+                    throw e;
+                    this.dataTableArray = this.dataTableDefaultArray;
+                }
+            }
+
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
