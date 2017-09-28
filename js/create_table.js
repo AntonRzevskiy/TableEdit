@@ -36,4 +36,6 @@ $.TableEdid.defaults = {
 
     controlOrientation: 'right',
 
+    topControlsElements: '',
+
 };
