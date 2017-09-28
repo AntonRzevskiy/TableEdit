@@ -42,4 +42,6 @@ $.TableEdid.defaults = {
 
     rowControlsElements: '',
 
+    stubElements: '',
+
 };
