@@ -34,4 +34,6 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    controlOrientation: 'right',
+
 };
