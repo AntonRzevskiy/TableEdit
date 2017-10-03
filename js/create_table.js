@@ -66,4 +66,21 @@ $.TableEdid.defaults = {
         return params.$tr;
     },
 
+    _createTopControls: function() {
+        var params = {$tr:$('<tr/>')},
+            name = 'createTopControls';
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            for( var i = 0; i < this._numberOfColumns; i++ ) {
+                params.$tr.append(
+                    $('<td/>').html( this.topControlsElements )
+                );
+            }
+            this.$thead.append( this._addStub( params.$tr ) );
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
