@@ -100,4 +100,26 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    _createRowControls: function( $tr ) {
+        var name = 'createRowControls',
+            params = {$tr:$tr};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( this.controlOrientation === 'right' ) {
+                params.$tr.append(
+                    $('<td/>').html( this.rowControlsElements )
+                );
+            }
+            else if( this.controlOrientation === 'left' ) {
+                params.$tr.prepend(
+                    $('<td/>').html( this.rowControlsElements )
+                );
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+        return params.$tr;
+    },
+
 };
