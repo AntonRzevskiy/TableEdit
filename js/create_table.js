@@ -46,17 +46,17 @@ $.TableEdid.defaults = {
 
     _addStub: function( $tr ) {
         var name = 'addStub',
-            params = {$tr:$tr,$td:$('<td/>')};
+            params = {$tr:$tr};
         this.doAction( name + 'Before', params );
         if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
             if( this.controlOrientation === 'right' ) {
                 params.$tr.append(
-                    params.$td.html( this.stubElements )
+                    $('<td/>').html( this.stubElements )
                 );
             }
             else if( this.controlOrientation === 'left' ) {
                 params.$tr.prepend(
-                    params.$td.html( this.stubElements )
+                    $('<td/>').html( this.stubElements )
                 );
             }
         }
