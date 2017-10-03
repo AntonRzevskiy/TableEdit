@@ -83,4 +83,21 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    _createBottomControls: function() {
+        var name = 'createBottomControls',
+            params = {$tr:$('<tr/>')};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            for( var i = 0; i < this._numberOfColumns; i++ ) {
+                params.$tr.append(
+                    $('<td/>').html( this.bottomControlsElements )
+                );
+            }
+            this.$tfoot.append( this._addStub( params.$tr ) );
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
