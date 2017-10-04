@@ -122,4 +122,28 @@ $.TableEdid.defaults = {
         return params.$tr;
     },
 
+    _defineOutputConteiner: function( selector ) {
+        var name = 'defineOutputConteiner',
+            params = {selector:selector};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( this.hasOwnProperty('outputConteiner') && $(this.outputConteiner).length ) {
+                // return this.outputConteiner;
+                params.selector = this.outputConteiner;
+            }
+            else if( $('body').find(params.selector).length ) {
+                // return selector;
+            }
+            else {
+                if( this._defineOutputMethod() === 'after' ) this.outputMethod = 'append';
+                // return 'body';
+                params.selector = 'body';
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+        return params.selector;
+    },
+
 };
