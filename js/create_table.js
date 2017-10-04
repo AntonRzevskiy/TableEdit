@@ -146,4 +146,23 @@ $.TableEdid.defaults = {
         return params.selector;
     },
 
+    _defineOutputMethod: function() {
+        var name = 'defineOutputMethod',
+            params = {method:''};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( this.hasOwnProperty('outputMethod') && $.fn.hasOwnProperty( this.outputMethod ) ) {
+                // return this.outputMethod;
+                params.method = this.outputMethod;
+            } else {
+                // return 'after';
+                params.method = 'after';
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+        return params.method;
+    },
+
 };
