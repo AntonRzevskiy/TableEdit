@@ -165,4 +165,16 @@ $.TableEdid.defaults = {
         return params.method;
     },
 
+    _addTable: function( selector ) {
+        var name = 'addTable',
+            params = {selector:selector};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            $( this._defineOutputConteiner(params.selector) )[ this._defineOutputMethod() ]( this.$table );
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
