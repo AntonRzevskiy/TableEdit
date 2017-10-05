@@ -203,4 +203,20 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    _createRow: function() {
+        var name = 'createRow';
+        for( var row = 1, length = this.dataTableArray.length; row < length; row++ ) {
+            var params = {$tr:$('<tr/>'),row:this.dataTableArray[row],index:row};
+            this.doAction( name + 'Before', params );
+            if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+                params.$tr.append( this._createCell( params.$tr, params.row, params.index ) );
+                this.$tbody.append( this._createRowControls( params.$tr ) );
+                this._setNumberOfColumns( params.row );
+            }
+            if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        }
+    },
+
 };
