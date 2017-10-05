@@ -177,4 +177,30 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    _createHeader: function() {
+        var name = 'createHeader',
+            params = {tableHead:this.dataTableArray[0] || [],$tr:$('<tr/>')};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            for( var col = 0; col < params.tableHead.length; col++ ) {
+                var $th = $('<th/>');
+
+                if( params.tableHead[col].hasOwnProperty('settings') )
+                    this._cellConfiguration( $th, params.tableHead[col].settings );
+
+                if( params.tableHead[col].hasOwnProperty('value') )
+                    $th.append( params.tableHead[col].value );
+
+                this._setMatrix( {$td:$th,row:params.tableHead,col:params.tableHead[col],rowIndex:0,colIndex:col} );
+
+                params.$tr.append( $th );
+            }
+            this.$tbody.append( this._createRowControls( params.$tr ) );
+            this._setNumberOfColumns( params.tableHead );
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
