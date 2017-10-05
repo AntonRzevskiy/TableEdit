@@ -220,7 +220,7 @@ $.TableEdid.defaults = {
     },
 
     _createCell: function( $tr, row, index ) {
-        var name = 'createRow';
+        var name = 'createCell';
         for( var col = 0; col < row.length; col++ ) {
 
             if( row[col].hasOwnProperty('matrix') && row[col].matrix[0] == 1 || row[col].hasOwnProperty('matrix') && row[col].matrix[1] == 1 ) continue;
