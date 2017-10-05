@@ -219,4 +219,34 @@ $.TableEdid.defaults = {
         }
     },
 
+    _createCell: function( $tr, row, index ) {
+        var name = 'createRow';
+        for( var col = 0; col < row.length; col++ ) {
+
+            if( row[col].hasOwnProperty('matrix') && row[col].matrix[0] == 1 || row[col].hasOwnProperty('matrix') && row[col].matrix[1] == 1 ) continue;
+
+            var params = {$tr:$tr,$td:$('<td/>'),row:row,col:row[col],rowIndex:index,colIndex:col};
+            this.doAction( name + 'Before', params );
+            if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+
+                if( params.col.hasOwnProperty('settings') )
+                    this._cellConfiguration( params.$td, params.col.settings );
+
+                if( params.col.hasOwnProperty('value') )
+                    params.$td.append( params.col.value );
+
+                if( params.col.hasOwnProperty('callbacks') )
+                    this._doDelayedFunction( params );
+
+                this._setMatrix( params );
+
+                params.$tr.append( params.$td );
+            }
+            if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        }
+        return params.$tr;
+    },
+
 };
