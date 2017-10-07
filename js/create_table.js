@@ -315,4 +315,32 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', object );
     },
 
+    _setNumberOfColumns: function( row ) {
+        if( this._numberOfColumns == false ) {
+            var length = row.length;
+            for( var col = 0; col < row.length; col++ ) {
+                if( row[col].settings && row[col].settings.hasOwnProperty('colspan') ) {
+                    length += (row[col].settings.colspan - 1);
+                }
+            }
+            return this._numberOfColumns = length;
+        }
+        else if( this._numberOfColumns == row.length ) {
+            return this._numberOfColumns;
+        }
+        else {
+            var length = row.length;
+            for( var col = 0; col < row.length; col++ ) {
+                if( row[col].settings && row[col].settings.hasOwnProperty('colspan') ) {
+                    length += (row[col].settings.colspan - 1);
+                }
+            }
+            if ( this._numberOfColumns >= length ) {
+                return this._numberOfColumns;
+            } else {
+                return this._numberOfColumns = length;
+            }
+        }
+    },
+
 };
