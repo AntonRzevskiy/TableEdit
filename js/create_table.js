@@ -249,4 +249,70 @@ $.TableEdid.defaults = {
         return params.$tr;
     },
 
+    _setMatrix: function( object ) {
+        var name = 'setMatrix';
+        this.doAction( name + 'Before', object );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](object) == true || !this.hasOwnProperty(name + 'Before')) {
+
+            if( object.col.hasOwnProperty('matrix') && object.row.length == this._numberOfColumns ) return;
+
+            if( object.col.settings && object.col.settings.hasOwnProperty('colspan') && object.col.settings.hasOwnProperty('rowspan') ) {
+                var colspan = object.col.settings.colspan - 1;
+                var rowspan = object.col.settings.rowspan - 1;
+                while( rowspan > 0 ) {
+                    var shiftIndex = object.colIndex;
+                    for( var j = 0; j < object.colIndex; j++ ) {
+                        var inspectionCol = this.dataTableArray[ object.rowIndex + rowspan ][ j ];
+                        if( inspectionCol.settings && inspectionCol.settings.hasOwnProperty('colspan') ) {
+                            shiftIndex -= (inspectionCol.settings.colspan - 1);
+                            j += (inspectionCol.settings.colspan - 1);
+                        }
+                    }
+                    for( var i = 0; i < colspan; i++ ) {
+                        this.dataTableArray[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [1,1]} );
+                    }
+                    this.dataTableArray[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [0,1]} );
+                    rowspan--;
+                }
+                while( colspan-- > 0 ) {
+                    this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
+                }
+                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.$td.attr('data-real-index', object.colIndex);
+            }
+            else if( object.col.settings && object.col.settings.hasOwnProperty('colspan') ) {
+                var colspan = object.col.settings.colspan - 1;
+                while( colspan-- > 0 ) {
+                    this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
+                }
+                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.$td.attr('data-real-index', object.colIndex);
+            }
+            else if( object.col.settings && object.col.settings.hasOwnProperty('rowspan') ) {
+                var rowspan = object.col.settings.rowspan - 1;
+                while( rowspan > 0 ) {
+                    var shiftIndex = object.colIndex;
+                    for( var j = 0; j < object.colIndex; j++ ) {
+                        var inspectionCol = this.dataTableArray[ object.rowIndex + rowspan ][ j ];
+                        if( inspectionCol.settings && inspectionCol.settings.hasOwnProperty('colspan') ) {
+                            shiftIndex -= (inspectionCol.settings.colspan - 1);
+                            j += (inspectionCol.settings.colspan - 1);
+                        }
+                    }
+                    this.dataTableArray[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [0,1]} );
+                    rowspan--;
+                }
+                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.$td.attr('data-real-index', object.colIndex);
+            }
+            else {
+                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.$td.attr('data-real-index', object.colIndex);
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](object);
+        this.doAction( name + 'After', object );
+    },
+
 };
