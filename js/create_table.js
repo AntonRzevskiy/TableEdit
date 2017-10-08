@@ -387,4 +387,19 @@ $.TableEdid.defaults = {
         },0);
     },
 
+    _doDelayedFunction: function( obj ) {
+        var name = 'doDelayedFunction';
+        this.doAction( name + 'Before', obj );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](obj) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( obj.col.callbacks.length ) {
+                var fn = obj.col.callbacks.pop();
+                fn.call(this, obj);
+                this._doDelayedFunction( obj );
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](obj);
+        this.doAction( name + 'After', obj );
+    },
+
 };
