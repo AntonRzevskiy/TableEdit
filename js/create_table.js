@@ -419,4 +419,29 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    _createTableManager: function( selector ) {
+        var name = 'createTableManager',
+            params = {selector:selector};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            this._defineType(params.selector);
+            this._compileTable();
+
+            this._createHeader();
+            if( this.hasOwnProperty('maxRowsOutDelay') && this.dataTableArray.length > this.maxRowsOutDelay ) {
+                this._createDelayedRows();
+            }
+            else {
+                this._createRow();
+            }
+            this._createTopControls();
+            this._createBottomControls();
+
+            this._addTable(params.selector);
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
