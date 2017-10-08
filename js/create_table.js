@@ -360,4 +360,31 @@ $.TableEdid.defaults = {
         return params.$td;
     },
 
+    _createDelayedRows: function() {
+        if(! this.hasOwnProperty('howCreateOnce')) return;
+        var name = 'createDelayedRows',
+            context = this,
+            times = Math.ceil( (this.dataTableArray.length - 1) / this.howCreateOnce ),
+            interation = 0;
+        setTimeout(function generateRows(){
+            generateRows.i == undefined ? generateRows.i = 1 : generateRows.i = 0;
+            var save = context.howCreateOnce * interation,
+                length = (context.dataTableArray.length - save) < context.howCreateOnce ? context.dataTableArray.length - save : context.howCreateOnce;
+            for( var row = generateRows.i; row < length; row++ ) {
+                var params = {$tr:$('<tr/>'),row:context.dataTableArray[row + save],index:(row + save)};
+                context.doAction( name + 'Before', params );
+                if(context.hasOwnProperty(name + 'Before') && typeof context[name + 'Before'] == 'function' && context[name + 'Before'](params) == true || !context.hasOwnProperty(name + 'Before')) {
+                    params.$tr.append( context._createCell( params.$tr, params.row, params.index ) );
+                    context.$tbody.append( context._createRowControls( params.$tr ) );
+                    context._setNumberOfColumns( params.row );
+                }
+                if (context.hasOwnProperty(name + 'After') && typeof context[name + 'After'] == 'function')
+                    context[name + 'After'](params);
+                context.doAction( name + 'After', params );
+            }
+            if( ++interation < times )
+                setTimeout(generateRows,0);
+        },0);
+    },
+
 };
