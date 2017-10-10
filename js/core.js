@@ -22,6 +22,20 @@
                             if(!res) break;
                         }
                     }
+                },
+
+                __init: function( selector ) {
+                    var arrInit = $.TableEdid.init;
+                    if( arrInit.length ) {
+                        for(var i = 0; i < arrInit.length; i++ ) {
+                            try {
+                                this[ arrInit[ i ] ].apply(this,[selector,arrInit,i]);
+                            } catch (e) {
+                                throw e;
+                                arrInit[ i ].apply(this,[selector,arrInit,i]);
+                            }
+                        }
+                    }
                 }
 
             }
@@ -109,6 +123,24 @@
                     $.extend(true, this._callbacks, newCallbacks);
                 }
             }
+        },
+
+        _init: {
+            value: []
+        },
+
+        init: {
+            get: function() {
+                return this._init;
+            },
+            set: function( fName ) {
+                if( typeof fName == 'function' || this.defaults.hasOwnProperty(fName) && typeof this.defaults[ fName ] == 'function' ) {
+                    this._init.push(fName);
+                }
+                else if( Array.isArray(fName) && fName.length > 1 && typeof fName[0] == 'function' || Array.isArray(fName) && fName.length > 1 && this.defaults.hasOwnProperty(fName[0]) && typeof this.defaults[ fName[0] ] == 'function' ) {
+                    this._init.splice( fName[1], 0, fName[0] );
+                }
+            }
         }
 
     });
@@ -131,6 +163,8 @@
                 $.TableEdid.defaults,
                 options
             );
+
+        that.__init( this );
 
         return this;
 
