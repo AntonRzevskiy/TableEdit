@@ -209,7 +209,9 @@ $.TableEdid.defaults = {
             var params = {$tr:$('<tr/>'),row:this.dataTableArray[row],index:row};
             this.doAction( name + 'Before', params );
             if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
-                params.$tr.append( this._createCell( params.$tr, params.row, params.index ) );
+                for( var col = 0; col < params.row.length; col++ ) {
+                    params.$tr.append( this._createCell( params.$tr, params.row, params.row[col], params.index, col ) );
+                }
                 this.$tbody.append( this._createRowControls( params.$tr ) );
                 this._setNumberOfColumns( params.row );
             }
@@ -219,34 +221,31 @@ $.TableEdid.defaults = {
         }
     },
 
-    _createCell: function( $tr, row, index ) {
+    _createCell: function( $tr, row, col, rowIndex, colIndex ) {
         var name = 'createCell';
-        for( var col = 0; col < row.length; col++ ) {
 
-            if( row[col].hasOwnProperty('matrix') && row[col].matrix[0] == 1 || row[col].hasOwnProperty('matrix') && row[col].matrix[1] == 1 ) continue;
+        if( col.hasOwnProperty('matrix') && col.matrix[0] == 1 || col.hasOwnProperty('matrix') && col.matrix[1] == 1 ) return;
 
-            var params = {$tr:$tr,$td:$('<td/>'),row:row,col:row[col],rowIndex:index,colIndex:col};
-            this.doAction( name + 'Before', params );
-            if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+        var params = {$tr:$tr,$td:$('<td/>'),row:row,col:col,rowIndex:rowIndex,colIndex:colIndex};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
 
-                if( params.col.hasOwnProperty('settings') )
-                    this._cellConfiguration( params.$td, params.col.settings );
+            if( params.col.hasOwnProperty('settings') )
+                this._cellConfiguration( params.$td, params.col.settings );
 
-                if( params.col.hasOwnProperty('value') )
-                    params.$td.append( params.col.value );
+            if( params.col.hasOwnProperty('value') )
+                params.$td.append( params.col.value );
 
-                if( params.col.hasOwnProperty('callbacks') )
-                    this._doDelayedFunction( params );
+            if( params.col.hasOwnProperty('callbacks') )
+                this._doDelayedFunction( params );
 
-                this._setMatrix( params );
-
-                params.$tr.append( params.$td );
-            }
-            if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
-                this[name + 'After'](params);
-            this.doAction( name + 'After', params );
+            this._setMatrix( params );
         }
-        return params.$tr;
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+        
+        return params.$td;
     },
 
     _setMatrix: function( object ) {
@@ -374,7 +373,9 @@ $.TableEdid.defaults = {
                 var params = {$tr:$('<tr/>'),row:context.dataTableArray[row + save],index:(row + save)};
                 context.doAction( name + 'Before', params );
                 if(context.hasOwnProperty(name + 'Before') && typeof context[name + 'Before'] == 'function' && context[name + 'Before'](params) == true || !context.hasOwnProperty(name + 'Before')) {
-                    params.$tr.append( context._createCell( params.$tr, params.row, params.index ) );
+                    for( var col = 0; col < params.row.length; col++ ) {
+                        params.$tr.append( context._createCell( params.$tr, params.row, params.row[col], params.index, col ) );
+                    }
                     context.$tbody.append( context._createRowControls( params.$tr ) );
                     context._setNumberOfColumns( params.row );
                 }
