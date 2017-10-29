@@ -203,22 +203,22 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
-    _createRow: function() {
-        var name = 'createRow';
-        for( var row = 1, length = this.dataTableArray.length; row < length; row++ ) {
-            var params = {$tr:$('<tr/>'),row:this.dataTableArray[row],index:row};
-            this.doAction( name + 'Before', params );
-            if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
-                for( var col = 0; col < params.row.length; col++ ) {
-                    params.$tr.append( this._createCell( params.$tr, params.row, params.row[col], params.index, col ) );
-                }
-                this.$tbody.append( this._createRowControls( params.$tr ) );
-                this._setNumberOfColumns( params.row );
+    _createRow: function( index ) {
+        var name = 'createRow',
+            params = {$tr:$('<tr/>'),row:this.dataTableArray[index],index:index};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            for( var col = 0; col < params.row.length; col++ ) {
+                params.$tr.append( this._createCell( params.$tr, params.row, params.row[col], params.index, col ) );
             }
-            if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
-                this[name + 'After'](params);
-            this.doAction( name + 'After', params );
+            this._createRowControls( params.$tr );
+            this._setNumberOfColumns( params.row );
         }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+
+        return params.$tr;
     },
 
     _createCell: function( $tr, row, col, rowIndex, colIndex ) {
@@ -244,7 +244,7 @@ $.TableEdid.defaults = {
         if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
             this[name + 'After'](params);
         this.doAction( name + 'After', params );
-        
+
         return params.$td;
     },
 
@@ -373,11 +373,7 @@ $.TableEdid.defaults = {
                 var params = {$tr:$('<tr/>'),row:context.dataTableArray[row + save],index:(row + save)};
                 context.doAction( name + 'Before', params );
                 if(context.hasOwnProperty(name + 'Before') && typeof context[name + 'Before'] == 'function' && context[name + 'Before'](params) == true || !context.hasOwnProperty(name + 'Before')) {
-                    for( var col = 0; col < params.row.length; col++ ) {
-                        params.$tr.append( context._createCell( params.$tr, params.row, params.row[col], params.index, col ) );
-                    }
-                    context.$tbody.append( context._createRowControls( params.$tr ) );
-                    context._setNumberOfColumns( params.row );
+                    context.$tbody.append( context._createRow(params.index) );
                 }
                 if (context.hasOwnProperty(name + 'After') && typeof context[name + 'After'] == 'function')
                     context[name + 'After'](params);
@@ -433,7 +429,9 @@ $.TableEdid.defaults = {
                 this._createDelayedRows();
             }
             else {
-                this._createRow();
+                for( var row = 1, length = this.dataTableArray.length; row < length; row++ ) {
+                    this.$tbody.append( this._createRow(row) );
+                }
             }
             this._createTopControls();
             this._createBottomControls();
