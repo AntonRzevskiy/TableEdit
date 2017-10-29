@@ -444,3 +444,5 @@ $.TableEdid.defaults = {
     },
 
 };
+
+$.TableEdid.init = '_createTableManager';
