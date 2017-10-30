@@ -41,4 +41,17 @@ $.TableEdid.defaults = {
         }
     },
 
+    _defaultValueNewCell: function() {
+        var name = '_defaultValueNewCell',
+            params = {};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( ! params.hasOwnProperty('value') ) params.value = '';
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+        return params;
+    },
+
 };
