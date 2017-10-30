@@ -85,4 +85,45 @@ $.TableEdid.defaults = {
         this.doAction( name + 'After', params );
     },
 
+    _deleteSomeRows: function( options ) {
+        var name = '_deleteSomeRows',
+            o = {
+                count: 1,
+                direction: 'bottom',
+                scene: 0
+            };
+        $.extend(true, o, options);
+        o.pullOutIndex = o.scene;
+        o.pullOutRow = null;
+        o.nextRow = null;
+        while( o.count-- > 0 && this.dataTableArray[ o.pullOutIndex ] !== undefined ) {
+            o.pullOutRow = this.dataTableArray[ o.pullOutIndex ];
+            o.nextRow = this.dataTableArray[ o.pullOutIndex + 1 ];
+            this.doAction( name + 'Before', o );
+            if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](o) == true || !this.hasOwnProperty(name + 'Before')) {
+                for( var col = 0; col < o.pullOutRow.length; col++ ) {
+                    if( o.pullOutRow[ col ].hasOwnProperty('settings') && o.pullOutRow[ col ].settings.hasOwnProperty('rowspan') && o.pullOutRow[ col ].settings.rowspan > 1 ) {
+                        o.pullOutRow[ col ].settings.rowspan -= 1;
+                        o.nextRow[col] = o.pullOutRow[ col ];
+                        var $movable = this.$tbody.find('tr').eq( o.pullOutIndex ).find('td[data-real-index='+ col +'],th[data-real-index='+ col +']');
+                        var $wanted = this.$tbody.find('tr').eq( o.pullOutIndex + 1 ).find('td[data-real-index='+ (col + (+$movable.attr('colspan') || 1)) +'],th[data-real-index='+ (col + (+$movable.attr('colspan') || 1)) +']');
+                        $wanted.before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
+                    }
+                    if( o.pullOutRow[ col ].matrix[0] == 1 && o.pullOutRow[ col ].matrix[1] == 0 ) {
+                        o.nextRow[col] = o.pullOutRow[ col ];
+                    }
+                    if( o.pullOutRow[col].matrix[0] == 0 && o.pullOutRow[col].matrix[1] == 1 ) {
+                        this._correctCell( o.pullOutIndex, col, -1, 'rowspan' );
+                    }
+                }
+                this.dataTableArray.splice( o.pullOutIndex, 1 );
+                this.$tbody.find('tr').eq( o.pullOutIndex ).remove();
+                if( o.count && o.direction === 'top' ) o.pullOutIndex--;
+            }
+            if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](o);
+            this.doAction( name + 'After', o );
+        }
+    },
+
 };
