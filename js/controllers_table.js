@@ -126,4 +126,88 @@ $.TableEdid.defaults = {
         }
     },
 
+    _addNewCols: function( options ) {
+        var o = {
+                count: 1,
+                scene: 0,
+                part: true,
+                newCol: null,
+                checkedCell: null,
+            };
+        $.extend(true, o, options);
+        while( o.count-- > 0 ) {
+            o.newCol = new Array( this.dataTableArray.length );
+            this._numberOfColumns += 1;
+            var $method = this.controlOrientation == 'left' ? 'after' : 'before';
+            this.$thead.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.topControlsElements ) );
+            this.$tfoot.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.bottomControlsElements ) );
+            if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.newCol.length > this.maxRowsOutDelay ) {
+                this._addNewDelayedCols( o );
+            }
+            else {
+                for( var row = 0, length = o.newCol.length; row < length; row++ ) {
+                    this._addNewCol( row, o );
+                }
+            }
+        }
+    },
+
+    _addNewDelayedCols: function( o ) {
+        if(! this.hasOwnProperty('howCreateOnce')) return;
+        var $that = this,
+            times = Math.ceil( (o.newCol.length - 1) / this.howCreateOnce ),
+            interation = 0;
+        setTimeout(function generateCol(){
+            var save = $that.howCreateOnce * interation,
+                length = (o.newCol.length - save) < $that.howCreateOnce ? o.newCol.length - save : $that.howCreateOnce;
+            for( var row = 0; row < length; row++ ) {
+                $that._addNewCol( (row + save), o );
+            }
+            if( ++interation < times )
+                setTimeout(generateCol,0);
+        },0);
+    },
+
+    _addNewCol: function( row, o ) {
+        o.checkedCell = this.dataTableArray[ row ][ o.scene ];
+        var name = '_addNewCols';
+        this.doAction( name + 'Before', o );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](o) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( o.checkedCell !== undefined && o.checkedCell.matrix[0] == 1 ) {
+                o.newCol[ row ] = {matrix: o.checkedCell.matrix};
+                if( o.checkedCell.matrix[1] == 0 ) {
+                    this._correctCell( row, o.scene, 1, 'colspan' );
+                }
+            }
+            else {
+                o.newCol[ row ] = this._defaultValueNewCell();
+            }
+            this.dataTableArray[ row ].splice( o.scene, 0, o.newCol[row] );
+            var cell = this.dataTableArray[ row ][ o.scene ],
+                $tr = this.$tbody.find('tr').eq( row );
+            $tr.find('td[data-real-index],th[data-real-index]').filter(function(){
+                var $this = $(this);
+                if( $this.attr('data-real-index') >= o.scene )
+                    $this.attr('data-real-index', +$this.attr('data-real-index') + 1);
+            });
+            var $destination = $tr.find('td[data-real-index='+ (o.scene + 1) +'],th[data-real-index='+ (o.scene + 1) +']');
+            if( $destination.length ) {
+                $destination.before( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
+            }
+            else {
+                var d = o.scene;
+                while( --d ) {
+                    $destination = $tr.find('td[data-real-index='+ d +'],th[data-real-index='+ d +']');
+                    if( $destination.length ) {
+                        $destination.after( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
+                        break;
+                    }
+                }
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](o);
+        this.doAction( name + 'After', o );
+    },
+
 };
