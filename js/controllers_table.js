@@ -54,4 +54,35 @@ $.TableEdid.defaults = {
         return params;
     },
 
+    _correctCell: function( rowIndex, colIndex, correct, property ) {
+        var name = '_correctCell',
+            params = {rowIndex:rowIndex,colIndex:colIndex,correct:correct,property:property};
+        this.doAction( name + 'Before', params );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this.hasOwnProperty(name + 'Before')) {
+            if( params.property === 'rowspan' ) {
+                do {
+                    if( this.dataTableArray[ params.rowIndex ][ params.colIndex ].matrix[1] == 0 ) {
+                        this.dataTableArray[ params.rowIndex ][ params.colIndex ].settings.rowspan += params.correct;
+                        var $wanted = this.$tbody.find('tr').eq( params.rowIndex ).find('td[data-real-index='+ params.colIndex +'],th[data-real-index='+ params.colIndex +']');
+                        $wanted.attr('rowspan', +$wanted.attr('rowspan') + params.correct);
+                        break;
+                    }
+                } while( params.rowIndex-- >= 0 );
+            }
+            else if( params.property === 'colspan' ) {
+                do {
+                    if( this.dataTableArray[ params.rowIndex ][ params.colIndex ].matrix[0] == 0 ) {
+                        this.dataTableArray[ params.rowIndex ][ params.colIndex ].settings.colspan += params.correct;
+                        var $wanted = this.$tbody.find('tr').eq( params.rowIndex ).find('td[data-real-index='+ params.colIndex +'],th[data-real-index='+ params.colIndex +']');
+                        $wanted.attr('colspan', +$wanted.attr('colspan') + params.correct);
+                        break;
+                    }
+                } while( params.colIndex-- >= 0 );
+            }
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 };
