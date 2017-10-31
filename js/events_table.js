@@ -1,0 +1,54 @@
+$.TableEdid.defaults = {
+
+    _eventsBind: function() {
+        var name = 'eventsBind';
+        this.doAction( name + 'Before' );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before']() == true || !this.hasOwnProperty(name + 'Before')) {
+
+            this.$tbody.on(
+                'click._addRow',
+                '.addrow',
+                this,
+                function(e) {
+                    var thisRowIndex = $(this).closest('tr').index();
+                    e.data._addNewRows({count:5,scene:thisRowIndex,direction:'top'});
+                }
+            );
+
+            this.$tbody.on(
+                'click._delRow',
+                '.delrow',
+                this,
+                function(e) {
+                    var thisRowIndex = $(this).closest('tr').index();
+                    e.data._deleteSomeRows({count:5,scene:thisRowIndex,direction:'bottom'});
+                }
+            );
+
+            this.$thead.on(
+                'click._addCol',
+                '.addCol',
+                this,
+                this._addCol
+            );
+
+            this.$tfoot.on(
+                'click._addCol',
+                '.addCol',
+                this,
+                this._addCol
+            );
+
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After']();
+        this.doAction( name + 'After' );
+    },
+
+    _addCol: function(e) {
+        var thisColIndex = $(this).closest('td').index();
+        e.data._addNewCols({ scene:thisColIndex, part:true, count:5 });
+    },
+};
+
+$.TableEdid.init = '_eventsBind';
