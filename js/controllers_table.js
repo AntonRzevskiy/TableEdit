@@ -196,12 +196,13 @@ $.TableEdid.defaults = {
             }
             else {
                 var d = o.scene;
-                while( --d ) {
+                while( --d >= 0 ) {
                     $destination = $tr.find('td[data-real-index='+ d +'],th[data-real-index='+ d +']');
                     if( $destination.length ) {
                         $destination.after( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
                         break;
                     }
+                    if( d == -1 ) $tr.prepend( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
                 }
             }
         }
@@ -209,7 +210,7 @@ $.TableEdid.defaults = {
             this[name + 'After'](o);
         this.doAction( name + 'After', o );
     },
-    
+
     _deleteSomeCols: function( options ) {
         var o = {
                 count: 1,
@@ -235,7 +236,7 @@ $.TableEdid.defaults = {
             }
         }
     },
-    
+
     _deleteDelayedCols: function( o ) {
         if(! this.hasOwnProperty('howCreateOnce')) return;
         var $that = this,
@@ -251,7 +252,7 @@ $.TableEdid.defaults = {
                 setTimeout(delCol,0);
         },0);
     },
-    
+
     _deleteCol: function( row, o ) {
         o.$tr = this.$tbody.find('tr').eq( row );
         o.checkedCell = this.dataTableArray[ row ][ o.pullOutIndex ];
