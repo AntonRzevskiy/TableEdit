@@ -202,8 +202,8 @@ $.TableEdid.defaults = {
                         $destination.after( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
                         break;
                     }
-                    if( d == -1 ) $tr.prepend( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
                 }
+                if( d == -1 ) $tr.prepend( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
             }
         }
         if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
