@@ -209,5 +209,80 @@ $.TableEdid.defaults = {
             this[name + 'After'](o);
         this.doAction( name + 'After', o );
     },
+    
+    _deleteSomeCols: function( options ) {
+        var o = {
+                count: 1,
+                scene: 0,
+                part: true,
+                $tr: null,
+                checkedCell: null,
+            };
+        $.extend(true, o, options);
+        o.pullOutIndex = o.scene;
+        while( o.count-- > 0 ) {
+            this._numberOfColumns -= 1;
+			this.$thead.find('td').eq( o.pullOutIndex ).remove();
+			this.$tfoot.find('td').eq( o.pullOutIndex ).remove();
+            if( this.controlOrientation == 'left' ) o.pullOutIndex -= 1;
+            if( o.part && this.hasOwnProperty('maxRowsOutDelay') && this.dataTableArray.length > this.maxRowsOutDelay ) {
+                this._deleteDelayedCols( o );
+            }
+            else {
+                for( var row = 0, length = this.dataTableArray.length; row < length; row++ ) {
+                    this._deleteCol( row, o );
+                }
+            }
+        }
+    },
+    
+    _deleteDelayedCols: function( o ) {
+        if(! this.hasOwnProperty('howCreateOnce')) return;
+        var $that = this,
+            times = Math.ceil( (this.dataTableArray.length - 1) / this.howCreateOnce ),
+            interation = 0;
+        setTimeout(function delCol(){
+            var save = $that.howCreateOnce * interation,
+                length = ($that.dataTableArray.length - save) < $that.howCreateOnce ? $that.dataTableArray.length - save : $that.howCreateOnce;
+            for( var row = 0; row < length; row++ ) {
+                $that._deleteCol( (row + save), o );
+            }
+            if( ++interation < times )
+                setTimeout(delCol,0);
+        },0);
+    },
+    
+    _deleteCol: function( row, o ) {
+        o.$tr = this.$tbody.find('tr').eq( row );
+        o.checkedCell = this.dataTableArray[ row ][ o.pullOutIndex ];
+        var name = '_deleteSomeCols';
+        this.doAction( name + 'Before', o );
+        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](o) == true || !this.hasOwnProperty(name + 'Before')) {
+            var remove = true;
+            if( o.checkedCell.hasOwnProperty('settings') && o.checkedCell.settings.hasOwnProperty('colspan') && o.checkedCell.settings.colspan > 1 ) {
+                o.checkedCell.settings.colspan -= 1;
+                this.dataTableArray[ row ][ o.pullOutIndex + 1 ] = o.checkedCell;
+                var $wanted = o.$tr.find('td[data-real-index='+ o.pullOutIndex +'],th[data-real-index='+ o.pullOutIndex +']');
+                $wanted.attr('colspan', +$wanted.attr('colspan') - 1);
+                remove = false;
+            }
+            if( o.checkedCell.matrix[0] == 0 && o.checkedCell.matrix[1] == 1 ) {
+                this.dataTableArray[ row ][ o.pullOutIndex + 1 ] = o.checkedCell;
+            }
+            if( o.checkedCell.matrix[0] == 1 && o.checkedCell.matrix[1] == 0 ) {
+                this._correctCell( row, o.pullOutIndex, -1, 'colspan' );
+            }
+            this.dataTableArray[ row ].splice( o.pullOutIndex, 1 );
+            if( remove ) o.$tr.find('td[data-real-index='+ o.pullOutIndex +'],th[data-real-index='+ o.pullOutIndex +']').remove();
+            o.$tr.find('td[data-real-index],th[data-real-index]').filter(function(){
+                var $this = $(this);
+                if( $this.attr('data-real-index') > o.pullOutIndex )
+                    $this.attr('data-real-index', +$this.attr('data-real-index') - 1);
+            });
+        }
+        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](o);
+        this.doAction( name + 'After', o );
+    },
 
 };

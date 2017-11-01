@@ -39,6 +39,20 @@ $.TableEdid.defaults = {
                 this._addCol
             );
 
+            this.$thead.on(
+                'click._delCol',
+                '.delCol',
+                this,
+                this._delCol
+            );
+
+            this.$tfoot.on(
+                'click._delCol',
+                '.delCol',
+                this,
+                this._delCol
+            );
+
         }
         if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
             this[name + 'After']();
@@ -49,6 +63,12 @@ $.TableEdid.defaults = {
         var thisColIndex = $(this).closest('td').index();
         e.data._addNewCols({ scene:thisColIndex, part:true, count:5 });
     },
+
+    _delCol: function(e) {
+        var thisColIndex = $(this).closest('td').index();
+        e.data._deleteSomeCols({ scene:thisColIndex, part:true, count:5 });
+    },
+
 };
 
 $.TableEdid.init = '_eventsBind';
