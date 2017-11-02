@@ -31,7 +31,6 @@
                             try {
                                 this[ arrInit[ i ] ].apply(this,[selector,arrInit,i]);
                             } catch (e) {
-                                throw e;
                                 arrInit[ i ].apply(this,[selector,arrInit,i]);
                             }
                         }

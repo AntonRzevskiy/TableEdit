@@ -23,7 +23,7 @@ $.TableEdid.defaults = {
                 try {
                     this.dataTableArray = params.selector;
                 } catch (e) {
-                    throw e;
+                    console.error(e);
                     this.dataTableArray = this.dataTableDefaultArray;
                 }
             }
