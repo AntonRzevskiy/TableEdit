@@ -10,12 +10,12 @@
 
     Object.defineProperties($.TableEdid, {
 
-        _defaults: {
+        _plugin: {
             value: {
 
                 doAction: function( name, args, context ) {
                     var callbacks = $.TableEdid.callbacks;
-                    if( callbacks.hasOwnProperty(name) && callbacks[name].length ) {
+                    if( callbacks[name] && callbacks[name].length ) {
                         for(var i = 0; i < callbacks[name].length; i++ ) {
                             var fn = callbacks[name][i],
                                 res = fn.apply((context || this),[callbacks[name],i,args]);
@@ -24,14 +24,13 @@
                     }
                 },
 
-                __init: function( selector ) {
+                init: function( selector ) {
                     var arrInit = $.TableEdid.init;
                     if( arrInit.length ) {
                         for(var i = 0; i < arrInit.length; i++ ) {
                             try {
                                 this[ arrInit[ i ] ].apply(this,[selector,arrInit,i]);
                             } catch (e) {
-                                throw e;
                                 arrInit[ i ].apply(this,[selector,arrInit,i]);
                             }
                         }
@@ -41,13 +40,13 @@
             }
         },
 
-        defaults: {
+        plugin: {
             get: function() {
-                return this._defaults;
+                return this._plugin;
             },
             set: function( newSettings ) {
                 if ( newSettings instanceof Object ) {
-                    $.extend(true, this._defaults, newSettings);
+                    $.extend(true, this._plugin, newSettings);
                 }
             }
         },
@@ -56,17 +55,17 @@
             value: {
 
                 refresh: function( object ) {
-                    var obj = object || $.TableEdid.defaults;
+                    var obj = object || $.TableEdid.plugin;
                     for( var method in obj ) {
                         if( method.charAt(0) == '_' && typeof obj[method] == 'function' ) {
-                            if(! $.TableEdid.callbacks.hasOwnProperty(method + 'Before') ) {
+                            if(! $.TableEdid.callbacks[method + 'Before'] ) {
                                 (function( method ) {
                                     Object.defineProperty($.TableEdid.callbacks, method + 'Before', {
                                         value: []
                                     });
                                 })(method);
                             }
-                            if(! $.TableEdid.callbacks.hasOwnProperty(method.substring(1) + 'Before') ) {
+                            if(! $.TableEdid.callbacks[method.substring(1) + 'Before'] ) {
                                 (function( method ) {
                                     Object.defineProperty($.TableEdid.callbacks, method.substring(1) + 'Before', {
                                         get: function() {
@@ -83,14 +82,14 @@
                                     });
                                 })(method);
                             }
-                            if(! $.TableEdid.callbacks.hasOwnProperty(method + 'After') ) {
+                            if(! $.TableEdid.callbacks[method + 'After'] ) {
                                 (function( method ) {
                                     Object.defineProperty($.TableEdid.callbacks, method + 'After', {
                                         value: []
                                     });
                                 })(method);
                             }
-                            if(! $.TableEdid.callbacks.hasOwnProperty(method.substring(1) + 'After') ) {
+                            if(! $.TableEdid.callbacks[method.substring(1) + 'After'] ) {
                                 (function( method ) {
                                     Object.defineProperty($.TableEdid.callbacks, method.substring(1) + 'After', {
                                         get: function() {
@@ -134,10 +133,10 @@
                 return this._init;
             },
             set: function( fName ) {
-                if( typeof fName == 'function' || this.defaults.hasOwnProperty(fName) && typeof this.defaults[ fName ] == 'function' ) {
+                if( typeof fName == 'function' || this.plugin[fName] && typeof this.plugin[ fName ] == 'function' ) {
                     this._init.push(fName);
                 }
-                else if( Array.isArray(fName) && fName.length > 1 && typeof fName[0] == 'function' || Array.isArray(fName) && fName.length > 1 && this.defaults.hasOwnProperty(fName[0]) && typeof this.defaults[ fName[0] ] == 'function' ) {
+                else if( Array.isArray(fName) && fName.length > 1 && typeof fName[0] == 'function' || Array.isArray(fName) && fName.length > 1 && this.plugin[ fName[0] ] && typeof this.plugin[ fName[0] ] == 'function' ) {
                     this._init.splice( fName[1], 0, fName[0] );
                 }
             }
@@ -145,9 +144,9 @@
 
     });
 
-    $.fn.TableEdid = function( options ) {
+    $.fn.tableEdid = function( options ) {
 
-        var localDefaults = {
+        var localPlugin = {
 
                 $table: $('<table/>'),
                 $thead: $('<thead/>'),
@@ -159,21 +158,21 @@
             },
             options = options || {},
             that = $.extend(true,
-                localDefaults,
-                $.TableEdid.defaults,
+                localPlugin,
+                $.TableEdid.plugin,
                 options
             );
 
-        that.__init( this );
+        that.init( this );
 
         return this;
 
     }
 
-    if(! Array.prototype.TableEdid) {
+    if(! Array.prototype.tableEdid) {
 
-        Object.defineProperty(Array.prototype, "TableEdid", {
-            value: $.fn.TableEdid
+        Object.defineProperty(Array.prototype, "tableEdid", {
+            value: $.fn.tableEdid
         });
 
     }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Edid Table</title>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+</head>
+<body style="position:relative;padding:20px;">
+
+<script src="js/core.js"></script>
+<script src="js/create_table.js"></script>
+<script src="js/controllers_table.js"></script>
+<script src="js/events_table.js"></script>
+
+    <script>
+
+    jQuery(document).ready(function($){
+        
+        var R = 0,
+            rowsGenerate = new Array(1000);
+        for(var i = 0; i < rowsGenerate.length; i++) {
+            
+            var randomPosition = -1;
+            if( i % 10 == 0 ) {
+                randomPosition = Math.floor(Math.random() * 8 + 0);
+                var randomColspan = Math.floor(Math.random() * (8 - randomPosition) + 2);
+                var randomRowspan = Math.floor(Math.random() * 8 + 2);
+                R = randomRowspan - 1;
+
+                rowsGenerate[i] = new Array(10 - (randomColspan - 1));
+                rowsGenerate[i][randomPosition] = {value:'value',settings:{ colspan:randomColspan,rowspan:randomRowspan }};
+            }
+
+            else if( R > 0 ) {
+
+                rowsGenerate[i] = new Array(10 - randomColspan);
+                R--;
+
+            }
+            else {
+
+                rowsGenerate[i] = new Array(10);
+
+            }
+
+            for(n = 0; n < rowsGenerate[i].length; n++) {
+
+                if( n == randomPosition ) {
+                    continue;
+                }
+
+                rowsGenerate[i][n] = {value:'value'};
+            }
+        }
+        var rowsCustom = [
+            [ {value:'head 1'}, {value:'head 2'}, {value:'head 3'}, {value:'head 4'}, {value:'head 5'}, {value:'head 6'}, {value:'head 7'}, {value:'head 8'}, {value:'head 9'}, {value:'head 10'} ]
+        ];
+        var Table = rowsCustom.concat( rowsGenerate );
+        Table.tableEdid({
+            outputMethod: 'prepend',
+            stubElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+            topControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                 '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            bottomControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                    '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            rowControlsElements: '<a class="btn btn-success btn-xs addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                 '<a class="btn btn-danger btn-xs delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            maxRowsOutDelay: 400,
+            howCreateOnce: 80,
+            compileTableAfter: function() {
+                this.$table.addClass('table table-bordered table-hover');
+                return true;
+            },
+        });
+        
+    });
+
+    </script>
+
+</body>
+</html>
