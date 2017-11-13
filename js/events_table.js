@@ -1,74 +1,80 @@
-$.TableEdid.defaults = {
+jQuery(document).ready(function($){
 
-    _eventsBind: function() {
-        var name = 'eventsBind';
-        this.doAction( name + 'Before' );
-        if(this.hasOwnProperty(name + 'Before') && typeof this[name + 'Before'] == 'function' && this[name + 'Before']() == true || !this.hasOwnProperty(name + 'Before')) {
+    if( !$.TableEdid ) return;
 
-            this.$tbody.on(
-                'click._addRow',
-                '.addrow',
-                this,
-                function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
-                    e.data._addNewRows({count:5,scene:thisRowIndex,direction:'top'});
-                }
-            );
+    $.TableEdid.plugin = {
 
-            this.$tbody.on(
-                'click._delRow',
-                '.delrow',
-                this,
-                function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
-                    e.data._deleteSomeRows({count:5,scene:thisRowIndex,direction:'bottom'});
-                }
-            );
+        _eventsBind: function() {
+            var name = 'eventsBind';
+            this.doAction( name + 'Before' );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before']() == true || !this[name + 'Before']) {
 
-            this.$thead.on(
-                'click._addCol',
-                '.addCol',
-                this,
-                this._addCol
-            );
+                this.$tbody.on(
+                    'click._addRow',
+                    '.addrow',
+                    this,
+                    function(e) {
+                        var thisRowIndex = $(this).closest('tr').index();
+                        e.data._addNewRows({count:5,scene:thisRowIndex,direction:'top'});
+                    }
+                );
 
-            this.$tfoot.on(
-                'click._addCol',
-                '.addCol',
-                this,
-                this._addCol
-            );
+                this.$tbody.on(
+                    'click._delRow',
+                    '.delrow',
+                    this,
+                    function(e) {
+                        var thisRowIndex = $(this).closest('tr').index();
+                        e.data._deleteSomeRows({count:5,scene:thisRowIndex,direction:'bottom'});
+                    }
+                );
 
-            this.$thead.on(
-                'click._delCol',
-                '.delCol',
-                this,
-                this._delCol
-            );
+                this.$thead.on(
+                    'click._addCol',
+                    '.addCol',
+                    this,
+                    this._addCol
+                );
 
-            this.$tfoot.on(
-                'click._delCol',
-                '.delCol',
-                this,
-                this._delCol
-            );
+                this.$tfoot.on(
+                    'click._addCol',
+                    '.addCol',
+                    this,
+                    this._addCol
+                );
 
-        }
-        if (this.hasOwnProperty(name + 'After') && typeof this[name + 'After'] == 'function')
-            this[name + 'After']();
-        this.doAction( name + 'After' );
-    },
+                this.$thead.on(
+                    'click._delCol',
+                    '.delCol',
+                    this,
+                    this._delCol
+                );
 
-    _addCol: function(e) {
-        var thisColIndex = $(this).closest('td').index();
-        e.data._addNewCols({ scene:thisColIndex, part:true, count:5 });
-    },
+                this.$tfoot.on(
+                    'click._delCol',
+                    '.delCol',
+                    this,
+                    this._delCol
+                );
 
-    _delCol: function(e) {
-        var thisColIndex = $(this).closest('td').index();
-        e.data._deleteSomeCols({ scene:thisColIndex, part:true, count:5 });
-    },
+            }
+            if (this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After']();
+            this.doAction( name + 'After' );
+        },
 
-};
+        _addCol: function(e) {
+            var thisColIndex = $(this).closest('td').index();
+            e.data._addNewCols({ scene:thisColIndex, part:true, count:5 });
+        },
 
-$.TableEdid.init = '_eventsBind';
+        _delCol: function(e) {
+            var thisColIndex = $(this).closest('td').index();
+            e.data._deleteSomeCols({ scene:thisColIndex, part:true, count:5 });
+        },
+
+    };
+
+    $.TableEdid.init = '_eventsBind';
+
+});
