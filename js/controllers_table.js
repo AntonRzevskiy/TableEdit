@@ -47,11 +47,10 @@ jQuery(document).ready(function($){
 
         _defaultValueNewCell: function( cell ) {
             var name = '_defaultValueNewCell',
-                params = {};
+                params = cell || {};
             this.doAction( name + 'Before', params );
             if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
                 if( ! params.hasOwnProperty('value') ) params.value = '';
-                if( cell ) $.extend(true,cell,params);
             }
             if (this[name + 'After'] && typeof this[name + 'After'] == 'function')
                 this[name + 'After'](params);
