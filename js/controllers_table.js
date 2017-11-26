@@ -290,7 +290,7 @@ jQuery(document).ready(function($){
             this.doAction( name + 'After', o );
         },
 
-    };
+    },
 
     _saveBackCell: function( rowIndex, colIndex, saving, newValue ) {
         var name = 'saveBackCell',
