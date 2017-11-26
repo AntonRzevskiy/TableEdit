@@ -292,4 +292,31 @@ jQuery(document).ready(function($){
 
     };
 
+    _saveBackCell: function( rowIndex, colIndex, saving, newValue ) {
+        var name = 'saveBackCell',
+            chain = saving.split('.'),
+            params = {rowIndex:rowIndex,colIndex:colIndex,saving:chain,newValue:newValue};
+        this.doAction( name + 'Before', params );
+        if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+            var tmp = [],
+                o = {};
+            for(var i = params.chain.length - 1, lastKey = params.chain.length - 1; i >= 0; i--  ) {
+                var a = {};
+                if( i == lastKey ) {
+                    a[ params.chain[i] ] = params.newValue;
+                    tmp.push( a );
+                } else {
+                    var b = tmp.pop();
+                    a[ params.chain[i] ] = b;
+                    tmp.push( a );
+                }
+            }
+            o = tmp.pop();
+            $.extend(true, this.dataTableArray[ params.rowIndex ][ params.colIndex ], o);
+        }
+        if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+            this[name + 'After'](params);
+        this.doAction( name + 'After', params );
+    },
+
 });
