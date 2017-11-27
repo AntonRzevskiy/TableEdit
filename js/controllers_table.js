@@ -317,6 +317,34 @@ jQuery(document).ready(function($){
             this.doAction( name + 'After', params );
         },
 
+        _getFrontRow: function( rowIndex ) {
+            var name = 'getFrontRow',
+                params = { rowIndex: +rowIndex };
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                return this.$tbody.find('tr').eq( params.rowIndex );
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
+        _getFrontCell: function( row, col ) {
+            var name = 'getFrontCell',
+                params = { col: +col, row: row };
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                if( typeof params.row === 'object' ) {
+                    return params.row.find('td[data-real-index='+ params.col +'],th[data-real-index='+ params.col +']');
+                }
+                params.row = +row;
+                return this._getFrontRow( params.row ).find('td[data-real-index='+ params.col +'],th[data-real-index='+ params.col +']');
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
     };
 
 });
