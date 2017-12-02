@@ -345,6 +345,223 @@ jQuery(document).ready(function($){
             this.doAction( name + 'After', params );
         },
 
+        _change: function( rowIndex, colIndex, newData ) {
+            var name = 'change',
+                params = {
+                    rowIndex: +rowIndex,
+                    colIndex: +colIndex,
+                    newData: newData,
+                    adding: [],
+                    remove: [],
+                    cell: this.dataTableArray[ rowIndex ][ colIndex ],
+                    stretchError: {
+                        colspan: [],
+                        rowspan: []
+                    },
+                    getTune: function( interest, obj, replace ) {
+                        replace = replace || 1;
+                        return obj.settings && obj.settings[interest] ? +obj.settings[interest] : replace;
+                    },
+                    isStretched: function( cell ) {
+                        if( cell === undefined ) return true;
+                        if( cell.matrix ) {
+                            if( cell.matrix[0] != 0 || cell.matrix[1] != 0 ) return true;
+                        }
+                        if( this.getTune('colspan',cell) > 1 ) return true;
+                        if( this.getTune('rowspan',cell) > 1 ) return true;
+                        return false;
+                    }
+                };
+
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                var countCol,
+                    countRow;
+
+                if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData);
+                    countRow = params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            params.adding.push({
+                                rowIndex: (params.rowIndex + row),
+                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
+                                cell: this.dataTableArray[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
+                            });
+                        }
+                    }
+                }
+                if( params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData) > 0 ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            params.adding.push({
+                                rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
+                                colIndex: (params.colIndex + col),
+                                cell: this.dataTableArray[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
+                            });
+                        }
+                    }
+                }
+                if( params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.newData) - params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData) > 0 ? params.getTune('rowspan',params.newData) : params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            var checkCell = this.dataTableArray[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) + col) ];
+                            params.remove.push({
+                                rowIndex: (params.rowIndex + row),
+                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                cell: checkCell,
+                            });
+                            if( params.isStretched(checkCell) ) {
+                                params.stretchError.colspan.push({
+                                    rowIndex: (params.rowIndex + row),
+                                    colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                    cell: checkCell,
+                                });
+                            }
+                        }
+                    }
+                }
+                if( params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
+                    countCol = params.newData.settings.colspan ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.newData) - params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            var checkCell = this.dataTableArray[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ] ? this.dataTableArray[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ][ (params.colIndex + col) ] : undefined;
+                            params.remove.push({
+                                rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                colIndex: (params.colIndex + col),
+                                cell: checkCell,
+                            });
+                            if( params.isStretched(checkCell) ) {
+                                params.stretchError.rowspan.push({
+                                    rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                    colIndex: (params.colIndex + col),
+                                    cell: checkCell,
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if( params.adding.length ) this._handleContraction( params );
+                if( params.remove.length ) this._handleStretching( params );
+                if( params.newData.value ) this._handleValueChanging( params );
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
+        _handleValueChanging: function( params ) {
+            var name = 'handleValueChanging';
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                if( params.cell.value && params.cell.value != params.newData.value ) {
+                    this._saveBackCell( params.rowIndex, params.colIndex, 'value', params.newData.value );
+                    this._getFrontCell( params.rowIndex, params.colIndex ).html( params.newData.value );
+                }
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
+        _handleContraction: function( params ) {
+            var name = 'handleContraction';
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
+                    for( var i = 0; i < params.adding.length; i++ ) {
+                        var el = params.adding[i];
+                        var col = el.colIndex + 1;
+                        delete el.cell.matrix;
+                        this._defaultValueNewCell( el.cell );
+                        do {
+                            var $tr = this._getFrontRow( el.rowIndex );
+                            if( this.dataTableArray[ el.rowIndex ][ col ] === undefined ) {
+                                if( this.controlOrientation === 'left' ) {
+                                    $tr.append( this._createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
+                                    break;
+                                }
+                                $tr.find('td,th').eq( -1 ).before( this._createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
+                                break;
+                            }
+                            if( this.dataTableArray[ el.rowIndex ][ col ].matrix[0] == 0 && this.dataTableArray[ el.rowIndex ][ col ].matrix[1] == 0 ) {
+                                
+                                this._getFrontCell( $tr, col ).before(
+                                    this._createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex )
+                                );
+                                break;
+                            }
+                        }while( ++col < this._numberOfColumns );
+                    }
+                    if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
+                        this._saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', params.newData.settings.colspan );
+                        this._getFrontCell( params.rowIndex, params.colIndex ).attr('colspan', params.cell.settings.colspan);
+                    }
+                    if( params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
+                        this._saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', params.newData.settings.rowspan );
+                        this._getFrontCell( params.rowIndex, params.colIndex ).attr('rowspan', params.cell.settings.rowspan);
+                    }
+                }
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
+        _handleStretching: function( params ) {
+            var name = 'handleStretching';
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
+                    for( var i = 0; i < params.remove.length; i++ ) {
+                        var el = params.remove[i];
+                        this._emptyCell(el.cell);
+                        this._getFrontCell( el.rowIndex, el.colIndex ).remove();
+                        if( el.rowIndex ==  params.rowIndex ) {
+                            el.cell.matrix = [1,0];
+                        }
+                        else if( el.colIndex ==  params.colIndex ) {
+                            el.cell.matrix = [0,1];
+                        }
+                        else {
+                           el.cell.matrix = [1,1]; 
+                        }
+                    }
+                    if( params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
+                        this._saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', params.newData.settings.colspan );
+                        this._getFrontCell( params.rowIndex, params.colIndex ).attr('colspan', params.cell.settings.colspan);
+                    }
+                    if( params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
+                        this._saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', params.newData.settings.rowspan );
+                        this._getFrontCell( params.rowIndex, params.colIndex ).attr('rowspan', params.cell.settings.rowspan);
+                    }
+                }
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
+        _emptyCell: function( cell ) {
+            var name = 'emptyCell',
+                params = cell || {};
+            this.doAction( name + 'Before', params );
+            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
+                for( var key in cell) {
+                    delete cell[key];
+                }
+            }
+            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                this[name + 'After'](params);
+            this.doAction( name + 'After', params );
+        },
+
     };
 
 });
