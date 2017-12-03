@@ -13,6 +13,7 @@
 </head>
 <body style="position:relative;padding:20px;">
 
+<link rel="stylesheet" href="css/tableEdit.css">
 <script src="js/core.js"></script>
 <script src="js/create_table.js"></script>
 <script src="js/controllers_table.js"></script>
@@ -74,7 +75,7 @@
             maxRowsOutDelay: 400,
             howCreateOnce: 80,
             compileTableAfter: function() {
-                this.$table.addClass('table table-bordered table-hover');
+                this.$table.addClass('table table-bordered table-hover tableEdit');
                 return true;
             },
         });
