@@ -15,7 +15,7 @@ jQuery(document).ready(function($){
                     this,
                     function(e) {
                         var thisRowIndex = $(this).closest('tr').index();
-                        e.data._addNewRows({count:5,scene:thisRowIndex,direction:'top'});
+                        e.data._addNewRows({scene:thisRowIndex});
                     }
                 );
 
@@ -25,7 +25,7 @@ jQuery(document).ready(function($){
                     this,
                     function(e) {
                         var thisRowIndex = $(this).closest('tr').index();
-                        e.data._deleteSomeRows({count:5,scene:thisRowIndex,direction:'bottom'});
+                        e.data._deleteSomeRows({scene:thisRowIndex});
                     }
                 );
 
@@ -107,12 +107,12 @@ jQuery(document).ready(function($){
 
         _addCol: function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data._addNewCols({ scene:thisColIndex, part:true, count:5 });
+            e.data._addNewCols({scene:thisColIndex});
         },
 
         _delCol: function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data._deleteSomeCols({ scene:thisColIndex, part:true, count:5 });
+            e.data._deleteSomeCols({scene:thisColIndex});
         },
 
         _cellEditingStart: function( event, object ) {
