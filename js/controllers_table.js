@@ -298,14 +298,14 @@ jQuery(document).ready(function($){
             if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
                 var tmp = [],
                     o = {};
-                for(var i = params.chain.length - 1, lastKey = params.chain.length - 1; i >= 0; i--  ) {
+                for(var i = params.saving.length - 1, lastKey = params.saving.length - 1; i >= 0; i--  ) {
                     var a = {};
                     if( i == lastKey ) {
-                        a[ params.chain[i] ] = params.newValue;
+                        a[ params.saving[i] ] = params.newValue;
                         tmp.push( a );
                     } else {
                         var b = tmp.pop();
-                        a[ params.chain[i] ] = b;
+                        a[ params.saving[i] ] = b;
                         tmp.push( a );
                     }
                 }
