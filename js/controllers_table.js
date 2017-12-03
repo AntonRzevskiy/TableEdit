@@ -31,7 +31,7 @@ jQuery(document).ready(function($){
                         }
                     }
                     this.dataTableArray.splice( o.shiftIndex, 0, o.newRow );
-                    var $add = this.$tbody.find('tr').eq( o.shiftIndex );
+                    var $add = this._getFrontRow( o.shiftIndex );
                     if( $add.length ) {
                         $add.before( this._createRow(o.shiftIndex) );
                     }
@@ -67,7 +67,7 @@ jQuery(document).ready(function($){
                     do {
                         if( this.dataTableArray[ params.rowIndex ][ params.colIndex ].matrix[1] == 0 ) {
                             this.dataTableArray[ params.rowIndex ][ params.colIndex ].settings.rowspan += params.correct;
-                            var $wanted = this.$tbody.find('tr').eq( params.rowIndex ).find('td[data-real-index='+ params.colIndex +'],th[data-real-index='+ params.colIndex +']');
+                            var $wanted = this._getFrontCell( params.rowIndex, params.colIndex );
                             $wanted.attr('rowspan', +$wanted.attr('rowspan') + params.correct);
                             break;
                         }
@@ -77,7 +77,7 @@ jQuery(document).ready(function($){
                     do {
                         if( this.dataTableArray[ params.rowIndex ][ params.colIndex ].matrix[0] == 0 ) {
                             this.dataTableArray[ params.rowIndex ][ params.colIndex ].settings.colspan += params.correct;
-                            var $wanted = this.$tbody.find('tr').eq( params.rowIndex ).find('td[data-real-index='+ params.colIndex +'],th[data-real-index='+ params.colIndex +']');
+                            var $wanted = this._getFrontCell( params.rowIndex, params.colIndex );
                             $wanted.attr('colspan', +$wanted.attr('colspan') + params.correct);
                             break;
                         }
@@ -90,7 +90,7 @@ jQuery(document).ready(function($){
         },
 
         _deleteSomeRows: function( options ) {
-            var name = '_deleteSomeRows',
+            var name = 'deleteSomeRows',
                 o = {
                     count: 1,
                     direction: 'bottom',
@@ -109,8 +109,8 @@ jQuery(document).ready(function($){
                         if( o.pullOutRow[ col ].hasOwnProperty('settings') && o.pullOutRow[ col ].settings.hasOwnProperty('rowspan') && o.pullOutRow[ col ].settings.rowspan > 1 ) {
                             o.pullOutRow[ col ].settings.rowspan -= 1;
                             o.nextRow[col] = o.pullOutRow[ col ];
-                            var $movable = this.$tbody.find('tr').eq( o.pullOutIndex ).find('td[data-real-index='+ col +'],th[data-real-index='+ col +']');
-                            var $wanted = this.$tbody.find('tr').eq( o.pullOutIndex + 1 ).find('td[data-real-index='+ (col + (+$movable.attr('colspan') || 1)) +'],th[data-real-index='+ (col + (+$movable.attr('colspan') || 1)) +']');
+                            var $movable = this._getFrontCell( o.pullOutIndex, col );
+                            var $wanted = this._getFrontCell( (o.pullOutIndex + 1), (col + (+$movable.attr('colspan') || 1)) );
                             $wanted.before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
                         }
                         if( o.pullOutRow[ col ].matrix[0] == 1 && o.pullOutRow[ col ].matrix[1] == 0 ) {
@@ -121,7 +121,7 @@ jQuery(document).ready(function($){
                         }
                     }
                     this.dataTableArray.splice( o.pullOutIndex, 1 );
-                    this.$tbody.find('tr').eq( o.pullOutIndex ).remove();
+                    this._getFrontRow( o.pullOutIndex ).remove();
                     if( o.count && o.direction === 'top' ) o.pullOutIndex--;
                 }
                 if (this[name + 'After'] && typeof this[name + 'After'] == 'function')
@@ -188,20 +188,20 @@ jQuery(document).ready(function($){
                 }
                 this.dataTableArray[ row ].splice( o.scene, 0, o.newCol[row] );
                 var cell = this.dataTableArray[ row ][ o.scene ],
-                    $tr = this.$tbody.find('tr').eq( row );
+                    $tr = this._getFrontRow( row );
                 $tr.find('td[data-real-index],th[data-real-index]').filter(function(){
                     var $this = $(this);
                     if( $this.attr('data-real-index') >= o.scene )
                         $this.attr('data-real-index', +$this.attr('data-real-index') + 1);
                 });
-                var $destination = $tr.find('td[data-real-index='+ (o.scene + 1) +'],th[data-real-index='+ (o.scene + 1) +']');
+                var $destination = this._getFrontCell( $tr, (o.scene + 1) );
                 if( $destination.length ) {
                     $destination.before( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
                 }
                 else {
                     var d = o.scene;
                     while( --d >= 0 ) {
-                        $destination = $tr.find('td[data-real-index='+ d +'],th[data-real-index='+ d +']');
+                        $destination = this._getFrontCell( $tr, d );
                         if( $destination.length ) {
                             $destination.after( this._createCell( $tr, this.dataTableArray[row], cell, row, o.scene ) );
                             break;
@@ -258,7 +258,7 @@ jQuery(document).ready(function($){
         },
 
         _deleteCol: function( row, o ) {
-            o.$tr = this.$tbody.find('tr').eq( row );
+            o.$tr = this._getFrontRow( row );
             o.checkedCell = this.dataTableArray[ row ][ o.pullOutIndex ];
             var name = '_deleteSomeCols';
             this.doAction( name + 'Before', o );
@@ -267,7 +267,7 @@ jQuery(document).ready(function($){
                 if( o.checkedCell.hasOwnProperty('settings') && o.checkedCell.settings.hasOwnProperty('colspan') && o.checkedCell.settings.colspan > 1 ) {
                     o.checkedCell.settings.colspan -= 1;
                     this.dataTableArray[ row ][ o.pullOutIndex + 1 ] = o.checkedCell;
-                    var $wanted = o.$tr.find('td[data-real-index='+ o.pullOutIndex +'],th[data-real-index='+ o.pullOutIndex +']');
+                    var $wanted = this._getFrontCell( o.$tr, o.pullOutIndex );
                     $wanted.attr('colspan', +$wanted.attr('colspan') - 1);
                     remove = false;
                 }
@@ -278,7 +278,7 @@ jQuery(document).ready(function($){
                     this._correctCell( row, o.pullOutIndex, -1, 'colspan' );
                 }
                 this.dataTableArray[ row ].splice( o.pullOutIndex, 1 );
-                if( remove ) o.$tr.find('td[data-real-index='+ o.pullOutIndex +'],th[data-real-index='+ o.pullOutIndex +']').remove();
+                if( remove ) this._getFrontCell( o.$tr, o.pullOutIndex ).remove();
                 o.$tr.find('td[data-real-index],th[data-real-index]').filter(function(){
                     var $this = $(this);
                     if( $this.attr('data-real-index') > o.pullOutIndex )
@@ -319,30 +319,34 @@ jQuery(document).ready(function($){
 
         _getFrontRow: function( rowIndex ) {
             var name = 'getFrontRow',
-                params = { rowIndex: +rowIndex };
+                params = { rowIndex: +rowIndex, $tr: null };
             this.doAction( name + 'Before', params );
             if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
-                return this.$tbody.find('tr').eq( params.rowIndex );
+                params.$tr = this.$tbody.find('tr').eq( params.rowIndex );
             }
             if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
                 this[name + 'After'](params);
             this.doAction( name + 'After', params );
+            return params.$tr;
         },
 
         _getFrontCell: function( row, col ) {
             var name = 'getFrontCell',
-                params = { col: +col, row: row };
+                params = { col: +col, row: row, $td: null };
             this.doAction( name + 'Before', params );
             if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
                 if( typeof params.row === 'object' ) {
-                    return params.row.find('td[data-real-index='+ params.col +'],th[data-real-index='+ params.col +']');
+                    params.$td = params.row.find('td[data-real-index='+ params.col +'],th[data-real-index='+ params.col +']');
                 }
-                params.row = +row;
-                return this._getFrontRow( params.row ).find('td[data-real-index='+ params.col +'],th[data-real-index='+ params.col +']');
+                else {
+                    params.row = +row;
+                    params.$td = this._getFrontRow( params.row ).find('td[data-real-index='+ params.col +'],th[data-real-index='+ params.col +']');
+                }
             }
             if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
                 this[name + 'After'](params);
             this.doAction( name + 'After', params );
+            return params.$td;
         },
 
         _change: function( rowIndex, colIndex, newData ) {
