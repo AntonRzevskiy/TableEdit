@@ -480,8 +480,8 @@ jQuery(document).ready(function($){
                         var col = el.colIndex + 1;
                         delete el.cell.matrix;
                         this._defaultValueNewCell( el.cell );
+                        var $tr = this._getFrontRow( el.rowIndex );
                         do {
-                            var $tr = this._getFrontRow( el.rowIndex );
                             if( this.dataTableArray[ el.rowIndex ][ col ] === undefined ) {
                                 if( this.controlOrientation === 'left' ) {
                                     $tr.append( this._createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
@@ -497,7 +497,7 @@ jQuery(document).ready(function($){
                                 );
                                 break;
                             }
-                        }while( ++col < this._numberOfColumns );
+                        }while( col++ < this._numberOfColumns );
                     }
                     if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
                         this._saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', params.newData.settings.colspan );
