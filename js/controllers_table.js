@@ -464,7 +464,7 @@ jQuery(document).ready(function($){
             var name = 'handleValueChanging';
             this.doAction( name + 'Before', params );
             if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
-                if( params.cell.value && params.cell.value != params.newData.value ) {
+                if( params.cell.hasOwnProperty('value') && params.cell.value != params.newData.value ) {
                     this._saveBackCell( params.rowIndex, params.colIndex, 'value', params.newData.value );
                     this._getFrontCell( params.rowIndex, params.colIndex ).html( params.newData.value );
                 }
