@@ -2,7 +2,7 @@
 
     'use strict';
 
-    if (!window.jQuery) {
+    if(!window.jQuery) {
         return;
     }
 
@@ -45,7 +45,7 @@
                 return this._plugin;
             },
             set: function( newSettings ) {
-                if ( newSettings instanceof Object ) {
+                if( newSettings instanceof Object ) {
                     $.extend(true, this._plugin, newSettings);
                 }
             }
@@ -72,7 +72,7 @@
                                             return this[method + 'Before'];
                                         },
                                         set: function( callback ) {
-                                            if ( typeof callback == 'function' ) {
+                                            if( typeof callback == 'function' ) {
                                                 this[method + 'Before'].push(callback);
                                             }
                                             else if( Array.isArray(callback) && callback.length > 1 && typeof callback[0] == 'function' ) {
@@ -96,7 +96,7 @@
                                             return this[method + 'After'];
                                         },
                                         set: function( callback ) {
-                                            if ( typeof callback == 'function' ) {
+                                            if( typeof callback == 'function' ) {
                                                 this[method + 'After'].push(callback);
                                             }
                                             else if( Array.isArray(callback) && callback.length > 1 && typeof callback[0] == 'function' ) {
@@ -118,7 +118,7 @@
                 return this._callbacks;
             },
             set: function( newCallbacks ) {
-                if ( newCallbacks instanceof Object ) {
+                if( newCallbacks instanceof Object ) {
                     $.extend(true, this._callbacks, newCallbacks);
                 }
             }
@@ -140,23 +140,39 @@
                     this._init.splice( fName[1], 0, fName[0] );
                 }
             }
+        },
+
+        _localPlugin: {
+            value: {}
+        },
+
+        localPlugin: {
+            get: function() {
+                return this._localPlugin;
+            },
+            set: function( object ) {
+                if( object instanceof Object ) {
+                    $.extend(true, this._localPlugin, object);
+                }
+            }
         }
 
     });
 
     $.fn.tableEdid = function( options ) {
 
-        var localPlugin = {
+        var localPlugin = {};
 
-                $table: $('<table/>'),
-                $thead: $('<thead/>'),
-                $tfoot: $('<tfoot/>'),
-                $tbody: $('<tbody/>'),
-                dataTableArray: [],
-                _numberOfColumns: false,
+        for( var property in $.TableEdid.localPlugin ) {
+            if( typeof $.TableEdid.localPlugin[ property ] == 'function' ) {
+                localPlugin[ property ] = $.TableEdid.localPlugin[ property ]();
+            }
+            else {
+                localPlugin[ property ] = $.TableEdid.localPlugin[ property ];
+            }
+        }
 
-            },
-            options = options || {},
+        var options = options || {},
             that = $.extend(true,
                 localPlugin,
                 $.TableEdid.plugin,

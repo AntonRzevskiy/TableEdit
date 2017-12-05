@@ -2,6 +2,23 @@ jQuery(document).ready(function($){
 
     if( !$.TableEdid ) return;
 
+    $.TableEdid.localPlugin = {
+        $table: function(){
+            return $('<table/>');
+        },
+        $thead: function(){
+            return $('<thead/>');
+        },
+        $tfoot: function(){
+            return $('<tfoot/>');
+        },
+        $tbody: function(){
+            return $('<tbody/>');
+        },
+        dataTableArray: [],
+        _numberOfColumns: false,
+    };
+
     $.TableEdid.plugin = {
 
         _compileTable: function() {
