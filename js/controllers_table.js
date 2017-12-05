@@ -453,7 +453,7 @@ jQuery(document).ready(function($){
 
                 if( params.adding.length ) this._handleContraction( params );
                 if( params.remove.length ) this._handleStretching( params );
-                if( params.newData.value ) this._handleValueChanging( params );
+                if( params.newData.hasOwnProperty('value') ) this._handleValueChanging( params );
             }
             if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
                 this[name + 'After'](params);
