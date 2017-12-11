@@ -24,15 +24,11 @@
     background-color: rgba(2, 88, 248, 0.3);
     box-shadow: 5px 1px 30px -15px #000000;
 }
-
-/*
- * Button Panel 
- */
-.btn-panel > .btn[class*='del'] {
+.tableEdit .btn-panel > .btn[class*='del'] {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
-.btn-panel > .btn[class*='add'] {
+.tableEdit .btn-panel > .btn[class*='add'] {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
