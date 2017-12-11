@@ -9,13 +9,15 @@ jQuery(document).ready(function($){
             this.doAction( name + 'Before' );
             if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before']() == true || !this[name + 'Before']) {
 
+                if( ! this.uniqueID ) this.uniqueID = this._numberOfColumns + this.dataTableArray.length + Math.floor(Math.random() * 900 + 100);
+
                 this.$tbody.on(
                     'click._addRow',
                     '.addrow',
                     this,
                     function(e) {
                         var thisRowIndex = $(this).closest('tr').index();
-                        e.data._addNewRows({scene:thisRowIndex});
+                        e.data.addNewRows({scene:thisRowIndex});
                     }
                 );
 
@@ -25,7 +27,7 @@ jQuery(document).ready(function($){
                     this,
                     function(e) {
                         var thisRowIndex = $(this).closest('tr').index();
-                        e.data._deleteSomeRows({scene:thisRowIndex});
+                        e.data.deleteSomeRows({scene:thisRowIndex});
                     }
                 );
 
@@ -33,28 +35,28 @@ jQuery(document).ready(function($){
                     'click._addCol',
                     '.addCol',
                     this,
-                    this._addCol
+                    this.addCol
                 );
 
                 this.$tfoot.on(
                     'click._addCol',
                     '.addCol',
                     this,
-                    this._addCol
+                    this.addCol
                 );
 
                 this.$thead.on(
                     'click._delCol',
                     '.delCol',
                     this,
-                    this._delCol
+                    this.delCol
                 );
 
                 this.$tfoot.on(
                     'click._delCol',
                     '.delCol',
                     this,
-                    this._delCol
+                    this.delCol
                 );
 
                 this.$tbody.on(
@@ -105,14 +107,14 @@ jQuery(document).ready(function($){
             this.doAction( name + 'After' );
         },
 
-        _addCol: function(e) {
+        addCol: function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data._addNewCols({scene:thisColIndex});
+            e.data.addNewCols({scene:thisColIndex});
         },
 
-        _delCol: function(e) {
+        delCol: function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data._deleteSomeCols({scene:thisColIndex});
+            e.data.deleteSomeCols({scene:thisColIndex});
         },
 
         _cellEditingStart: function( event, object ) {
@@ -130,7 +132,7 @@ jQuery(document).ready(function($){
                     },
                     $menuContainer: $('body'),
                     $menuContent: $('' +
-                        '<div class="edit-cell edit-cell-content" data-row="'+ object.target.closest('tr').index() +'" data-col="'+ object.target.attr('data-real-index') +'">' +
+                        '<div class="edit-cell edit-cell-content" data-row="'+ object.target.closest('tr').index() +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ $that.uniqueID +'">' +
                             // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
                         '</div>' +
                     ''),
@@ -172,7 +174,7 @@ jQuery(document).ready(function($){
             params.newValue = object.target.find( params.formElement ).val();
             $that.doAction( name + 'Before', params );
             if($that[name + 'Before'] && typeof $that[name + 'Before'] == 'function' && $that[name + 'Before'](params) == true || !$that[name + 'Before']) {
-                $that._saveBackCell( +params.$target.closest('tr').index(), +params.$target.attr('data-real-index'), 'value', params.newValue );
+                $that.saveBackCell( +params.$target.closest('tr').index(), +params.$target.attr('data-real-index'), 'value', params.newValue );
                 params.$target.html( params.newValue ).removeClass('edit-cell');
                 $('body').find( '.edit-cell-content' ).remove();
             }

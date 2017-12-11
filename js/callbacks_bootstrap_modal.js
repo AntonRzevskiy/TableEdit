@@ -11,14 +11,17 @@ jQuery(document).ready(function($){
             $('#TableEdidModal').on(
                 'show.bs.modal', 
                 this, 
-                function (e) {
+                function(e) {
                     var $that = e.data,
                         $form = $(this).find('form'),
                         $buttonActi = $(e.relatedTarget),
                         row = +$buttonActi.closest('.edit-cell-content').attr('data-row'),
-                        col = +$buttonActi.closest('.edit-cell-content').attr('data-col');
+                        col = +$buttonActi.closest('.edit-cell-content').attr('data-col'),
+                        uniqueID = +$buttonActi.closest('.edit-cell-content').attr('data-uniq');
 
-                    $form.find('#markers').attr('data-row', row).attr('data-col', col);
+                    if( uniqueID !== $that.uniqueID ) return;
+
+                    $form.find('#markers').attr('data-row', row).attr('data-col', col).attr('data-uniq', uniqueID);
 
                     $form.find('#value').val( $that.dataTableArray[ row ][ col ].value );
 
@@ -32,16 +35,19 @@ jQuery(document).ready(function($){
             $('.save-cell-changes').on(
                 'click',
                 this, 
-                function (e) {
+                function(e) {
                     var $that = e.data,
                         $form = $(this).closest('.modal-content').find('.modal-body form'),
                         row = $form.find('#markers').attr('data-row'),
                         col = $form.find('#markers').attr('data-col'),
+                        uniqueID = +$form.find('#markers').attr('data-uniq'),
                         colspan = $form.find('#colspan').val(),
                         rowspan = $form.find('#rowspan').val(),
                         value = $form.find('#value').val();
 
-                    $that._change( row, col, {
+                    if( uniqueID !== $that.uniqueID ) return;
+
+                    $that.change( row, col, {
                         settings: {
                             colspan: colspan,
                             rowspan: rowspan
