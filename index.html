@@ -131,6 +131,120 @@
     });
 
     </script>
-    
+
+    <table id="from-table" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>head 1</th>
+                <th>head 2</th>
+                <th>head 3</th>
+                <th>head 4</th>
+                <th>head 5</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>foot 1</th>
+                <th>foot 2</th>
+                <th>foot 3</th>
+                <th>foot 4</th>
+                <th>foot 5</th>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr>
+                <td>value</td>
+                <td colspan="2">value</td>
+                <td>value</td>
+                <td>value</td>
+            </tr>
+            <tr>
+                <td>value</td>
+                <td>value</td>
+                <td>value</td>
+                <td>value</td>
+                <td>value</td>
+            </tr>
+            <tr>
+                <td>value</td>
+                <td>value</td>
+                <td colspan="2" rowspan="2">value</td>
+                <td>value</td>
+            </tr>
+            <tr>
+                <td>value</td>
+                <td>value</td>
+                <td>value</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+
+    jQuery(document).ready(function($){
+        
+        $('#from-table').tableEdid({
+            stubElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+            topControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                 '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            bottomControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                    '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            rowControlsElements: '<a class="btn btn-success btn-xs addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                 '<a class="btn btn-danger btn-xs delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            compileTableAfter: function() {
+                this.$table.addClass('table table-bordered table-hover tableEdit');
+                return true;
+            },
+            defineTypeAfter: function( obj ) {
+                if( $(obj.selector).is('table') ) {
+                    try {
+                        // this.dataTableArray = JSON.parse($(obj.selector).val());
+                        var that = this;
+                        var $table = $(obj.selector);
+                        $table.find('thead > tr, tbody > tr').each(function( r ) {
+                            var row = [];
+                            $(this).find('th, td').each(function() {
+                                var cell = {
+                                    value: $(this).html(),
+                                    settings: {}
+                                };
+                                if( $(this).attr('rowspan') ) cell.settings.rowspan = +$(this).attr('rowspan');
+                                if( $(this).attr('colspan') ) cell.settings.colspan = +$(this).attr('colspan');
+                                if( $.isEmptyObject(cell.settings) ) delete cell.settings;
+                                row.push( cell );
+                            });
+                            that.dataTableArray.push( row );
+                        });
+                        $table.find('tfoot > tr').each(function() {
+                            var row = [];
+                            $(this).find('th, td').each(function() {
+                                var cell = {
+                                    value: $(this).html(),
+                                    settings: {}
+                                };
+                                if( $(this).attr('rowspan') ) cell.settings.rowspan = +$(this).attr('rowspan');
+                                if( $(this).attr('colspan') ) cell.settings.colspan = +$(this).attr('colspan');
+                                if( $.isEmptyObject(cell.settings) ) delete cell.settings;
+                                row.push( cell );
+                            });
+                            that.dataTableArray.push( row );
+                        });
+                    } catch (e) {
+                        console.error(e);
+                        this.dataTableArray = this.dataTableDefaultArray;
+                    }
+                }
+                return true;
+            },
+            addTableAfter: function( obj ) {
+                $(obj.selector).addClass('hidden');
+                return true;
+            }
+        });
+        
+    });
+
+    </script>
+
 </body>
 </html>
