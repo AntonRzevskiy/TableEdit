@@ -85,5 +85,52 @@
 
     </script>
 
+    
+    <textarea id="from-textarea" class="hidden">
+    
+        [
+            [ {"value":"head 1"}, {"value":"head 2"}, {"value":"head 3"}, {"value":"head 4"}, {"value":"head 5","settings":{"class":"danger"}} ],
+            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
+            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
+            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
+            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
+            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ]
+        ]
+    
+    </textarea>
+    
+    <script>
+
+    jQuery(document).ready(function($){
+        
+        $('#from-textarea').tableEdid({
+            stubElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+            topControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                 '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            bottomControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                    '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            rowControlsElements: '<a class="btn btn-success btn-xs addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
+                                 '<a class="btn btn-danger btn-xs delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            compileTableAfter: function() {
+                this.$table.addClass('table table-bordered table-hover tableEdit');
+                return true;
+            },
+            defineTypeAfter: function( obj ) {
+                if( $(obj.selector).is('textarea') ) {
+                    try {
+                        this.dataTableArray = JSON.parse($(obj.selector).val());
+                    } catch (e) {
+                        console.error(e);
+                        this.dataTableArray = this.dataTableDefaultArray;
+                    }
+                }
+                return true;
+            }
+        });
+        
+    });
+
+    </script>
+    
 </body>
 </html>
