@@ -35,6 +35,19 @@
                             }
                         }
                     }
+                },
+
+                doMethod: function( method, args ) {
+                    if( ! this[ method ] ) return;
+                    var name = method.charAt(0) == '_' ? method.substring(1) : method;
+                    this.doAction( name + 'Before', args );
+                    if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](args) == true || !this[name + 'Before']) {
+                        var result = this[ method ].call( this, args );
+                    }
+                    if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
+                        this[name + 'After'](args);
+                    this.doAction( name + 'After', args );
+                    if( result ) return result;
                 }
 
             }
