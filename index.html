@@ -19,6 +19,7 @@
 <script src="js/controllers_table.js"></script>
 <script src="js/events_table.js"></script>
 <script src="js/callbacks_bootstrap_modal.js"></script>
+<script src="js/callbacks_define_types.js"></script>
 
     <script>
 
@@ -114,17 +115,6 @@
             compileTableAfter: function() {
                 this.$table.addClass('table table-bordered table-hover tableEdit');
                 return true;
-            },
-            defineTypeAfter: function( obj ) {
-                if( $(obj.selector).is('textarea') ) {
-                    try {
-                        this.dataTableArray = JSON.parse($(obj.selector).val());
-                    } catch (e) {
-                        console.error(e);
-                        this.dataTableArray = this.dataTableDefaultArray;
-                    }
-                }
-                return true;
             }
         });
         
@@ -154,7 +144,7 @@
         <tbody>
             <tr>
                 <td>value</td>
-                <td colspan="2">value</td>
+                <td colspan="2" class="warning colspan">value</td>
                 <td>value</td>
                 <td>value</td>
             </tr>
@@ -168,7 +158,7 @@
             <tr>
                 <td>value</td>
                 <td>value</td>
-                <td colspan="2" rowspan="2">value</td>
+                <td colspan="2" rowspan="2" class="danger colspan rowspan">value</td>
                 <td>value</td>
             </tr>
             <tr>
@@ -195,49 +185,8 @@
                 this.$table.addClass('table table-bordered table-hover tableEdit');
                 return true;
             },
-            defineTypeAfter: function( obj ) {
-                if( $(obj.selector).is('table') ) {
-                    try {
-                        // this.dataTableArray = JSON.parse($(obj.selector).val());
-                        var that = this;
-                        var $table = $(obj.selector);
-                        $table.find('thead > tr, tbody > tr').each(function( r ) {
-                            var row = [];
-                            $(this).find('th, td').each(function() {
-                                var cell = {
-                                    value: $(this).html(),
-                                    settings: {}
-                                };
-                                if( $(this).attr('rowspan') ) cell.settings.rowspan = +$(this).attr('rowspan');
-                                if( $(this).attr('colspan') ) cell.settings.colspan = +$(this).attr('colspan');
-                                if( $.isEmptyObject(cell.settings) ) delete cell.settings;
-                                row.push( cell );
-                            });
-                            that.dataTableArray.push( row );
-                        });
-                        $table.find('tfoot > tr').each(function() {
-                            var row = [];
-                            $(this).find('th, td').each(function() {
-                                var cell = {
-                                    value: $(this).html(),
-                                    settings: {}
-                                };
-                                if( $(this).attr('rowspan') ) cell.settings.rowspan = +$(this).attr('rowspan');
-                                if( $(this).attr('colspan') ) cell.settings.colspan = +$(this).attr('colspan');
-                                if( $.isEmptyObject(cell.settings) ) delete cell.settings;
-                                row.push( cell );
-                            });
-                            that.dataTableArray.push( row );
-                        });
-                    } catch (e) {
-                        console.error(e);
-                        this.dataTableArray = this.dataTableDefaultArray;
-                    }
-                }
-                return true;
-            },
-            addTableAfter: function( obj ) {
-                $(obj.selector).addClass('hidden');
+            getSettingsFromCellAfter: function(obj) {
+                if( obj.$element.attr('class') ) obj.settings.class = obj.$element.attr('class');
                 return true;
             }
         });
