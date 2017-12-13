@@ -64,19 +64,18 @@ jQuery(document).ready(function($){
                 var tbody = this.convertTableToArray( params.selector, 'tbody > tr' );
                 var tfoot = this.convertTableToArray( params.selector, 'tfoot > tr' );
                 this.dataTableArray = thead.concat(tbody, tfoot);
-                if( this.dataTableArray.length ) {
-                    $.TableEdid.callbacks.addTableAfter = function( obj ) {
-                        $(obj.selector).addClass('hidden');
-                        return true;
-                    }
-                    return true;
-                }
+                if( this.dataTableArray.length ) return true;
             } catch (e) {
                 console.error(e);
                 this.dataTableArray = this.dataTableDefaultArray;
             }
         }
 
+        return true;
+    };
+
+    $.TableEdid.callbacks.addTableAfter = function( obj ) {
+        if( $(obj.selector).is('table') ) $(obj.selector).addClass('hidden');
         return true;
     };
 
