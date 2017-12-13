@@ -207,7 +207,7 @@
 
         return this;
 
-    }
+    };
 
     if(! Array.prototype.tableEdid) {
 
