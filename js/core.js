@@ -203,9 +203,14 @@
                 options
             );
 
-        that.init( this );
+        if( Array.isArray(this) || this.length == 1 ) {
+            that.init( this );
+            return this;
+        }
 
-        return this;
+        return this.each(function() {
+            $( this ).tableEdid( options );
+        });
 
     };
 
