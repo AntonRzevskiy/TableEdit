@@ -185,25 +185,26 @@
 
     $.fn.tableEdid = function( options ) {
 
-        var localPlugin = {};
-
-        for( var property in $.TableEdid.localPlugin ) {
-            if( typeof $.TableEdid.localPlugin[ property ] == 'function' ) {
-                localPlugin[ property ] = $.TableEdid.localPlugin[ property ]();
-            }
-            else {
-                localPlugin[ property ] = $.TableEdid.localPlugin[ property ];
-            }
-        }
-
-        var options = options || {},
-            that = $.extend(true,
-                localPlugin,
-                $.TableEdid.plugin,
-                options
-            );
-
         if( Array.isArray(this) || this.length == 1 ) {
+
+            var localPlugin = {};
+
+            for( var property in $.TableEdid.localPlugin ) {
+                if( typeof $.TableEdid.localPlugin[ property ] == 'function' ) {
+                    localPlugin[ property ] = $.TableEdid.localPlugin[ property ]();
+                }
+                else {
+                    localPlugin[ property ] = $.TableEdid.localPlugin[ property ];
+                }
+            }
+
+            var options = options || {},
+                that = $.extend(true,
+                    localPlugin,
+                    $.TableEdid.plugin,
+                    options
+                );
+
             that.init( this );
             return this;
         }
