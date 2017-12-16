@@ -175,7 +175,7 @@ jQuery(document).ready(function($){
 
         _setMatrix: function( object ) {
 
-            if( object.col.matrix && object.row.length == this._numberOfColumns ) return;
+            if( object.col.matrix && object.row.length == this._numberOfColumns ) return object.$td.attr('data-real-index', object.colIndex);
 
             if( object.col.settings && object.col.settings.colspan && object.col.settings.rowspan ) {
                 var colspan = object.col.settings.colspan - 1;
@@ -199,7 +199,7 @@ jQuery(document).ready(function($){
                     this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
                 }
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
             else if( object.col.settings && object.col.settings.colspan ) {
                 var colspan = object.col.settings.colspan - 1;
@@ -207,7 +207,7 @@ jQuery(document).ready(function($){
                     this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
                 }
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
             else if( object.col.settings && object.col.settings.rowspan ) {
                 var rowspan = object.col.settings.rowspan - 1;
@@ -224,11 +224,11 @@ jQuery(document).ready(function($){
                     rowspan--;
                 }
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
             else {
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
         },
 
