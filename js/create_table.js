@@ -126,7 +126,9 @@ jQuery(document).ready(function($){
         },
 
         _createHeader: function( params ) {
+            this.setNumberOfColumns( params.tableHead );
             for( var col = 0; col < params.tableHead.length; col++ ) {
+                if( params.tableHead[col].matrix && params.tableHead[col].matrix[0] == 1 || params.tableHead[col].matrix && params.tableHead[col].matrix[1] == 1 ) continue;
                 var $th = $('<th/>');
 
                 if( params.tableHead[col].hasOwnProperty('settings') )
@@ -140,7 +142,6 @@ jQuery(document).ready(function($){
                 params.$tr.append( $th );
             }
             this.$tbody.append( this.doMethod('_createRowControls', params) );
-            this.setNumberOfColumns( params.tableHead );
         },
 
         _createRow: function( params ) {
@@ -236,6 +237,7 @@ jQuery(document).ready(function($){
             if( this._numberOfColumns == false ) {
                 var length = row.length;
                 for( var col = 0; col < row.length; col++ ) {
+                    if( row[col].matrix ) return this._numberOfColumns = row.length;
                     if( row[col].settings && row[col].settings.colspan ) {
                         length += (row[col].settings.colspan - 1);
                     }
