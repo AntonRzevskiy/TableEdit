@@ -47,7 +47,7 @@
                     if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
                         this[name + 'After'](args);
                     this.doAction( name + 'After', args );
-                    if( result ) return result;
+                    if( result !== undefined ) return result;
                 }
 
             }
