@@ -67,17 +67,17 @@
         var Table = rowsCustom.concat( rowsGenerate );
         Table.tableEdid({
             outputMethod: 'prepend',
-            stubElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>',
-            topControlsElements: '<div class="btn-panel"><a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                 '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a></div>',
-            bottomControlsElements: '<div class="btn-panel"><a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                    '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a></div>',
-            rowControlsElements: '<div class="btn-panel"><a class="btn btn-success btn-xs addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                 '<a class="btn btn-danger btn-xs delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a></div>',
+            stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
+            topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
+            bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
+            rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
             maxRowsOutDelay: 400,
             howCreateOnce: 80,
             compileTableAfter: function() {
-                this.$table.addClass('table table-bordered table-hover tableEdit');
+                this.$table.addClass('tableEdit');
                 return true;
             },
         });
@@ -105,15 +105,15 @@
     jQuery(document).ready(function($){
         
         $('#from-textarea').tableEdid({
-            stubElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>',
-            topControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                 '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
-            bottomControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                    '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
-            rowControlsElements: '<a class="btn btn-success btn-xs addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                 '<a class="btn btn-danger btn-xs delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
+            topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
+            bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
+            rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
             compileTableAfter: function() {
-                this.$table.addClass('table table-bordered table-hover tableEdit');
+                this.$table.addClass('table-hover tableEdit');
                 return true;
             }
         });
@@ -174,15 +174,15 @@
     jQuery(document).ready(function($){
         
         $('#from-table').tableEdid({
-            stubElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>',
-            topControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                 '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
-            bottomControlsElements: '<a class="btn btn-success btn-xs addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                    '<a class="btn btn-danger btn-xs delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
-            rowControlsElements: '<a class="btn btn-success btn-xs addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus-sign"></span></a>' +
-                                 '<a class="btn btn-danger btn-xs delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus-sign"></span></a>',
+            stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
+            topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
+            bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
+            rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                 '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
             compileTableAfter: function() {
-                this.$table.addClass('table table-bordered table-hover tableEdit');
+                this.$table.addClass('table-hover tableEdit');
                 return true;
             },
             getSettingsFromCellAfter: function(obj) {
