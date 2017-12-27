@@ -6,6 +6,7 @@ jQuery(document).ready(function($){
 
         addNewRows: function( options ) {
             var o = {
+                    condition: true,
                     count: 1,
                     direction: 'bottom',
                     scene: 0,
@@ -21,6 +22,7 @@ jQuery(document).ready(function($){
         },
 
         _addNewRow: function( o ) {
+            if( o.condition === false ) return;
             for( var col = 0; col < o.newRow.length; col++ ) {
                 if( o.checkedRow !== undefined && o.checkedRow[col].matrix[1] == 1 ) {
                     o.newRow[col] = {matrix: o.checkedRow[col].matrix};
@@ -29,7 +31,7 @@ jQuery(document).ready(function($){
                     }
                 }
                 else {
-                    o.newRow[col] = this.doMethod('_defaultValueNewCell', {});
+                    o.newRow[col] = this.doMethod('_defaultValueNewCell', (o.newRow[ col ] instanceof Object) ? o.newRow[ col ] : {});
                 }
             }
             this.dataTableArray.splice( o.shiftIndex, 0, o.newRow );
@@ -72,6 +74,7 @@ jQuery(document).ready(function($){
 
         deleteSomeRows: function( options ) {
             var o = {
+                    condition: true,
                     count: 1,
                     direction: 'bottom',
                     scene: 0
@@ -88,6 +91,7 @@ jQuery(document).ready(function($){
         },
 
         _deleteRow: function( o ) {
+            if( o.condition === false ) return;
             for( var col = 0; col < o.pullOutRow.length; col++ ) {
                 if( o.pullOutRow[ col ].hasOwnProperty('settings') && o.pullOutRow[ col ].settings.hasOwnProperty('rowspan') && o.pullOutRow[ col ].settings.rowspan > 1 ) {
                     o.pullOutRow[ col ].settings.rowspan -= 1;
@@ -108,8 +112,13 @@ jQuery(document).ready(function($){
             if( o.count && o.direction === 'top' ) o.pullOutIndex--;
         },
 
+        _addNewColumn: function( params ) {
+            return params.condition;
+        },
+
         addNewCols: function( options ) {
             var o = {
+                    condition: true,
                     count: 1,
                     scene: 0,
                     part: true,
@@ -120,6 +129,7 @@ jQuery(document).ready(function($){
             $.extend(true, o, options);
             while( o.count-- > 0 ) {
                 o.newCol = new Array( this.dataTableArray.length );
+                if( this.doMethod('_addNewColumn', o) === false ) continue;
                 this._numberOfColumns += 1;
                 var $method = this.controlOrientation == 'left' ? 'after' : 'before';
                 this.$thead.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.topControlsElements ) );
@@ -164,7 +174,7 @@ jQuery(document).ready(function($){
                 }
             }
             else {
-                o.newCol[ o.rowIndex ] = this.doMethod('_defaultValueNewCell', {});
+                o.newCol[ o.rowIndex ] = this.doMethod('_defaultValueNewCell', (o.newCol[ o.rowIndex ] instanceof Object) ? o.newCol[ o.rowIndex ] : {});
             }
             this.dataTableArray[ o.rowIndex ].splice( o.scene, 0, o.newCol[o.rowIndex] );
             var cell = this.dataTableArray[ o.rowIndex ][ o.scene ],
@@ -191,8 +201,13 @@ jQuery(document).ready(function($){
             }
         },
 
+        _deleteColumn: function( params ) {
+            return params.condition;
+        },
+
         deleteSomeCols: function( options ) {
             var o = {
+                    condition: true,
                     count: 1,
                     scene: 0,
                     part: true,
@@ -203,6 +218,7 @@ jQuery(document).ready(function($){
             $.extend(true, o, options);
             o.pullOutIndex = o.scene;
             while( o.count-- > 0 ) {
+                if( this.doMethod('_deleteColumn', o) === false ) continue;
                 this._numberOfColumns -= 1;
                 this.$thead.find('td').eq( o.pullOutIndex ).remove();
                 this.$tfoot.find('td').eq( o.pullOutIndex ).remove();
