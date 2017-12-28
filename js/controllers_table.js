@@ -112,10 +112,6 @@ jQuery(document).ready(function($){
             if( o.count && o.direction === 'top' ) o.pullOutIndex--;
         },
 
-        _addNewColumn: function( params ) {
-            return params.condition;
-        },
-
         addNewCols: function( options ) {
             var o = {
                     condition: true,
@@ -129,20 +125,25 @@ jQuery(document).ready(function($){
             $.extend(true, o, options);
             while( o.count-- > 0 ) {
                 o.newCol = new Array( this.dataTableArray.length );
-                if( this.doMethod('_addNewColumn', o) === false ) continue;
-                this._numberOfColumns += 1;
-                var $method = this.controlOrientation == 'left' ? 'after' : 'before';
-                this.$thead.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.topControlsElements ) );
-                this.$tfoot.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.bottomControlsElements ) );
-                if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.newCol.length > this.maxRowsOutDelay ) {
-                    this.addNewDelayedCols( o );
-                }
-                else {
-                    for( var row = 0, length = o.newCol.length; row < length; row++ ) {
-                        o.checkedCell = this.dataTableArray[ row ][ o.scene ];
-                        o.rowIndex = row;
-                        this.doMethod('_addNewCol', o);
-                    }
+                this.doMethod('_addNewColumn', o);
+                
+            }
+        },
+
+        _addNewColumn: function( o ) {
+            if( o.condition === false ) return;
+            this._numberOfColumns += 1;
+            var $method = this.controlOrientation == 'left' ? 'after' : 'before';
+            this.$thead.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.topControlsElements ) );
+            this.$tfoot.find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.bottomControlsElements ) );
+            if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.newCol.length > this.maxRowsOutDelay ) {
+                this.addNewDelayedCols( o );
+            }
+            else {
+                for( var row = 0, length = o.newCol.length; row < length; row++ ) {
+                    o.checkedCell = this.dataTableArray[ row ][ o.scene ];
+                    o.rowIndex = row;
+                    this.doMethod('_addNewCol', o);
                 }
             }
         },
@@ -201,10 +202,6 @@ jQuery(document).ready(function($){
             }
         },
 
-        _deleteColumn: function( params ) {
-            return params.condition;
-        },
-
         deleteSomeCols: function( options ) {
             var o = {
                     condition: true,
@@ -218,21 +215,25 @@ jQuery(document).ready(function($){
             $.extend(true, o, options);
             o.pullOutIndex = o.scene;
             while( o.count-- > 0 ) {
-                if( this.doMethod('_deleteColumn', o) === false ) continue;
-                this._numberOfColumns -= 1;
-                this.$thead.find('td').eq( o.pullOutIndex ).remove();
-                this.$tfoot.find('td').eq( o.pullOutIndex ).remove();
-                if( this.controlOrientation == 'left' ) o.pullOutIndex -= 1;
-                if( o.part && this.hasOwnProperty('maxRowsOutDelay') && this.dataTableArray.length > this.maxRowsOutDelay ) {
-                    this.deleteDelayedCols( o );
-                }
-                else {
-                    for( var row = 0, length = this.dataTableArray.length; row < length; row++ ) {
-                        o.$tr = this.doMethod('_getFrontRow', {rowIndex: row, $tr: null});
-                        o.checkedCell = this.dataTableArray[ row ][ o.pullOutIndex ];
-                        o.rowIndex = row;
-                        this.doMethod('_deleteCol', o);
-                    }
+                this.doMethod('_deleteColumn', o);
+            }
+        },
+
+        _deleteColumn: function( o ) {
+            if( o.condition === false ) return;
+            this._numberOfColumns -= 1;
+            this.$thead.find('td').eq( o.pullOutIndex ).remove();
+            this.$tfoot.find('td').eq( o.pullOutIndex ).remove();
+            if( this.controlOrientation == 'left' ) o.pullOutIndex -= 1;
+            if( o.part && this.hasOwnProperty('maxRowsOutDelay') && this.dataTableArray.length > this.maxRowsOutDelay ) {
+                this.deleteDelayedCols( o );
+            }
+            else {
+                for( var row = 0, length = this.dataTableArray.length; row < length; row++ ) {
+                    o.$tr = this.doMethod('_getFrontRow', {rowIndex: row, $tr: null});
+                    o.checkedCell = this.dataTableArray[ row ][ o.pullOutIndex ];
+                    o.rowIndex = row;
+                    this.doMethod('_deleteCol', o);
                 }
             }
         },
