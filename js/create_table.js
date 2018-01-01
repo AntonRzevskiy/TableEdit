@@ -40,13 +40,16 @@ jQuery(document).ready(function($){
 
         controlOrientation: 'right',
 
-        topControlsElements: '',
+        topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                             '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
-        bottomControlsElements: '',
+        bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                                '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
-        rowControlsElements: '',
+        rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
+                             '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
-        stubElements: '',
+        stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
 
         _addStub: function( params ) {
             if( this.controlOrientation === 'right' ) {
