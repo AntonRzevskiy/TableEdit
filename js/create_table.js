@@ -126,7 +126,9 @@ jQuery(document).ready(function($){
         },
 
         _createHeader: function( params ) {
+            this.setNumberOfColumns( params.tableHead );
             for( var col = 0; col < params.tableHead.length; col++ ) {
+                if( params.tableHead[col].matrix && params.tableHead[col].matrix[0] == 1 || params.tableHead[col].matrix && params.tableHead[col].matrix[1] == 1 ) continue;
                 var $th = $('<th/>');
 
                 if( params.tableHead[col].hasOwnProperty('settings') )
@@ -140,7 +142,6 @@ jQuery(document).ready(function($){
                 params.$tr.append( $th );
             }
             this.$tbody.append( this.doMethod('_createRowControls', params) );
-            this.setNumberOfColumns( params.tableHead );
         },
 
         _createRow: function( params ) {
@@ -175,7 +176,7 @@ jQuery(document).ready(function($){
 
         _setMatrix: function( object ) {
 
-            if( object.col.matrix && object.row.length == this._numberOfColumns ) return;
+            if( object.col.matrix && object.row.length == this._numberOfColumns ) return object.$td.attr('data-real-index', object.colIndex);
 
             if( object.col.settings && object.col.settings.colspan && object.col.settings.rowspan ) {
                 var colspan = object.col.settings.colspan - 1;
@@ -199,7 +200,7 @@ jQuery(document).ready(function($){
                     this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
                 }
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
             else if( object.col.settings && object.col.settings.colspan ) {
                 var colspan = object.col.settings.colspan - 1;
@@ -207,7 +208,7 @@ jQuery(document).ready(function($){
                     this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
                 }
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
             else if( object.col.settings && object.col.settings.rowspan ) {
                 var rowspan = object.col.settings.rowspan - 1;
@@ -224,11 +225,11 @@ jQuery(document).ready(function($){
                     rowspan--;
                 }
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
             else {
                 this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
-                object.$td.attr('data-real-index', object.colIndex);
+                return object.$td.attr('data-real-index', object.colIndex);
             }
         },
 
@@ -236,6 +237,7 @@ jQuery(document).ready(function($){
             if( this._numberOfColumns == false ) {
                 var length = row.length;
                 for( var col = 0; col < row.length; col++ ) {
+                    if( row[col].matrix ) return this._numberOfColumns = row.length;
                     if( row[col].settings && row[col].settings.colspan ) {
                         length += (row[col].settings.colspan - 1);
                     }

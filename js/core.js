@@ -47,7 +47,7 @@
                     if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
                         this[name + 'After'](args);
                     this.doAction( name + 'After', args );
-                    if( result ) return result;
+                    if( result !== undefined ) return result;
                 }
 
             }
@@ -69,6 +69,7 @@
 
                 refresh: function( object ) {
                     var obj = object || $.TableEdid.plugin;
+                    var recent = [];
                     for( var method in obj ) {
                         if( method.charAt(0) == '_' && typeof obj[method] == 'function' ) {
                             if(! $.TableEdid.callbacks[method + 'Before'] ) {
@@ -93,6 +94,7 @@
                                             }
                                         }
                                     });
+                                    recent.push( method.substring(1) + 'Before' );
                                 })(method);
                             }
                             if(! $.TableEdid.callbacks[method + 'After'] ) {
@@ -117,7 +119,16 @@
                                             }
                                         }
                                     });
+                                    recent.push( method.substring(1) + 'After' );
                                 })(method);
+                            }
+                        }
+                    }
+                    return {
+                        recent: recent,
+                        eachCallback: function( fn, context ) {
+                            for( var i = 0, length = this.recent.length; i < length; i++ ) {
+                                fn.call((context || this), this.recent[i]);
                             }
                         }
                     }
@@ -174,29 +185,35 @@
 
     $.fn.tableEdid = function( options ) {
 
-        var localPlugin = {};
+        if( Array.isArray(this) || this.length == 1 ) {
 
-        for( var property in $.TableEdid.localPlugin ) {
-            if( typeof $.TableEdid.localPlugin[ property ] == 'function' ) {
-                localPlugin[ property ] = $.TableEdid.localPlugin[ property ]();
+            var localPlugin = {};
+
+            for( var property in $.TableEdid.localPlugin ) {
+                if( typeof $.TableEdid.localPlugin[ property ] == 'function' ) {
+                    localPlugin[ property ] = $.TableEdid.localPlugin[ property ]();
+                }
+                else {
+                    localPlugin[ property ] = $.TableEdid.localPlugin[ property ];
+                }
             }
-            else {
-                localPlugin[ property ] = $.TableEdid.localPlugin[ property ];
-            }
+
+            var options = options || {},
+                that = $.extend(true,
+                    localPlugin,
+                    $.TableEdid.plugin,
+                    options
+                );
+
+            that.init( this );
+            return this;
         }
 
-        var options = options || {},
-            that = $.extend(true,
-                localPlugin,
-                $.TableEdid.plugin,
-                options
-            );
+        return this.each(function() {
+            $( this ).tableEdid( options );
+        });
 
-        that.init( this );
-
-        return this;
-
-    }
+    };
 
     if(! Array.prototype.tableEdid) {
 
