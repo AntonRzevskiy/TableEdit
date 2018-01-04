@@ -187,18 +187,18 @@ jQuery(document).ready(function($){
             });
             var $destination = this.doMethod('_getFrontCell', {row: $tr, col: (o.scene + 1), $td: null});
             if( $destination.length ) {
-                $destination.before( this.preCreateCell( $tr, this.dataTableArray[o.rowIndex], cell, o.rowIndex, o.scene ) );
+                $destination.before( this.createCell( $tr, this.dataTableArray[o.rowIndex], cell, o.rowIndex, o.scene ) );
             }
             else {
                 var d = o.scene;
                 while( --d >= 0 ) {
                     $destination = this.doMethod('_getFrontCell', {row: $tr, col: d, $td: null});
                     if( $destination.length ) {
-                        $destination.after( this.preCreateCell( $tr, this.dataTableArray[o.rowIndex], cell, o.rowIndex, o.scene ) );
+                        $destination.after( this.createCell( $tr, this.dataTableArray[o.rowIndex], cell, o.rowIndex, o.scene ) );
                         break;
                     }
                 }
-                if( d == -1 ) $tr.prepend( this.preCreateCell( $tr, this.dataTableArray[o.rowIndex], cell, o.rowIndex, o.scene ) );
+                if( d == -1 ) $tr.prepend( this.createCell( $tr, this.dataTableArray[o.rowIndex], cell, o.rowIndex, o.scene ) );
             }
         },
 
@@ -442,16 +442,16 @@ jQuery(document).ready(function($){
                     do {
                         if( this.dataTableArray[ el.rowIndex ][ col ] === undefined ) {
                             if( this.controlOrientation === 'left' ) {
-                                $tr.append( this.preCreateCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
+                                $tr.append( this.createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
                                 break;
                             }
-                            $tr.find('td,th').eq( -1 ).before( this.preCreateCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
+                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex ) );
                             break;
                         }
                         if( this.dataTableArray[ el.rowIndex ][ col ].matrix[0] == 0 && this.dataTableArray[ el.rowIndex ][ col ].matrix[1] == 0 ) {
                             
                             this.doMethod('_getFrontCell', {row: $tr, col: col, $td: null}).before(
-                                this.preCreateCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex )
+                                this.createCell( $tr, this.dataTableArray[el.rowIndex], el.cell, el.rowIndex, el.colIndex )
                             );
                             break;
                         }

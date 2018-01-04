@@ -149,7 +149,7 @@ jQuery(document).ready(function($){
 
         _createRow: function( params ) {
             for( var col = 0; col < params.row.length; col++ ) {
-                params.$tr.append( this.preCreateCell( params.$tr, params.row, params.row[col], params.index, col ) );
+                params.$tr.append( this.createCell( params.$tr, params.row, params.row[col], params.index, col ) );
             }
             this.doMethod('_createRowControls', params);
             this.setNumberOfColumns( params.row );
@@ -157,7 +157,7 @@ jQuery(document).ready(function($){
             return params.$tr;
         },
 
-        preCreateCell: function( $tr, row, col, rowIndex, colIndex ) {
+        createCell: function( $tr, row, col, rowIndex, colIndex ) {
             if( col.matrix && col.matrix[0] == 1 || col.matrix && col.matrix[1] == 1 ) return;
             return this.doMethod('_createCell', {$tr:$tr,$td:$('<td/>'),row:row,col:col,rowIndex:rowIndex,colIndex:colIndex});
         },
