@@ -10,13 +10,14 @@ jQuery(document).ready(function($){
                     'count':     1,
                     'direction': 'top',
                     'scene':     0,
-                    'group':     this.dataTbodyArray,
-                    '$group':    this.$tbody,
+                    'group':     '',
+                    '$group':    null,
                     'newRow':    null,
                     'td':        '',
                 };
             $.extend(true, o, options);
             o.shiftIndex = o.direction === 'top' ? o.scene : o.scene + 1;
+            o.group = this[ o.group ];
             o.checkedRow = o.group[ o.shiftIndex ];
             while( o.count-- > 0 ) {
                 o.newRow = new Array( this._numberOfColumns );
@@ -88,13 +89,14 @@ jQuery(document).ready(function($){
                     'count': 1,
                     'direction': 'bottom',
                     'scene': 0,
-                    'group': this.dataTbodyArray,
+                    'group': '',
                     '$group': this.$tbody,
                 };
             $.extend(true, o, options);
             o.pullOutIndex = o.scene;
             o.pullOutRow = null;
             o.nextRow = null;
+            o.group = this[ o.group ];
             while( o.count-- > 0 && o.group[ o.pullOutIndex ] !== undefined ) {
                 o.pullOutRow = o.group[ o.pullOutIndex ];
                 o.nextRow = o.group[ o.pullOutIndex + 1 ];
@@ -382,7 +384,7 @@ jQuery(document).ready(function($){
         _getFrontRow: function( params ) {
             if( params.$group.is('thead') ) {
                 // minus controls rows for thead only
-                params.rowIndex -= params.$group.find('tr[data-controls]').length;
+                params.rowIndex += params.$group.find('tr[data-controls]').length;
             }
             return params.$tr = params.$group.find('tr').eq( +params.rowIndex );
         },

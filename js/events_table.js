@@ -8,6 +8,21 @@ jQuery(document).ready(function($){
 
             if( ! this.uniqueID ) this.uniqueID = this._numberOfColumns + this.dataTbodyArray.length + Math.floor(Math.random() * 900 + 100);
 
+            this.$thead.on(
+                'click._addRow',
+                '.addrow',
+                this,
+                function(e) {
+                    var thisRowIndex = $(this).closest('tr').index() - $(this).closest('tr').parent().find('tr[data-controls]').length;
+                    e.data.addNewRows({
+                        'scene': thisRowIndex,
+                        '$group': e.data.$thead,
+                        'group': 'dataTheadArray', // coz event for thead
+                        'td': 'th'
+                    });
+                }
+            );
+
             this.$tbody.on(
                 'click._addRow',
                 '.addrow',
@@ -16,7 +31,37 @@ jQuery(document).ready(function($){
                     var thisRowIndex = $(this).closest('tr').index();
                     e.data.addNewRows({
                         'scene': thisRowIndex,
-                        'group': e.data.dataTbodyArray // coz event for tbody
+                        '$group': e.data.$tbody,
+                        'group': 'dataTbodyArray' // coz event for tbody
+                    });
+                }
+            );
+
+            this.$tfoot.on(
+                'click._addRow',
+                '.addrow',
+                this,
+                function(e) {
+                    var thisRowIndex = $(this).closest('tr').index();
+                    e.data.addNewRows({
+                        'scene': thisRowIndex,
+                        '$group': e.data.$tfoot,
+                        'group': 'dataTfootArray', // coz event for tfoot
+                        'td': 'th'
+                    });
+                }
+            );
+
+            this.$thead.on(
+                'click._delRow',
+                '.delrow',
+                this,
+                function(e) {
+                    var thisRowIndex = $(this).closest('tr').index() - $(this).closest('tr').parent().find('tr[data-controls]').length;
+                    e.data.deleteSomeRows({
+                        'scene': thisRowIndex,
+                        '$group': e.data.$thead,
+                        'group': 'dataTheadArray' // coz event for thead
                     });
                 }
             );
@@ -29,7 +74,22 @@ jQuery(document).ready(function($){
                     var thisRowIndex = $(this).closest('tr').index();
                     e.data.deleteSomeRows({
                         'scene': thisRowIndex,
-                        'group': e.data.dataTbodyArray // coz event for tbody
+                        '$group': e.data.$tbody,
+                        'group': 'dataTbodyArray' // coz event for tbody
+                    });
+                }
+            );
+
+            this.$tfoot.on(
+                'click._delRow',
+                '.delrow',
+                this,
+                function(e) {
+                    var thisRowIndex = $(this).closest('tr').index();
+                    e.data.deleteSomeRows({
+                        'scene': thisRowIndex,
+                        '$group': e.data.$tfoot,
+                        'group': 'dataTfootArray' // coz event for tfoot
                     });
                 }
             );

@@ -19,6 +19,10 @@
 .tableEdit td, .tableEdit th {
     padding: 18px 24px;
 }
+.tableEdit tfoot th, .tableEdit tfoot td, .tableEdit thead tr:not(:first-child) th, .tableEdit thead tr:not(:first-child) td {
+    border-top: 1px solid #ddd;
+    vertical-align: top;
+}
 .tableEdit tbody td, .tableEdit tbody th {
     border-top: 1px solid #ddd;
     vertical-align: top;
