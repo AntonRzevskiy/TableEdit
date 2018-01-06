@@ -15,20 +15,21 @@ jQuery(document).ready(function($){
                     var $that = e.data,
                         $form = $(this).find('form'),
                         $buttonActi = $(e.relatedTarget),
+                        group = $buttonActi.closest('.edit-cell-content').attr('data-group'),
                         row = +$buttonActi.closest('.edit-cell-content').attr('data-row'),
                         col = +$buttonActi.closest('.edit-cell-content').attr('data-col'),
                         uniqueID = +$buttonActi.closest('.edit-cell-content').attr('data-uniq');
 
                     if( uniqueID !== $that.uniqueID ) return;
 
-                    $form.find('#markers').attr('data-row', row).attr('data-col', col).attr('data-uniq', uniqueID);
+                    $form.find('#markers').attr('data-group', group).attr('data-row', row).attr('data-col', col).attr('data-uniq', uniqueID);
 
-                    $form.find('#value').val( $that.dataTableArray[ row ][ col ].value );
+                    $form.find('#value').val( $that[ group ][ row ][ col ].value );
 
-                    var colspan = $that.dataTableArray[ row ][ col ].settings && $that.dataTableArray[ row ][ col ].settings.colspan && $that.dataTableArray[ row ][ col ].settings.colspan || 1;
-                    var rowspan = $that.dataTableArray[ row ][ col ].settings && $that.dataTableArray[ row ][ col ].settings.rowspan && $that.dataTableArray[ row ][ col ].settings.rowspan || 1;
+                    var colspan = $that[ group ][ row ][ col ].settings && $that[ group ][ row ][ col ].settings.colspan && $that[ group ][ row ][ col ].settings.colspan || 1;
+                    var rowspan = $that[ group ][ row ][ col ].settings && $that[ group ][ row ][ col ].settings.rowspan && $that[ group ][ row ][ col ].settings.rowspan || 1;
                     $form.find('#colspan').val( colspan ).attr('max', $that._numberOfColumns);
-                    $form.find('#rowspan').val( rowspan ).attr('max', $that.dataTableArray.length);
+                    $form.find('#rowspan').val( rowspan ).attr('max', $that[ group ].length);
                 }
             );
 
@@ -38,6 +39,7 @@ jQuery(document).ready(function($){
                 function(e) {
                     var $that = e.data,
                         $form = $(this).closest('.modal-content').find('.modal-body form'),
+                        group = $form.find('#markers').attr('data-group'),
                         row = $form.find('#markers').attr('data-row'),
                         col = $form.find('#markers').attr('data-col'),
                         uniqueID = +$form.find('#markers').attr('data-uniq'),
@@ -47,7 +49,7 @@ jQuery(document).ready(function($){
 
                     if( uniqueID !== $that.uniqueID ) return;
 
-                    $that.change( row, col, {
+                    $that.change( group, row, col, {
                         settings: {
                             colspan: colspan,
                             rowspan: rowspan

@@ -16,6 +16,9 @@ jQuery(document).ready(function($){
             return $('<tbody/>');
         },
         dataTableArray: [],
+        dataTbodyArray: [],
+        dataTheadArray: [],
+        dataTfootArray: [],
         _numberOfColumns: false,
     };
 
@@ -30,10 +33,10 @@ jQuery(document).ready(function($){
         _defineType: function( params ) {
             if( Array.isArray( params.selector ) ) {
                 try {
-                    this.dataTableArray = params.selector;
+                    this.dataTbodyArray = params.selector;
                 } catch (e) {
                     console.error(e);
-                    this.dataTableArray = this.dataTableDefaultArray;
+                    this.dataTbodyArray = this.dataTableDefaultArray;
                 }
             }
         },
@@ -71,7 +74,7 @@ jQuery(document).ready(function($){
                     $('<td/>').html( this.topControlsElements )
                 );
             }
-            this.$thead.append( this.doMethod('_addStub', params) );
+            this.$thead.prepend( this.doMethod('_addStub', params) );
         },
 
         _createBottomControls: function( params ) {
@@ -128,38 +131,36 @@ jQuery(document).ready(function($){
             $( this.doMethod('_defineOutputConteiner', params) )[ this.doMethod('_defineOutputMethod', {method:''}) ]( this.$table );
         },
 
-        _createHeader: function( params ) {
-            this.setNumberOfColumns( params.tableHead );
-            for( var col = 0; col < params.tableHead.length; col++ ) {
-                if( params.tableHead[col].matrix && params.tableHead[col].matrix[0] == 1 || params.tableHead[col].matrix && params.tableHead[col].matrix[1] == 1 ) continue;
-                var $th = $('<th/>');
-
-                if( params.tableHead[col].hasOwnProperty('settings') )
-                    this.doMethod('_cellConfiguration', {$td: $th,settings: params.tableHead[col].settings});
-
-                if( params.tableHead[col].hasOwnProperty('value') )
-                    $th.append( params.tableHead[col].value );
-
-                this.doMethod('_setMatrix', {$td:$th,row:params.tableHead,col:params.tableHead[col],rowIndex:0,colIndex:col});
-
-                params.$tr.append( $th );
-            }
-            this.$tbody.append( this.doMethod('_createRowControls', params) );
-        },
-
         _createRow: function( params ) {
+            this.setNumberOfColumns( params.row );
             for( var col = 0; col < params.row.length; col++ ) {
-                params.$tr.append( this.createCell( params.$tr, params.row, params.row[col], params.index, col ) );
+                params.$tr.append( this.createCell(
+                    params.$tr,
+                    params.row,
+                    params.row[col],
+                    params.index,
+                    col,
+                    params.group,
+                    params.td
+                ) );
             }
             this.doMethod('_createRowControls', params);
-            this.setNumberOfColumns( params.row );
 
             return params.$tr;
         },
 
-        createCell: function( $tr, row, col, rowIndex, colIndex ) {
+        createCell: function( $tr, row, col, rowIndex, colIndex, group, td ) {
             if( col.matrix && col.matrix[0] == 1 || col.matrix && col.matrix[1] == 1 ) return;
-            return this.doMethod('_createCell', {$tr:$tr,$td:$('<td/>'),row:row,col:col,rowIndex:rowIndex,colIndex:colIndex});
+            return this.doMethod('_createCell', {
+                '$tr': $tr,
+                'row': row,
+                'col': col,
+                'rowIndex': rowIndex,
+                'colIndex': colIndex,
+                'group': group,
+                // deffault param string, will be jQuery
+                '$td': ( td ) ? $('<' + td + '/>') : $('<td/>'),
+            });
         },
 
         _createCell: function( params ) {
@@ -187,30 +188,30 @@ jQuery(document).ready(function($){
                 while( rowspan > 0 ) {
                     var shiftIndex = object.colIndex;
                     for( var j = 0; j < object.colIndex; j++ ) {
-                        var inspectionCol = this.dataTableArray[ object.rowIndex + rowspan ][ j ];
+                        var inspectionCol = object.group[ object.rowIndex + rowspan ][ j ];
                         if( inspectionCol.settings && inspectionCol.settings.colspan ) {
                             shiftIndex -= (inspectionCol.settings.colspan - 1);
                             j += (inspectionCol.settings.colspan - 1);
                         }
                     }
                     for( var i = 0; i < colspan; i++ ) {
-                        this.dataTableArray[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [1,1]} );
+                        object.group[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [1,1]} );
                     }
-                    this.dataTableArray[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [0,1]} );
+                    object.group[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [0,1]} );
                     rowspan--;
                 }
                 while( colspan-- > 0 ) {
-                    this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
+                    object.group[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
                 }
-                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.group[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
                 return object.$td.attr('data-real-index', object.colIndex);
             }
             else if( object.col.settings && object.col.settings.colspan ) {
                 var colspan = object.col.settings.colspan - 1;
                 while( colspan-- > 0 ) {
-                    this.dataTableArray[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
+                    object.group[ object.rowIndex ].splice( object.colIndex + 1, 0, {matrix: [1,0]} );
                 }
-                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.group[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
                 return object.$td.attr('data-real-index', object.colIndex);
             }
             else if( object.col.settings && object.col.settings.rowspan ) {
@@ -218,20 +219,20 @@ jQuery(document).ready(function($){
                 while( rowspan > 0 ) {
                     var shiftIndex = object.colIndex;
                     for( var j = 0; j < object.colIndex; j++ ) {
-                        var inspectionCol = this.dataTableArray[ object.rowIndex + rowspan ][ j ];
+                        var inspectionCol = object.group[ object.rowIndex + rowspan ][ j ];
                         if( inspectionCol.settings && inspectionCol.settings.colspan ) {
                             shiftIndex -= (inspectionCol.settings.colspan - 1);
                             j += (inspectionCol.settings.colspan - 1);
                         }
                     }
-                    this.dataTableArray[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [0,1]} );
+                    object.group[ object.rowIndex + rowspan ].splice( shiftIndex, 0, {matrix: [0,1]} );
                     rowspan--;
                 }
-                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.group[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
                 return object.$td.attr('data-real-index', object.colIndex);
             }
             else {
-                this.dataTableArray[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
+                object.group[ object.rowIndex ][ object.colIndex ].matrix = [0,0];
                 return object.$td.attr('data-real-index', object.colIndex);
             }
         },
@@ -274,17 +275,22 @@ jQuery(document).ready(function($){
             return params.$td;
         },
 
-        createDelayedRows: function() {
+        createDelayedRows: function( td ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
             var context = this,
-                times = Math.ceil( (this.dataTableArray.length - 1) / this.howCreateOnce ),
+                times = Math.ceil( (this.dataTbodyArray.length - 1) / this.howCreateOnce ),
                 interation = 0;
-            setTimeout(function generateRows(){
-                generateRows.i == undefined ? generateRows.i = 1 : generateRows.i = 0;
+            setTimeout(function generateRows() {
                 var save = context.howCreateOnce * interation,
-                    length = (context.dataTableArray.length - save) < context.howCreateOnce ? context.dataTableArray.length - save : context.howCreateOnce;
-                for( var row = generateRows.i; row < length; row++ ) {
-                    context.$tbody.append( context.doMethod('_createRow', {$tr:$('<tr/>'),row:context.dataTableArray[row + save],index:(row + save)}) );
+                    length = (context.dataTbodyArray.length - save) < context.howCreateOnce ? context.dataTbodyArray.length - save : context.howCreateOnce;
+                for( var row = 0; row < length; row++ ) {
+                    context.$tbody.append( context.doMethod('_createRow', {
+                        '$tr': $('<tr/>'),
+                        'row': context.dataTbodyArray[row + save],
+                        'index' :(row + save),
+                        'group': context.dataTbodyArray,
+                        'td': td
+                    }) );
                 }
                 if( ++interation < times )
                     setTimeout(generateRows,0);
@@ -317,20 +323,56 @@ jQuery(document).ready(function($){
         },
 
         _createTableManager: function( params ) {
+            var row, length;
             this.doMethod('_defineType', params);
             this.doMethod('_compileTable');
 
-            this.doMethod('_createHeader', {tableHead:this.dataTableArray[0] || [],$tr:$('<tr/>')});
-            if( this.hasOwnProperty('maxRowsOutDelay') && this.dataTableArray.length > this.maxRowsOutDelay ) {
+            if( this.dataTheadArray.length ) {
+                for( row = 0, length = this.dataTheadArray.length; row < length; row++ ) {
+                    this.$thead.append( this.doMethod('_createRow', {
+                        '$tr': $('<tr/>'),
+                        'index': row,
+                        'row': this.dataTheadArray[ row ],
+                        'group': this.dataTheadArray,
+                        'td': 'th'
+                    }) );
+                }
+            }
+
+            if( this.hasOwnProperty('maxRowsOutDelay') && this.dataTbodyArray.length > this.maxRowsOutDelay ) {
                 this.createDelayedRows();
             }
             else {
-                for( var row = 1, length = this.dataTableArray.length; row < length; row++ ) {
-                    this.$tbody.append( this.doMethod('_createRow', {$tr:$('<tr/>'),row:this.dataTableArray[row],index:row}) );
+                for( row = 0, length = this.dataTbodyArray.length; row < length; row++ ) {
+                    this.$tbody.append( this.doMethod('_createRow', {
+                        '$tr': $('<tr/>'),
+                        'index': row,
+                        'row': this.dataTbodyArray[row],
+                        'group': this.dataTbodyArray
+                    }) );
                 }
             }
-            this.doMethod('_createTopControls', {$tr:$('<tr/>')});
-            this.doMethod('_createBottomControls', {$tr:$('<tr/>')});
+
+            if( this.dataTfootArray.length ) {
+                for( row = 0, length = this.dataTheadArray.length; row < length; row++ ) {
+                    this.$tfoot.prepend( this.doMethod('_createRow', {
+                        '$tr': $('<tr/>'),
+                        'index': row,
+                        'row': this.dataTfootArray[ row ],
+                        'group': this.dataTfootArray,
+                        'td': 'th'
+                    }) );
+                }
+            }
+
+            if( ! this._numberOfColumns ) this.setNumberOfColumns( this.dataTbodyArray[ 0 ] );
+
+            this.doMethod('_createTopControls', {
+                '$tr': $('<tr/>').attr('data-controls',true)
+            });
+            this.doMethod('_createBottomControls', {
+                '$tr': $('<tr/>').attr('data-controls',true)
+            });
 
             this.doMethod('_addTable', params);
         },

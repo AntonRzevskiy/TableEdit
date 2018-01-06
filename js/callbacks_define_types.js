@@ -44,30 +44,38 @@ jQuery(document).ready(function($){
 
     $.TableEdid.callbacks.defineTypeAfter = function(params) {
 
-        if( this.dataTableArray.length ) return true;
+        if( this.dataTbodyArray.length ) return true;
 
         // from textarea
         if( $(params.selector).is('textarea') ) {
             try {
-                this.dataTableArray = JSON.parse($(params.selector).val());
+                var data = JSON.parse($(params.selector).val());
+                if( Array.isArray( data ) ) {
+                    this.dataTbodyArray = data;
+                }
+                else {
+                    if( data.thead ) this.dataTheadArray = data.thead;
+                    if( data.tbody ) this.dataTbodyArray = data.tbody;
+                    if( data.tfoot ) this.dataTfootArray = data.tfoot;
+                }
+                // this.dataTbodyArray = JSON.parse($(params.selector).val());
                 return true;
             } catch (e) {
                 console.error(e);
-                this.dataTableArray = this.dataTableDefaultArray;
+                this.dataTbodyArray = this.dataTableDefaultArray;
             }
         }
 
         // from table
         if( $(params.selector).is('table') ) {
             try {
-                var thead = this.convertTableToArray( params.selector, 'thead > tr' );
-                var tbody = this.convertTableToArray( params.selector, 'tbody > tr' );
-                var tfoot = this.convertTableToArray( params.selector, 'tfoot > tr' );
-                this.dataTableArray = thead.concat(tbody, tfoot);
-                if( this.dataTableArray.length ) return true;
+                this.dataTheadArray = this.convertTableToArray( params.selector, 'thead > tr' );
+                this.dataTbodyArray = this.convertTableToArray( params.selector, 'tbody > tr' );
+                this.dataTfootArray = this.convertTableToArray( params.selector, 'tfoot > tr' );
+                if( this.dataTbodyArray.length ) return true;
             } catch (e) {
                 console.error(e);
-                this.dataTableArray = this.dataTableDefaultArray;
+                this.dataTbodyArray = this.dataTableDefaultArray;
             }
         }
 
