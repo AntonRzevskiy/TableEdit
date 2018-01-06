@@ -185,7 +185,7 @@
 
     $.fn.tableEdid = function( options ) {
 
-        if( Array.isArray(this) || this.length == 1 ) {
+        if( Array.isArray(this) || this.length == 1 || this instanceof Object ) {
 
             var localPlugin = {};
 
@@ -218,6 +218,14 @@
     if(! Array.prototype.tableEdid) {
 
         Object.defineProperty(Array.prototype, "tableEdid", {
+            value: $.fn.tableEdid
+        });
+
+    }
+
+    if(! Object.prototype.tableEdid) {
+
+        Object.defineProperty(Object.prototype, "tableEdid", {
             value: $.fn.tableEdid
         });
 

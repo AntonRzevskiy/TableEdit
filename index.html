@@ -61,10 +61,13 @@
                 rowsGenerate[i][n] = {value:'value'};
             }
         }
-        var rowsCustom = [
+        var thead = [
             [ {value:'head 1'}, {value:'head 2'}, {value:'head 3'}, {value:'head 4'}, {value:'head 5'}, {value:'head 6'}, {value:'head 7'}, {value:'head 8'}, {value:'head 9'}, {value:'head 10'} ]
         ];
-        var Table = rowsCustom.concat( rowsGenerate );
+        var Table = {
+            'thead': thead,
+            'tbody': rowsGenerate,
+        };
         Table.tableEdid({
             outputMethod: 'prepend',
             stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',

@@ -39,6 +39,16 @@ jQuery(document).ready(function($){
                     this.dataTbodyArray = this.dataTableDefaultArray;
                 }
             }
+            if( params.selector instanceof Object ) {
+                try {
+                    this.dataTheadArray = params.selector.thead || [];
+                    this.dataTbodyArray = params.selector.tbody || [];
+                    this.dataTfootArray = params.selector.tfoot || [];
+                } catch (e) {
+                    console.error(e);
+                    this.dataTbodyArray = this.dataTableDefaultArray;
+                }
+            }
         },
 
         controlOrientation: 'right',
