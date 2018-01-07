@@ -552,11 +552,11 @@ jQuery(document).ready(function($){
                     }while( col++ < this._numberOfColumns );
                 }
                 if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', params.newData.settings.colspan, params.group );
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', +params.newData.settings.colspan, params.group );
                     this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('colspan', params.cell.settings.colspan);
                 }
                 if( params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', params.newData.settings.rowspan, params.group );
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', +params.newData.settings.rowspan, params.group );
                     this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('rowspan', params.cell.settings.rowspan);
                 }
             }
@@ -579,11 +579,11 @@ jQuery(document).ready(function($){
                     }
                 }
                 if( params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', params.newData.settings.colspan, params.group );
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', +params.newData.settings.colspan, params.group );
                     this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('colspan', params.cell.settings.colspan);
                 }
                 if( params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', params.newData.settings.rowspan, params.group );
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', +params.newData.settings.rowspan, params.group );
                     this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('rowspan', params.cell.settings.rowspan);
                 }
             }
