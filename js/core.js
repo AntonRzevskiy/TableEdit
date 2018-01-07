@@ -2,12 +2,23 @@
 
     'use strict';
 
-    if(!window.jQuery) {
+    if( ! window.jQuery ) {
+        /**
+         * This says that loading the plugin must happen after jQuery
+         */
         return;
     }
 
+    /**
+     * register the object in jQuery framework
+     */
     $.TableEdid = {};
 
+    /**
+     * Use @defineProperties for our object because
+     * we need protected properties to use @setters & @getters methods
+     * IE<9 not support @defineProperties!
+     */
     Object.defineProperties($.TableEdid, {
 
         _plugin: {
@@ -185,7 +196,26 @@
 
     $.fn.tableEdid = function( options ) {
 
-        if( Array.isArray(this) || this.length == 1 || this instanceof Object ) {
+        if(
+            /**
+             * If a function called for an array
+             * @this equal to an array like []
+             */
+            Array.isArray( this ) ||
+
+            /**
+             * Or, if a function called for an jQuery (single length) object
+             * @this equal to an jQuery.fn.init(1) not jQuery.fn.init( 2 or more DOM elements contains )
+             */
+            this.length == 1 ||
+
+            /**
+             * Or, if a function called for object
+             * @this equal to an object like {} not jQuery object
+             */
+            this instanceof Object && !(this instanceof jQuery)
+
+        ) {
 
             var localPlugin = {};
 
@@ -209,7 +239,12 @@
             return this;
         }
 
+        /**
+         * If @this equal to an jQuery.fn.init(2 or more DOM elements contains)
+         * We sort each and call for each function @tableEdid recursively
+         */
         return this.each(function() {
+            // @this right here refers to an individual element of the jQuery collection
             $( this ).tableEdid( options );
         });
 

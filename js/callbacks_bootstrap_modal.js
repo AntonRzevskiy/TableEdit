@@ -50,11 +50,11 @@ jQuery(document).ready(function($){
                     if( uniqueID !== $that.uniqueID ) return;
 
                     $that.change( group, row, col, {
-                        settings: {
-                            colspan: colspan,
-                            rowspan: rowspan
+                        'settings': {
+                            'colspan': colspan,
+                            'rowspan': rowspan
                         },
-                        value: value
+                        'value': value
                     });
 
                     $('#TableEdidModal').modal('hide');

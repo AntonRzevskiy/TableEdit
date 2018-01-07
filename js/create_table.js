@@ -3,6 +3,10 @@ jQuery(document).ready(function($){
     if( !$.TableEdid ) return;
 
     $.TableEdid.localPlugin = {
+
+        /**
+         * The following four functions set the properties individually for each table
+         */
         $table: function(){
             return $('<table/>');
         },
@@ -15,10 +19,21 @@ jQuery(document).ready(function($){
         $tbody: function(){
             return $('<tbody/>');
         },
+
+        /**
+         * @dataTableArray contains @dataTbodyArray, @dataTheadArray & @dataTfootArray
+         * to combine data into one array
+         */
         dataTableArray: [],
+
+        
         dataTbodyArray: [],
         dataTheadArray: [],
         dataTfootArray: [],
+
+        /**
+         * @_numberOfColumns property is responsible for the number of columns
+         */
         _numberOfColumns: false,
     };
 
@@ -119,7 +134,7 @@ jQuery(document).ready(function($){
                 // return selector;
             }
             else {
-                if( this.doMethod('_defineOutputMethod', {method:''}) === 'after' ) this.outputMethod = 'append';
+                if( this.doMethod('_defineOutputMethod', {'method':''}) === 'after' ) this.outputMethod = 'append';
                 // return 'body';
                 params.selector = 'body';
             }
@@ -138,20 +153,20 @@ jQuery(document).ready(function($){
         },
 
         _addTable: function( params ) {
-            $( this.doMethod('_defineOutputConteiner', params) )[ this.doMethod('_defineOutputMethod', {method:''}) ]( this.$table );
+            $( this.doMethod('_defineOutputConteiner', params) )[ this.doMethod('_defineOutputMethod', {'method':''}) ]( this.$table );
         },
 
         _createRow: function( params ) {
             this.setNumberOfColumns( params.row );
             for( var col = 0; col < params.row.length; col++ ) {
                 params.$tr.append( this.createCell(
-                    params.$tr,
-                    params.row,
-                    params.row[col],
-                    params.index,
-                    col,
-                    params.group,
-                    params.td
+                    params.$tr,     // jQuery obj
+                    params.row,     // Array
+                    params.row[col],// Object
+                    params.index,   // Number Index of row
+                    col,            // Number Index of col
+                    params.group,   // Array
+                    params.td       // String optional
                 ) );
             }
             this.doMethod('_createRowControls', params);
@@ -175,7 +190,7 @@ jQuery(document).ready(function($){
 
         _createCell: function( params ) {
             if( params.col.settings )
-                this.doMethod('_cellConfiguration', {$td: params.$td,settings: params.col.settings});
+                this.doMethod('_cellConfiguration', {'$td': params.$td,'settings': params.col.settings});
 
             if( params.col.value )
                 params.$td.append( params.col.value );

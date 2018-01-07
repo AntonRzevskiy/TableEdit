@@ -225,23 +225,23 @@ jQuery(document).ready(function($){
             }
             var $that = object.$that,
                 params = {
-                    event: event,
-                    $target: object.target,
-                    group: $that[ object.group ],
-                    targetOffset: object.target.offset(),
-                    $targetContent: $('<textarea/>', {text: object.target.html()}),
-                    $targetCss: {
+                    'event': event,
+                    '$target': object.target,
+                    'group': $that[ object.group ],
+                    'targetOffset': object.target.offset(),
+                    '$targetContent': $('<textarea/>', {text: object.target.html()}),
+                    '$targetCss': {
                         'height': function() {
                             return object.target.height();
                         }
                     },
-                    $menuContainer: $('body'),
-                    $menuContent: $('' +
+                    '$menuContainer': $('body'),
+                    '$menuContent': $('' +
                         '<div class="edit-cell edit-cell-content" data-group="'+ object.group +'" data-row="'+ rowIndex +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ $that.uniqueID +'">' +
                             // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
                         '</div>' +
                     ''),
-                    $menuCss: {
+                    '$menuCss': {
                         'top': function() {
                             return params.targetOffset.top - 1;
                         },
@@ -269,10 +269,10 @@ jQuery(document).ready(function($){
         cellEditingStop: function( event, object ) {
             var $that = object.$that,
                 params = {
-                    event: event,
-                    $target: object.target,
-                    group: $that[object.group],
-                    formElement: 'textarea'
+                    'event': event,
+                    '$target': object.target,
+                    'group': $that[object.group],
+                    'formElement': 'textarea'
                 };
             params.newValue = object.target.find( params.formElement ).val();
             $that.doMethod('_cellEditingStop', params);
