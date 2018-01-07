@@ -149,7 +149,7 @@ jQuery(document).ready(function($){
                 function(e) {
                     if( e.data.cache && e.data.cache.isEditCell && ! $(e.target).closest('.edit-cell').length ) {
                         var group;
-                        switch( e.data.cache.editableCell.parent().parent()[0].nodeName ) {
+                        switch( e.data.cache.editableCell.parent().parent().prop('nodeName') ) {
                             case 'THEAD':
                                 group = 'dataTheadArray';
                                     break;
