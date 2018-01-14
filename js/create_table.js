@@ -153,7 +153,7 @@ jQuery(document).ready(function($){
         },
 
         _addTable: function( params ) {
-            $( this.doMethod('_defineOutputConteiner', params) )[ this.doMethod('_defineOutputMethod', {'method':''}) ]( this.$table );
+            $( this.doMethod('_defineOutputConteiner', {'selector':params.selector}) )[ this.doMethod('_defineOutputMethod', {'method':''}) ]( this.$table );
         },
 
         _createRow: function( params ) {
