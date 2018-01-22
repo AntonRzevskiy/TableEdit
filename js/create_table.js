@@ -379,8 +379,8 @@ jQuery(document).ready(function($){
             }
 
             if( this.dataTfootArray.length ) {
-                for( row = 0, length = this.dataTheadArray.length; row < length; row++ ) {
-                    this.$tfoot.prepend( this.doMethod('_createRow', {
+                for( row = 0, length = this.dataTfootArray.length; row < length; row++ ) {
+                    this.$tfoot.append( this.doMethod('_createRow', {
                         '$tr': $('<tr/>'),
                         'index': row,
                         'row': this.dataTfootArray[ row ],
