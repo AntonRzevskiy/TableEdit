@@ -112,7 +112,19 @@ jQuery(document).ready(function($){
                     o.nextRow[col] = o.pullOutRow[ col ];
                     var $movable = this.doMethod('_getFrontCell', {'row': o.pullOutIndex, 'col': col, '$td': null, '$group': o.$group});
                     var $wanted = this.doMethod('_getFrontCell', {'row': (o.pullOutIndex + 1), 'col': (col + (+$movable.attr('colspan') || 1)), '$td': null, '$group': o.$group});
-                    $wanted.before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
+                    if( ! $wanted.length ) {
+                        if( this.controlOrientation == 'right' ) {
+                            this.doMethod('_getFrontRow', {'rowIndex': (o.pullOutIndex + 1), '$tr': null, '$group': o.$group}).find('td:not([data-real-index])').
+                                before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
+                        }
+                        else {
+                            this.doMethod('_getFrontRow', {'rowIndex': (o.pullOutIndex + 1), '$tr': null, '$group': o.$group}).
+                                append( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
+                        }
+                    }
+                    else {
+                        $wanted.before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
+                    }
                 }
                 if( o.pullOutRow[ col ].matrix[0] == 1 && o.pullOutRow[ col ].matrix[1] == 0 ) {
                     if( o.nextRow ) o.nextRow[col] = o.pullOutRow[ col ];
