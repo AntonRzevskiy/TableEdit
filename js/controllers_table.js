@@ -349,11 +349,16 @@ jQuery(document).ready(function($){
                 $wanted.attr('colspan', +$wanted.attr('colspan') - 1);
                 remove = false;
             }
-            if( o.checkedCell.matrix[0] == 0 && o.checkedCell.matrix[1] == 1 ) {
+            if( o.checkedCell.matrix[0] == 0 && o.checkedCell.matrix[1] == 1 &&
+                o.group[ o.rowIndex ][ o.pullOutIndex + 1 ] !== undefined &&
+                o.group[ o.rowIndex ][ o.pullOutIndex + 1 ].matrix[0] == 1 && o.group[ o.rowIndex ][ o.pullOutIndex + 1 ].matrix[1] == 1
+            ) {
                 o.group[ o.rowIndex ][ o.pullOutIndex + 1 ] = o.checkedCell;
+                remove = false;
             }
             if( o.checkedCell.matrix[0] == 1 && o.checkedCell.matrix[1] == 0 ) {
                 this.doMethod('_correctCell', {'rowIndex':o.rowIndex,'colIndex':o.pullOutIndex,'correct':-1,'property':'colspan','group':o.group,'$group': o.$group});
+                remove = false;
             }
             o.group[ o.rowIndex ].splice( o.pullOutIndex, 1 );
             if( remove ) this.doMethod('_getFrontCell', {'row': o.$tr, 'col': o.pullOutIndex, '$td': null, '$group': o.$group}).remove();
