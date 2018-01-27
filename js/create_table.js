@@ -90,7 +90,6 @@ jQuery(document).ready(function($){
                     $('<td/>').html( this.stubElements )
                 );
             }
-            return params.$tr;
         },
 
         _createTopControls: function( params ) {
@@ -99,7 +98,7 @@ jQuery(document).ready(function($){
                     $('<td/>').html( this.topControlsElements )
                 );
             }
-            this.$thead.prepend( this.doMethod('_addStub', params) );
+            this.doMethod('_addStub', params);
         },
 
         _createBottomControls: function( params ) {
@@ -108,7 +107,7 @@ jQuery(document).ready(function($){
                     $('<td/>').html( this.bottomControlsElements )
                 );
             }
-            this.$tfoot.append( this.doMethod('_addStub', params) );
+            this.doMethod('_addStub', params);
         },
 
         _createRowControls: function( params ) {
