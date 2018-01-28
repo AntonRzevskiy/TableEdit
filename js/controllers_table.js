@@ -127,7 +127,7 @@ jQuery(document).ready(function($){
                     }
                 }
                 if( o.pullOutRow[ col ].matrix[0] == 1 && o.pullOutRow[ col ].matrix[1] == 0 ) {
-                    if( o.nextRow ) o.nextRow[col] = o.pullOutRow[ col ];
+                    if( o.nextRow && o.nextRow[col].matrix[0] == 1 ) o.nextRow[col] = o.pullOutRow[ col ];
                 }
                 if( o.pullOutRow[col].matrix[0] == 0 && o.pullOutRow[col].matrix[1] == 1 ) {
                     this.doMethod('_correctCell', {
