@@ -538,7 +538,7 @@ jQuery(document).ready(function($){
         _handleValueChanging: function( params ) {
             if( params.cell.hasOwnProperty('value') && params.cell.value != params.newData.value ) {
                 this.saveBackCell( params.rowIndex, params.colIndex, 'value', params.newData.value, params.group );
-                this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).html( params.newData.value );
+                params.$cell = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).html( params.newData.value );
             }
         },
 
