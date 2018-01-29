@@ -461,7 +461,7 @@ jQuery(document).ready(function($){
             var countCol,
                 countRow;
 
-            if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
+            if( params.newData.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
                 countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData);
                 countRow = params.getTune('rowspan',params.cell);
                 for( var row = 0; row < countRow; row++ ) {
@@ -474,7 +474,7 @@ jQuery(document).ready(function($){
                     }
                 }
             }
-            if( params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
+            if( params.newData.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
                 countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData) > 0 ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
                 countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData);
                 for( var row = 0; row < countRow; row++ ) {
@@ -487,7 +487,7 @@ jQuery(document).ready(function($){
                     }
                 }
             }
-            if( params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
+            if( params.newData.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
                 countCol = params.getTune('colspan',params.newData) - params.getTune('colspan',params.cell);
                 countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData) > 0 ? params.getTune('rowspan',params.newData) : params.getTune('rowspan',params.cell);
                 for( var row = 0; row < countRow; row++ ) {
@@ -508,7 +508,7 @@ jQuery(document).ready(function($){
                     }
                 }
             }
-            if( params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
+            if( params.newData.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
                 countCol = params.newData.settings.colspan ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
                 countRow = params.getTune('rowspan',params.newData) - params.getTune('rowspan',params.cell);
                 for( var row = 0; row < countRow; row++ ) {
