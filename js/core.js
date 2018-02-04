@@ -51,14 +51,16 @@
                 doMethod: function( method, args ) {
                     if( ! this[ method ] ) return;
                     var name = method.charAt(0) == '_' ? method.substring(1) : method;
-                    var result;
+                    var result; // returnable from main function
+                    var subResult; // a sub returnable value insted of main
                     this.doAction( name + 'Before', args );
                     if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](args) == true || !this[name + 'Before']) {
                         result = this[ method ].call( this, args );
                     }
                     if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
-                        result = this[name + 'After'](args);
+                        subResult = this[name + 'After'](args);
                     this.doAction( name + 'After', args );
+                    if( subResult !== undefined ) return subResult;
                     if( result !== undefined ) return result;
                 }
 
