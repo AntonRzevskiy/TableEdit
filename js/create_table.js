@@ -99,6 +99,7 @@ jQuery(document).ready(function($){
                 );
             }
             this.doMethod('_addStub', params);
+            this.$thead.prepend( params.$tr );
         },
 
         _createBottomControls: function( params ) {
@@ -108,6 +109,7 @@ jQuery(document).ready(function($){
                 );
             }
             this.doMethod('_addStub', params);
+            this.$tfoot.append( params.$tr );
         },
 
         _createRowControls: function( params ) {
