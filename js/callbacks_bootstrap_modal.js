@@ -26,8 +26,8 @@ jQuery(document).ready(function($){
 
                     $form.find('#value').val( $that[ group ][ row ][ col ].value );
 
-                    var colspan = $that[ group ][ row ][ col ].settings && $that[ group ][ row ][ col ].settings.colspan && $that[ group ][ row ][ col ].settings.colspan || 1;
-                    var rowspan = $that[ group ][ row ][ col ].settings && $that[ group ][ row ][ col ].settings.rowspan && $that[ group ][ row ][ col ].settings.rowspan || 1;
+                    var colspan = $that[ group ][ row ][ col ].attr && $that[ group ][ row ][ col ].attr.colspan && $that[ group ][ row ][ col ].attr.colspan || 1;
+                    var rowspan = $that[ group ][ row ][ col ].attr && $that[ group ][ row ][ col ].attr.rowspan && $that[ group ][ row ][ col ].attr.rowspan || 1;
                     $form.find('#colspan').val( colspan ).attr('max', $that._numberOfColumns);
                     $form.find('#rowspan').val( rowspan ).attr('max', $that[ group ].length);
                 }
@@ -50,7 +50,7 @@ jQuery(document).ready(function($){
                     if( uniqueID !== $that.uniqueID ) return;
 
                     $that.change( group, row, col, {
-                        'settings': {
+                        'attr': {
                             'colspan': colspan,
                             'rowspan': rowspan
                         },
@@ -67,13 +67,13 @@ jQuery(document).ready(function($){
         addTableAfter: function() {
 
             if( ! $('body').find('#TableEdidModal').length ) {
-                this.$table.after(''+
+                $( this.table ).after(''+
                     '<div class="modal fade" id="TableEdidModal" tabindex="-1" role="dialog" aria-labelledby="TableEdidModalLabel" aria-hidden="true">' +
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-header">' +
                             '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-                            '<h4 class="modal-title" id="TableEdidModalLabel">Cell settings</h4>' +
+                            '<h4 class="modal-title" id="TableEdidModalLabel">Cell attr</h4>' +
                           '</div>' +
                           '<div class="modal-body">' +
                             '<form role="form">' +

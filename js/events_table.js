@@ -5,10 +5,14 @@ jQuery(document).ready(function($){
     $.TableEdid.plugin = {
 
         _eventsBind: function() {
+            var $table = $( this.table );
+            var $tbody = $( this.tbody );
+            var $tfoot = $( this.tfoot );
+            var $thead = $( this.thead );
 
-            if( ! this.uniqueID ) this.uniqueID = this._numberOfColumns + this.dataTbodyArray.length + Math.floor(Math.random() * 900 + 100);
+            if( ! this.uniqueID ) this.uniqueID = this.getNumOfCols() + this.dataTableObject.tbodyArray.length + Math.floor(Math.random() * 900 + 100);
 
-            this.$thead.on(
+            $thead.on(
                 'click._addRow',
                 '.addrow',
                 this,
@@ -23,7 +27,7 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$tbody.on(
+            $tbody.on(
                 'click._addRow',
                 '.addrow',
                 this,
@@ -37,7 +41,7 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._addRow',
                 '.addrow',
                 this,
@@ -52,7 +56,7 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$thead.on(
+            $thead.on(
                 'click._delRow',
                 '.delrow',
                 this,
@@ -66,7 +70,7 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$tbody.on(
+            $tbody.on(
                 'click._delRow',
                 '.delrow',
                 this,
@@ -80,7 +84,7 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._delRow',
                 '.delrow',
                 this,
@@ -94,49 +98,49 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$thead.on(
+            $thead.on(
                 'click._addCol',
                 '.addCol',
                 this,
                 this.addCol
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._addCol',
                 '.addCol',
                 this,
                 this.addCol
             );
 
-            this.$thead.on(
+            $thead.on(
                 'click._delCol',
                 '.delCol',
                 this,
                 this.delCol
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._delCol',
                 '.delCol',
                 this,
                 this.delCol
             );
 
-            this.$thead.on(
+            $thead.on(
                 'dblclick._editCell',
                 'td[data-real-index],th[data-real-index]',
                 this,
                 this.editingStart
             );
 
-            this.$tbody.on(
+            $tbody.on(
                 'dblclick._editCell',
                 'td[data-real-index],th[data-real-index]',
                 this,
                 this.editingStart
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'dblclick._editCell',
                 'td[data-real-index],th[data-real-index]',
                 this,
@@ -170,12 +174,12 @@ jQuery(document).ready(function($){
                 }
             );
 
-            this.$table.on(
+            $table.on(
                 'cell:editing:start',
                 this.cellEditingStart
             );
 
-            this.$table.on(
+            $table.on(
                 'cell:editing:stop',
                 this.cellEditingStop
             );

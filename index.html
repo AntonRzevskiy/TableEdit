@@ -37,7 +37,7 @@
                 R = randomRowspan - 1;
 
                 rowsGenerate[i] = new Array(10 - (randomColspan - 1));
-                rowsGenerate[i][randomPosition] = {value:'value',settings:{ colspan:randomColspan,rowspan:randomRowspan }};
+                rowsGenerate[i][randomPosition] = {val:'value',attr:{ colspan:randomColspan,rowspan:randomRowspan }};
             }
 
             else if( R > 0 ) {
@@ -58,11 +58,11 @@
                     continue;
                 }
 
-                rowsGenerate[i][n] = {value:'value'};
+                rowsGenerate[i][n] = {val:'value'};
             }
         }
         var thead = [
-            [ {value:'head 1'}, {value:'head 2'}, {value:'head 3'}, {value:'head 4'}, {value:'head 5'}, {value:'head 6'}, {value:'head 7'}, {value:'head 8'}, {value:'head 9'}, {value:'head 10'} ]
+            [ {val:'head 1'}, {val:'head 2'}, {val:'head 3'}, {val:'head 4'}, {val:'head 5'}, {val:'head 6'}, {val:'head 7'}, {val:'head 8'}, {val:'head 9'}, {val:'head 10'} ]
         ];
         var Table = {
             'thead': thead,
@@ -70,17 +70,10 @@
         };
         Table.tableEdid({
             outputMethod: 'prepend',
-            stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
-            topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            maxRowsOutDelay: 400,
-            howCreateOnce: 80,
+            maxRowsOutDelay: 1500,
+            howCreateOnce: 300,
             compileTableAfter: function() {
-                this.$table.addClass('tableEdit');
+                $( this.table ).addClass('tableEdit');
                 return true;
             },
         });
@@ -92,12 +85,12 @@
     <textarea id="from-textarea" class="hidden">
     
         [
-            [ {"value":"head 1"}, {"value":"head 2"}, {"value":"head 3"}, {"value":"head 4"}, {"value":"head 5","settings":{"class":"danger"}} ],
-            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-            [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ]
+            [ {"val":"head 1"}, {"val":"head 2"}, {"val":"head 3"}, {"val":"head 4"}, {"val":"head 5","attr":{"class":"danger"}} ],
+            [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ],
+            [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ],
+            [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ],
+            [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ],
+            [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ]
         ]
     
     </textarea>
@@ -107,16 +100,8 @@
     jQuery(document).ready(function($){
         
         $('#from-textarea').tableEdid({
-            stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
-            topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
             compileTableAfter: function() {
-                this.$table.addClass('table-hover tableEdit');
-                return true;
+                $( this.table ).addClass('table-hover tableEdit');
             }
         });
         
@@ -176,20 +161,12 @@
     jQuery(document).ready(function($){
         
         $('#from-table').tableEdid({
-            stubElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
-            topControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            bottomControlsElements: '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
-            rowControlsElements: '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
-                                 '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
             compileTableAfter: function() {
-                this.$table.addClass('table-hover tableEdit');
-                return true;
+                $( this.table ).addClass('table-hover tableEdit');
             },
             getSettingsFromCellAfter: function(obj) {
-                if( obj.$element.attr('class') ) obj.settings.class = obj.$element.attr('class');
-                return obj.settings;
+                if( obj.$element.attr('class') ) obj.attr.class = obj.$element.attr('class');
+                return obj.attr;
             }
         });
         

@@ -4,13 +4,13 @@ jQuery(document).ready(function($){
 
     $.TableEdid.plugin = {
 
-        _getSettingsFromCell: function( params ) {
-            if( params.$element.attr('rowspan') ) params.settings.rowspan = +params.$element.attr('rowspan');
-            if( params.$element.attr('colspan') ) params.settings.colspan = +params.$element.attr('colspan');
-            return params.settings;
+        '_getSettingsFromCell': function( params ) {
+            if( params.$element.attr('rowspan') ) params.attr.rowspan = +params.$element.attr('rowspan');
+            if( params.$element.attr('colspan') ) params.attr.colspan = +params.$element.attr('colspan');
+            return params.attr;
         },
 
-        convertTableToArray: function( selector, search ) {
+        'convertTableToArray': function( selector, search ) {
             params = {
                selector: selector,
                search: search,
@@ -21,16 +21,16 @@ jQuery(document).ready(function($){
             return this.doMethod('_convertTableToArray', params);
         },
 
-        _convertTableToArray: function( params ) {
+        '_convertTableToArray': function( params ) {
             var that = this;
             $( params.selector ).find( params.search ).each(function() {
                 params.row = [];
-                $(this).find('th, td').each(function() {
+                $(this).find('th,td').each(function() {
                     params.cell = {
-                        value: $(this).html(),
-                        settings: that.doMethod('_getSettingsFromCell', {$element: $(this), settings: {}})
+                        'val': $(this).html(),
+                        'attr': that.doMethod('_getSettingsFromCell', {'$element': $(this), attr: {}})
                     };
-                    if( $.isEmptyObject(params.cell.settings) ) delete params.cell.settings;
+                    if( $.isEmptyObject(params.cell.attr) ) delete params.cell.attr;
                     params.row.push( params.cell );
                 });
                 params.rows.push( params.row );
@@ -44,38 +44,38 @@ jQuery(document).ready(function($){
 
     $.TableEdid.callbacks.defineTypeAfter = function(params) {
 
-        if( this.dataTbodyArray.length ) return true;
+        if( this.dataTableObject.tbodyArray.length ) return true;
 
         // from textarea
         if( $(params.selector).is('textarea') ) {
             try {
                 var data = JSON.parse($(params.selector).val());
                 if( Array.isArray( data ) ) {
-                    this.dataTbodyArray = data;
+                    this.dataTableObject.tbodyArray = data;
                 }
                 else {
-                    if( data.thead ) this.dataTheadArray = data.thead;
-                    if( data.tbody ) this.dataTbodyArray = data.tbody;
-                    if( data.tfoot ) this.dataTfootArray = data.tfoot;
+                    if( data.thead ) this.dataTableObject.theadArray = data.thead;
+                    if( data.tbody ) this.dataTableObject.tbodyArray = data.tbody;
+                    if( data.tfoot ) this.dataTableObject.tfootArray = data.tfoot;
                 }
                 // this.dataTbodyArray = JSON.parse($(params.selector).val());
                 return true;
             } catch (e) {
                 console.error(e);
-                this.dataTbodyArray = this.dataTableDefaultArray;
+                this.dataTableObject.tbodyArray = this.dataTableDefaultArray;
             }
         }
 
         // from table
         if( $(params.selector).is('table') ) {
             try {
-                this.dataTheadArray = this.convertTableToArray( params.selector, 'thead > tr' );
-                this.dataTbodyArray = this.convertTableToArray( params.selector, 'tbody > tr' );
-                this.dataTfootArray = this.convertTableToArray( params.selector, 'tfoot > tr' );
-                if( this.dataTbodyArray.length ) return true;
+                this.dataTableObject.theadArray = this.convertTableToArray( params.selector, 'thead > tr' );
+                this.dataTableObject.tbodyArray = this.convertTableToArray( params.selector, 'tbody > tr' );
+                this.dataTableObject.tfootArray = this.convertTableToArray( params.selector, 'tfoot > tr' );
+                if( this.dataTableObject.tbodyArray.length ) return true;
             } catch (e) {
                 console.error(e);
-                this.dataTbodyArray = this.dataTableDefaultArray;
+                this.dataTableObject.tbodyArray = this.dataTableDefaultArray;
             }
         }
 
