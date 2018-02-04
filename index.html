@@ -84,12 +84,11 @@
                 return true;
             },
         });
-        
+
     });
 
     </script>
 
-    
     <textarea id="from-textarea" class="hidden">
     
         [
@@ -190,7 +189,7 @@
             },
             getSettingsFromCellAfter: function(obj) {
                 if( obj.$element.attr('class') ) obj.settings.class = obj.$element.attr('class');
-                return true;
+                return obj.settings;
             }
         });
         
