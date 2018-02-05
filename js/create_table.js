@@ -24,10 +24,12 @@ jQuery(document).ready(function($){
          * @dataTableArray contains @dataTbodyArray, @dataTheadArray & @dataTfootArray
          * to combine data into one array
          */
-        'dataTableObject': {
-            'tbodyArray': [],
-            'theadArray': [],
-            'tfootArray': []
+        'dataTableObject': function() {
+            return {
+                'tbodyArray': [],
+                'theadArray': [],
+                'tfootArray': []
+            }
         },
 
         /**
@@ -45,6 +47,36 @@ jQuery(document).ready(function($){
 
         /**
          * 
+         * @@ this method use @toLowerCase
+         * return an actual link to data
+         * must return empty array if @group not defined
+         */
+        'getGroup': function( group ) {
+            switch( group.toLowerCase() ) {
+                case 'tbodyarray':
+                // short aliases
+                case 'tbody': case 'b':
+                 return this.dataTableObject.tbodyArray;
+                  break;
+
+                case 'theadarray':
+                // short aliases
+                case 'thead': case 'h':
+                 return this.dataTableObject.theadArray;
+                  break;
+
+                case 'tfootarray':
+                // short aliases
+                case 'tfoot': case 'f':
+                 return this.dataTableObject.tfootArray;
+                  break;
+
+                default: return [];
+            }
+        },
+
+        /**
+         * 
          */
         'createEL': function( name ) {
             return document.createElement( name );
@@ -52,6 +84,7 @@ jQuery(document).ready(function($){
 
         /**
          * 
+         * must return DOM Element if @val defined
          */
         'html': function( element, val ) {
             if( val ) {
@@ -59,6 +92,21 @@ jQuery(document).ready(function($){
                 return element;
             }
             return element.innerHTML;
+        },
+
+        /**
+         * 
+         * must return DOM Element if @val defined
+         */
+        'attr': function( element, attr, val ) {
+            if( val !== undefined ) {
+                element.setAttribute( attr, val + '' );
+                return element;
+            }
+            if( element.hasAttribute( attr ) ) {
+                return element.getAttribute( attr );
+            }
+            return undefined;
         },
 
         /**
@@ -107,6 +155,9 @@ jQuery(document).ready(function($){
          */
         'controlOrientation': 'right',
 
+        /**
+         * 
+         */
         'topControlsElements': '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
                              '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
@@ -138,7 +189,6 @@ jQuery(document).ready(function($){
          * @tr - 
          */
         '_createTopControls': function( params ) {
-            params.tr.setAttribute('data-controls',true);
             for( var i = 0; i < this.getNumOfCols(); i++ ) {
                 params.tr.appendChild(
                     this.html( this.createEL('td'), this.topControlsElements )
@@ -152,7 +202,6 @@ jQuery(document).ready(function($){
          * @tr - 
          */
         '_createBottomControls': function( params ) {
-            params.tr.setAttribute('data-controls',true);
             for( var i = 0; i < this.getNumOfCols(); i++ ) {
                 params.tr.appendChild(
                     this.html( this.createEL('td'), this.bottomControlsElements )
@@ -281,7 +330,7 @@ jQuery(document).ready(function($){
          */
         '_setMatrix': function( object ) {
 
-            if( object.col.mx && object.row.length == this._numberOfColumns ) return object.td.setAttribute('data-real-index', object.colIndex + '');
+            if( object.col.mx && object.row.length == this._numberOfColumns ) return this.attr( object.td, 'data-real-index', object.colIndex );
 
             if( object.col.attr && object.col.attr.colspan && object.col.attr.rowspan ) {
                 var colspan = object.col.attr.colspan - 1;
@@ -305,7 +354,7 @@ jQuery(document).ready(function($){
                     object.group[ object.rowIndex ].splice( object.colIndex + 1, 0, {mx: 2} );
                 }
                 object.group[ object.rowIndex ][ object.colIndex ].mx = 1;
-                return object.td.setAttribute('data-real-index', object.colIndex + '');
+                return this.attr( object.td, 'data-real-index', object.colIndex );
             }
             else if( object.col.attr && object.col.attr.colspan ) {
                 var colspan = object.col.attr.colspan - 1;
@@ -313,7 +362,7 @@ jQuery(document).ready(function($){
                     object.group[ object.rowIndex ].splice( object.colIndex + 1, 0, {mx: 2} );
                 }
                 object.group[ object.rowIndex ][ object.colIndex ].mx = 1;
-                return object.td.setAttribute('data-real-index', object.colIndex + '');
+                return this.attr( object.td, 'data-real-index', object.colIndex );
             }
             else if( object.col.attr && object.col.attr.rowspan ) {
                 var rowspan = object.col.attr.rowspan - 1;
@@ -330,11 +379,11 @@ jQuery(document).ready(function($){
                     rowspan--;
                 }
                 object.group[ object.rowIndex ][ object.colIndex ].mx = 1;
-                return object.td.setAttribute('data-real-index', object.colIndex + '');
+                return this.attr( object.td, 'data-real-index', object.colIndex );
             }
             else {
                 object.group[ object.rowIndex ][ object.colIndex ].mx = 1;
-                return object.td.setAttribute('data-real-index', object.colIndex + '');
+                return this.attr( object.td, 'data-real-index', object.colIndex );
             }
         },
 
@@ -377,7 +426,8 @@ jQuery(document).ready(function($){
         '_cellConfiguration': function( params ) {
             if( params.attr && typeof params.attr === 'object' ) {
                 for( var attr in params.attr ) {
-                    $( params.td ).attr( attr, params.attr[attr] );
+                    params.td.setAttribute( attr, params.attr[attr] + '' );
+                    // $( params.td ).attr( attr, params.attr[attr] );
                 }
             }
             return params.td;
@@ -390,17 +440,17 @@ jQuery(document).ready(function($){
         'createDelayedRows': function( td ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
             var context = this,
-                times = Math.ceil( (this.dataTableObject.tbodyArray.length - 1) / this.howCreateOnce ),
+                times = Math.ceil( (this.getGroup('B').length - 1) / this.howCreateOnce ),
                 interation = 0;
             setTimeout(function generateRows() {
                 var save = context.howCreateOnce * interation,
-                    length = (context.dataTableObject.tbodyArray.length - save) < context.howCreateOnce ? context.dataTableObject.tbodyArray.length - save : context.howCreateOnce;
+                    length = (context.getGroup('B').length - save) < context.howCreateOnce ? context.getGroup('B').length - save : context.howCreateOnce;
                 for( var row = 0; row < length; row++ ) {
                     context.tbody.appendChild( context.doMethod('_createRow', {
                         'tr': context.createEL('tr'),
-                        'row': context.dataTableObject.tbodyArray[row + save],
+                        'row': context.getGroup('B')[row + save],
                         'index': (row + save),
-                        'group': context.dataTableObject.tbodyArray,
+                        'group': context.getGroup('B'),
                         'td': td
                     }) );
                 }
@@ -451,51 +501,51 @@ jQuery(document).ready(function($){
             this.doMethod('_defineType', params);
             this.doMethod('_compileTable');
 
-            if( this.dataTableObject.theadArray.length ) {
-                for( row = 0, length = this.dataTableObject.theadArray.length; row < length; row++ ) {
+            if( this.getGroup('H').length ) {
+                for( row = 0, length = this.getGroup('H').length; row < length; row++ ) {
                     this.thead.appendChild( this.doMethod('_createRow', {
                         'tr': this.createEL('tr'),
                         'index': row,
-                        'row': this.dataTableObject.theadArray[ row ],
-                        'group': this.dataTableObject.theadArray,
+                        'row': this.getGroup('H')[ row ],
+                        'group': this.getGroup('H'),
                         'td': 'th'
                     }) );
                 }
             }
 
-            if( this.hasOwnProperty('maxRowsOutDelay') && this.dataTableObject.tbodyArray.length > this.maxRowsOutDelay ) {
+            if( this.hasOwnProperty('maxRowsOutDelay') && this.getGroup('B').length > this.maxRowsOutDelay ) {
                 this.createDelayedRows();
             }
             else {
-                for( row = 0, length = this.dataTableObject.tbodyArray.length; row < length; row++ ) {
+                for( row = 0, length = this.getGroup('B').length; row < length; row++ ) {
                     this.tbody.appendChild( this.doMethod('_createRow', {
                         'tr': this.createEL('tr'),
                         'index': row,
-                        'row': this.dataTableObject.tbodyArray[row],
-                        'group': this.dataTableObject.tbodyArray
+                        'row': this.getGroup('B')[row],
+                        'group': this.getGroup('B')
                     }) );
                 }
             }
 
-            if( this.dataTableObject.tfootArray.length ) {
-                for( row = 0, length = this.dataTableObject.tfootArray.length; row < length; row++ ) {
+            if( this.getGroup('F').length ) {
+                for( row = 0, length = this.getGroup('F').length; row < length; row++ ) {
                     this.tfoot.appendChild( this.doMethod('_createRow', {
                         'tr': this.createEL('tr'),
                         'index': row,
-                        'row': this.dataTableObject.tfootArray[ row ],
-                        'group': this.dataTableObject.tfootArray,
+                        'row': this.getGroup('F')[ row ],
+                        'group': this.getGroup('F'),
                         'td': 'th'
                     }) );
                 }
             }
 
-            if( ! this.getNumOfCols() ) this.setNumberOfColumns( this.dataTableObject.tbodyArray[ 0 ] );
+            if( ! this.getNumOfCols() ) this.setNumberOfColumns( this.getGroup('B')[ 0 ] );
 
             this.doMethod('_createTopControls', {
-                'tr': this.createEL('tr')
+                'tr': this.attr( this.createEL('tr'), 'data-controls', true )
             });
             this.doMethod('_createBottomControls', {
-                'tr': this.createEL('tr')
+                'tr': this.attr( this.createEL('tr'), 'data-controls', true )
             });
 
             this.doMethod('_addTable', params);

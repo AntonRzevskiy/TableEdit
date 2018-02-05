@@ -10,18 +10,16 @@ jQuery(document).ready(function($){
             var $tfoot = $( this.tfoot );
             var $thead = $( this.thead );
 
-            if( ! this.uniqueID ) this.uniqueID = this.getNumOfCols() + this.dataTableObject.tbodyArray.length + Math.floor(Math.random() * 900 + 100);
+            if( ! this.uniqueID ) this.uniqueID = this.getNumOfCols() + this.getGroup('B').length + Math.floor(Math.random() * 900 + 100);
 
             $thead.on(
                 'click._addRow',
                 '.addrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index() - $(this).closest('tr').parent().find('tr[data-controls]').length;
                     e.data.addNewRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$thead,
-                        'group': 'dataTheadArray', // coz event for thead
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'H', // coz event for thead
                         'td': 'th'
                     });
                 }
@@ -32,11 +30,9 @@ jQuery(document).ready(function($){
                 '.addrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.addNewRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tbody,
-                        'group': 'dataTbodyArray' // coz event for tbody
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'B' // coz event for tbody
                     });
                 }
             );
@@ -46,11 +42,9 @@ jQuery(document).ready(function($){
                 '.addrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.addNewRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tfoot,
-                        'group': 'dataTfootArray', // coz event for tfoot
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'F', // coz event for tfoot
                         'td': 'th'
                     });
                 }
@@ -61,11 +55,9 @@ jQuery(document).ready(function($){
                 '.delrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index() - $(this).closest('tr').parent().find('tr[data-controls]').length;
                     e.data.deleteSomeRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$thead,
-                        'group': 'dataTheadArray' // coz event for thead
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'H' // coz event for thead
                     });
                 }
             );
@@ -75,11 +67,9 @@ jQuery(document).ready(function($){
                 '.delrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.deleteSomeRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tbody,
-                        'group': 'dataTbodyArray' // coz event for tbody
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'B' // coz event for tbody
                     });
                 }
             );
@@ -89,11 +79,9 @@ jQuery(document).ready(function($){
                 '.delrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.deleteSomeRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tfoot,
-                        'group': 'dataTfootArray' // coz event for tfoot
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'F' // coz event for tfoot
                     });
                 }
             );
@@ -214,12 +202,12 @@ jQuery(document).ready(function($){
 
         addCol: function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data.addNewCols({scene:thisColIndex});
+            e.data.addNewCols({'scene':thisColIndex});
         },
 
         delCol: function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data.deleteSomeCols({scene:thisColIndex});
+            e.data.deleteSomeCols({'scene':thisColIndex});
         },
 
         cellEditingStart: function( event, object ) {
