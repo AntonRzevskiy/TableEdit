@@ -4,7 +4,7 @@ jQuery(document).ready(function($){
 
     $.TableEdid.plugin = {
 
-        _eventsBind: function() {
+        '_eventsBind': function() {
             var $table = $( this.table );
             var $tbody = $( this.tbody );
             var $tfoot = $( this.tfoot );
@@ -140,23 +140,12 @@ jQuery(document).ready(function($){
                 this,
                 function(e) {
                     if( e.data.cache && e.data.cache.isEditCell && ! $(e.target).closest('.edit-cell').length ) {
-                        var group;
-                        switch( e.data.cache.editableCell.parent().parent().prop('nodeName') ) {
-                            case 'THEAD':
-                                group = 'dataTheadArray';
-                                    break;
-                            case 'TBODY':
-                                group = 'dataTbodyArray';
-                                    break;
-                            case 'TFOOT':
-                                group = 'dataTfootArray';
-                                    break;
-                        }
+                        var group = e.data.cache.editableCell.parent().parent().prop('nodeName').toLowerCase();
                         e.data.cache.isEditCell = false;
-                        e.data.$table.trigger('cell:editing:stop', {
-                            $that: e.data,
-                            target: e.data.cache.editableCell,
-                            group: group
+                        $( e.data.table ).trigger('cell:editing:stop', {
+                            'that': e.data,
+                            'target': e.data.cache.editableCell,
+                            'group': group
                         });
                     }
                 }
@@ -174,52 +163,42 @@ jQuery(document).ready(function($){
 
         },
         
-        editingStart: function(e) {
+        'editingStart': function(e) {
             var $this = $(this);
-            var $that = e.data;
-            var group;
-            if( $that.cache && $that.cache.editableCell && $that.cache.isEditCell && $that.cache.editableCell.is( $this ) ) return;
-            if(! $that.cache ) $that.cache = {};
-            $that.cache.editableCell = $this;
-            $that.cache.isEditCell = true;
-            switch( e.delegateTarget.nodeName ) {
-                case 'THEAD':
-                    group = 'dataTheadArray';
-                        break;
-                case 'TBODY':
-                    group = 'dataTbodyArray';
-                        break;
-                case 'TFOOT':
-                    group = 'dataTfootArray';
-                        break;
-            }
-            $that.$table.trigger('cell:editing:start', {
-                '$that': $that,
+            var that = e.data;
+            if( that.cache && that.cache.editableCell && that.cache.isEditCell && that.cache.editableCell.is( $this ) ) return;
+            if(! that.cache ) that.cache = {};
+            that.cache.editableCell = $this;
+            that.cache.isEditCell = true;
+            var group = e.delegateTarget.nodeName.toLowerCase();
+            $( that.table ).trigger('cell:editing:start', {
+                'that': that,
                 'target': $this,
                 'group': group
             });
         },
 
-        addCol: function(e) {
+        'addCol': function(e) {
             var thisColIndex = $(this).closest('td').index();
             e.data.addNewCols({'scene':thisColIndex});
         },
 
-        delCol: function(e) {
+        'delCol': function(e) {
             var thisColIndex = $(this).closest('td').index();
             e.data.deleteSomeCols({'scene':thisColIndex});
         },
 
-        cellEditingStart: function( event, object ) {
+        'cellEditingStart': function( event, object ) {
             var rowIndex = +object.target.closest('tr').index();
             if( object.target.closest('tr').parent().is('thead') ) {
                 rowIndex -= object.target.closest('tr').parent().find('tr[data-controls]').length;
             }
-            var $that = object.$that,
+            var that = object.that,
                 params = {
                     'event': event,
                     '$target': object.target,
-                    'group': $that[ object.group ],
+                    'group': object.group,
+                    'data': that.getGroup( object.group ),
                     'targetOffset': object.target.offset(),
                     '$targetContent': $('<textarea/>', {text: object.target.html()}),
                     '$targetCss': {
@@ -229,7 +208,7 @@ jQuery(document).ready(function($){
                     },
                     '$menuContainer': $('body'),
                     '$menuContent': $('' +
-                        '<div class="edit-cell edit-cell-content" data-group="'+ object.group +'" data-row="'+ rowIndex +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ $that.uniqueID +'">' +
+                        '<div class="edit-cell edit-cell-content" data-group="'+ object.group +'" data-row="'+ rowIndex +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ that.uniqueID +'">' +
                             // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
                         '</div>' +
                     ''),
@@ -238,17 +217,17 @@ jQuery(document).ready(function($){
                             return params.targetOffset.top - 1;
                         },
                         'left': function() {
-                            if( $that.controlOrientation == 'right' )
+                            if( that.controlOrientation == 'right' )
                                 return (params.targetOffset.left + object.target.outerWidth(true) + 1);
                             return (params.targetOffset.left - $(this).outerWidth(true) - 1);
                         },
                         'min-height': object.target.outerHeight(true) + 2,
                     }
                 };
-            $that.doMethod('_cellEditingStart', params);
+            that.doMethod('_cellEditingStart', params);
         },
 
-        _cellEditingStart: function( params ) {
+        '_cellEditingStart': function( params ) {
             params.$target.html( params.$targetContent.css( params.$targetCss ) )
             .addClass('edit-cell')
             .find( params.$targetContent ).focus(function(){
@@ -258,24 +237,25 @@ jQuery(document).ready(function($){
             params.$menuContainer.append( params.$menuContent.css( params.$menuCss ) );
         },
 
-        cellEditingStop: function( event, object ) {
-            var $that = object.$that,
+        'cellEditingStop': function( event, object ) {
+            var that = object.that,
                 params = {
                     'event': event,
                     '$target': object.target,
-                    'group': $that[object.group],
+                    'group': object.group,
+                    'data': that.getGroup( object.group ),
                     'formElement': 'textarea'
                 };
             params.newValue = object.target.find( params.formElement ).val();
-            $that.doMethod('_cellEditingStop', params);
+            that.doMethod('_cellEditingStop', params);
         },
 
-        _cellEditingStop: function( params ) {
+        '_cellEditingStop': function( params ) {
             var rowIndex = +params.$target.closest('tr').index();
             if( params.$target.closest('tr').parent().is('thead') ) {
                 rowIndex -= params.$target.closest('tr').parent().find('tr[data-controls]').length;
             }
-            this.saveBackCell( rowIndex, +params.$target.attr('data-real-index'), 'value', params.newValue, params.group );
+            this.saveBackCell( rowIndex, +params.$target.attr('data-real-index'), 'val', params.newValue, params.group );
             params.$target.html( params.newValue ).removeClass('edit-cell');
             $('body').find( '.edit-cell-content' ).remove();
         },

@@ -6,7 +6,7 @@ jQuery(document).ready(function($){
 
     $.TableEdid.callbacks = {
 
-        eventsBindAfter: function() {
+        'eventsBindAfter': function() {
 
             $('#TableEdidModal').on(
                 'show.bs.modal', 
@@ -16,6 +16,7 @@ jQuery(document).ready(function($){
                         $form = $(this).find('form'),
                         $buttonActi = $(e.relatedTarget),
                         group = $buttonActi.closest('.edit-cell-content').attr('data-group'),
+                        data = that.getGroup( group ),
                         row = +$buttonActi.closest('.edit-cell-content').attr('data-row'),
                         col = +$buttonActi.closest('.edit-cell-content').attr('data-col'),
                         uniqueID = +$buttonActi.closest('.edit-cell-content').attr('data-uniq');
@@ -24,12 +25,12 @@ jQuery(document).ready(function($){
 
                     $form.find('#markers').attr('data-group', group).attr('data-row', row).attr('data-col', col).attr('data-uniq', uniqueID);
 
-                    $form.find('#value').val( that[ group ][ row ][ col ].value );
+                    $form.find('#value').val( data[ row ][ col ].val );
 
-                    var colspan = that.getGroup(group)[ row ][ col ].attr && that.getGroup(group)[ row ][ col ].attr.colspan && that.getGroup(group)[ row ][ col ].attr.colspan || 1;
-                    var rowspan = that.getGroup(group)[ row ][ col ].attr && that.getGroup(group)[ row ][ col ].attr.rowspan && that.getGroup(group)[ row ][ col ].attr.rowspan || 1;
+                    var colspan = data[ row ][ col ].attr && data[ row ][ col ].attr.colspan && data[ row ][ col ].attr.colspan || 1;
+                    var rowspan = data[ row ][ col ].attr && data[ row ][ col ].attr.rowspan && data[ row ][ col ].attr.rowspan || 1;
                     $form.find('#colspan').val( colspan ).attr('max', that.getNumOfCols());
-                    $form.find('#rowspan').val( rowspan ).attr('max', that.getGroup(group).length);
+                    $form.find('#rowspan').val( rowspan ).attr('max', data.length);
                 }
             );
 
@@ -64,7 +65,7 @@ jQuery(document).ready(function($){
             return true;
         },
 
-        addTableAfter: function() {
+        'addTableAfter': function() {
 
             if( ! $('body').find('#TableEdidModal').length ) {
                 $( this.table ).after(''+
@@ -111,7 +112,7 @@ jQuery(document).ready(function($){
             return true;
         },
 
-        cellEditingStartBefore: function(params) {
+        'cellEditingStartBefore': function(params) {
             params.$menuContent.append('<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>');
             return true;
         },

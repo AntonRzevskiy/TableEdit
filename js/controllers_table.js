@@ -119,7 +119,7 @@ jQuery(document).ready(function($){
             o.shiftIndex = o.scene;
 
             if( this.getNodeGroup( o.group ).nodeName.toLowerCase() == 'thead' )
-                o.shiftIndex -= $( this.thead ).find('tr[data-controls]').length;
+                o.shiftIndex -= this.thead.querySelectorAll('tr[data-controls]').length;
 
             o.data = this.getGroup( o.group );
             o.checkedRow = o.data[ o.shiftIndex ];
@@ -503,7 +503,7 @@ jQuery(document).ready(function($){
         '_getFrontRow': function( params ) {
             if( params.group.nodeName ) {
                 if( params.group.nodeName.toLowerCase() === 'thead' ) {
-                    params.rowIndex += $( params.group ).find('tr[data-controls]').length;
+                    params.rowIndex += params.group.querySelectorAll('tr[data-controls]').length;
                 }
                 return params.tr = params.group.rows[ +params.rowIndex ];
             }
@@ -512,12 +512,12 @@ jQuery(document).ready(function($){
                 if( params.group.is('thead') ) {
                     params.rowIndex += params.group.find('tr[data-controls]').length;
                 }
-                return params.tr = params.group.find('tr').eq( +params.rowIndex );
+                return params.tr = params.group.find('tr').eq( +params.rowIndex )[ 0 ];
             }
 
             if( typeof params.group === 'string' ) {
                 if( this.provideGroup(params.group) === 'thead' ) {
-                    params.rowIndex += $( this.getNodeGroup( params.group ) ).find('tr[data-controls]').length;
+                    params.rowIndex += this.getNodeGroup( params.group ).querySelectorAll('tr[data-controls]').length;
                 }
                 return params.tr = this.getNodeGroup( params.group ).rows[ +params.rowIndex ];
             }
@@ -529,139 +529,132 @@ jQuery(document).ready(function($){
 
         /**
          * @group - 
-         * @row - ( int || string )
+         * @row - ( int || string || jQuery )
          * @col -  
          * return HTML Element 
          */
         '_getFrontCell': function( params ) {
+            if( params.row instanceof jQuery ) {
+                return params.td = params.row.find('td[data-real-index="'+ +params.col +'"],th[data-real-index="'+ +params.col +'"]')[ 0 ];
+            }
+
             if( params.row.nodeName ) {
-                return params.td = $( params.row ).find( 'td[data-real-index='+ +params.col +'],th[data-real-index='+ +params.col +']')[ 0 ];
+                return params.td = params.row.querySelector('td[data-real-index="'+ +params.col +'"],th[data-real-index="'+ +params.col +'"]');
             }
-            else {
-                return params.td = $( this.doMethod('_getFrontRow', {'rowIndex': params.row, 'group': params.group}) )
-                    .find( 'td[data-real-index='+ +params.col +'],th[data-real-index='+ +params.col +']' )[ 0 ];
-            }
+
+                return params.td = this.doMethod('_getFrontRow', {'rowIndex': params.row, 'group': params.group})
+                    .querySelector('td[data-real-index="'+ +params.col +'"],th[data-real-index="'+ +params.col +'"]');
+
         },
 
         /**
          * 
-         * @group - 
+         * @group - string
          * @rowIndex - 
          * @colIndex - 
          * @newData - object
          * 
          * return ? 
          */
-        change: function( group, rowIndex, colIndex, newData ) {
+        'change': function( group, rowIndex, colIndex, newData ) {
             var params = {
-                    group: this[ group ],
-                    $group: null,
-                    rowIndex: +rowIndex,
-                    colIndex: +colIndex,
-                    newData: newData,
-                    adding: [],
-                    remove: [],
-                    cell: this[ group ][ +rowIndex ][ +colIndex ],
-                    stretchError: {
-                        colspan: [],
-                        rowspan: []
+                    'group': group,
+                    'data': this.getGroup( group ),
+                    'rowIndex': +rowIndex,
+                    'colIndex': +colIndex,
+                    'newData': newData || {},
+                    'adding': [],
+                    'remove': [],
+                    'cell': this.getGroup( group )[ +rowIndex ][ +colIndex ],
+                    'stretchError': {
+                        'colspan': [],
+                        'rowspan': []
                     },
-                    getTune: function( interest, obj, replace ) {
+                    'getTune': function( interest, obj, replace ) {
                         replace = replace || 1;
                         return obj.attr && obj.attr[interest] ? +obj.attr[interest] : replace;
                     },
-                    isStretched: function( cell ) {
+                    'isStretched': function( cell ) {
                         if( cell === undefined ) return true;
-                        if( cell.mx ) {
-                            if( cell.mx[0] != 0 || cell.mx[1] != 0 ) return true;
-                        }
+                        if( cell.mx && cell.mx > 1 ) return true;
                         if( this.getTune('colspan',cell) > 1 ) return true;
                         if( this.getTune('rowspan',cell) > 1 ) return true;
                         return false;
                     }
                 };
-            switch( group ) {
-                case 'dataTheadArray':
-                    params.$group = this.$thead;
-                        break;
-                case 'dataTbodyArray':
-                    params.$group = this.$tbody;
-                        break;
-                case 'dataTfootArray':
-                    params.$group = this.$tfoot;
-                        break;
-            }
             return this.doMethod('_change', params);
         },
 
-        _change: function( params ) {
+        '_change': function( params ) {
             var countCol,
                 countRow;
 
-            if( params.newData.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
-                countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData);
-                countRow = params.getTune('rowspan',params.cell);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        params.adding.push({
-                            rowIndex: (params.rowIndex + row),
-                            colIndex: (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
-                            cell: params.group[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
-                        });
-                    }
-                }
-            }
-            if( params.newData.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
-                countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData) > 0 ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
-                countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        params.adding.push({
-                            rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
-                            colIndex: (params.colIndex + col),
-                            cell: params.group[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
-                        });
-                    }
-                }
-            }
-            if( params.newData.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
-                countCol = params.getTune('colspan',params.newData) - params.getTune('colspan',params.cell);
-                countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData) > 0 ? params.getTune('rowspan',params.newData) : params.getTune('rowspan',params.cell);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        var checkCell = params.group[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) + col) ];
-                        params.remove.push({
-                            rowIndex: (params.rowIndex + row),
-                            colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
-                            cell: checkCell,
-                        });
-                        if( params.isStretched(checkCell) ) {
-                            params.stretchError.colspan.push({
+            if( params.newData.hasOwnProperty('attr') ) {
+                if( params.newData.attr.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData);
+                    countRow = params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            params.adding.push({
                                 rowIndex: (params.rowIndex + row),
-                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
-                                cell: checkCell,
+                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
+                                cell: params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
                             });
                         }
                     }
                 }
-            }
-            if( params.newData.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
-                countCol = params.newData.attr.colspan ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
-                countRow = params.getTune('rowspan',params.newData) - params.getTune('rowspan',params.cell);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        var checkCell = params.group[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ] ? params.group[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ][ (params.colIndex + col) ] : undefined;
-                        params.remove.push({
-                            rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
-                            colIndex: (params.colIndex + col),
-                            cell: checkCell,
-                        });
-                        if( params.isStretched(checkCell) ) {
-                            params.stretchError.rowspan.push({
+                if( params.newData.attr.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData) > 0 ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            params.adding.push({
+                                rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
+                                colIndex: (params.colIndex + col),
+                                cell: params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
+                            });
+                        }
+                    }
+                }
+                if( params.newData.attr.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.newData) - params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData) > 0 ? params.getTune('rowspan',params.newData) : params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            var checkCell = params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) + col) ];
+                            params.remove.push({
+                                rowIndex: (params.rowIndex + row),
+                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                cell: checkCell,
+                            });
+                            if( params.isStretched(checkCell) ) {
+                                params.stretchError.colspan.push({
+                                    rowIndex: (params.rowIndex + row),
+                                    colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                    cell: checkCell,
+                                });
+                            }
+                        }
+                    }
+                }
+                if( params.newData.attr.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
+                    countCol = params.newData.attr.colspan ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.newData) - params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            var checkCell = params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ] ? params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ][ (params.colIndex + col) ] : undefined;
+                            params.remove.push({
                                 rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
                                 colIndex: (params.colIndex + col),
                                 cell: checkCell,
                             });
+                            if( params.isStretched(checkCell) ) {
+                                params.stretchError.rowspan.push({
+                                    rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                    colIndex: (params.colIndex + col),
+                                    cell: checkCell,
+                                });
+                            }
                         }
                     }
                 }
@@ -669,37 +662,37 @@ jQuery(document).ready(function($){
 
             if( params.adding.length ) this.doMethod('_handleContraction', params );
             if( params.remove.length ) this.doMethod('_handleStretching', params );
-            if( params.newData.hasOwnProperty('value') ) this.doMethod('_handleValueChanging', params );
+            if( params.newData.hasOwnProperty('val') ) this.doMethod('_handleValueChanging', params );
         },
 
-        _handleValueChanging: function( params ) {
-            if( params.cell.hasOwnProperty('value') && params.cell.value != params.newData.value ) {
-                this.saveBackCell( params.rowIndex, params.colIndex, 'value', params.newData.value, params.group );
-                params.$cell = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).html( params.newData.value );
+        '_handleValueChanging': function( params ) {
+            if( params.cell.hasOwnProperty('val') && params.cell.val != params.newData.val ) {
+                this.saveBackCell( params.rowIndex, params.colIndex, 'val', params.newData.val, params.group );
+                params.td = this.html( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), params.newData.val );
             }
         },
 
-        _handleContraction: function( params ) {
+        '_handleContraction': function( params ) {
             if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
                 for( var i = 0; i < params.adding.length; i++ ) {
                     var el = params.adding[i];
                     var col = el.colIndex + 1;
                     delete el.cell.mx;
                     this.doMethod('_defaultValueNewCell', el.cell);
-                    var $tr = this.doMethod('_getFrontRow', {'rowIndex': el.rowIndex, '$tr': null, '$group': params.$group});
+                    var $tr = $( this.doMethod('_getFrontRow', {'rowIndex': el.rowIndex, 'group': params.group}) );
                     do {
-                        if( params.group[ el.rowIndex ][ col ] === undefined ) {
+                        if( params.data[ el.rowIndex ][ col ] === undefined ) {
                             if( this.controlOrientation === 'left' ) {
-                                $tr.append( this.createCell( $tr, params.group[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.group, 'td' ) );
+                                $tr.append( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, 'td' ) );
                                 break;
                             }
-                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr, params.group[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.group, 'td' ) );
+                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, 'td' ) );
                             break;
                         }
-                        if( params.group[ el.rowIndex ][ col ].mx[0] == 0 && params.group[ el.rowIndex ][ col ].mx[1] == 0 ) {
+                        if( params.data[ el.rowIndex ][ col ].mx == 1 ) {
                             
-                            this.doMethod('_getFrontCell', {'row': $tr, 'col': col, '$td': null, '$group': params.$group}).before(
-                                this.createCell( $tr, params.group[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.group, 'td' )
+                            $( this.doMethod('_getFrontCell', {'row': $tr, 'col': col, 'group': params.group}) ).before(
+                                this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, 'td' )
                             );
                             break;
                         }
@@ -707,43 +700,43 @@ jQuery(document).ready(function($){
                 }
                 if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
                     this.saveBackCell( params.rowIndex, params.colIndex, 'attr.colspan', +params.newData.attr.colspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('colspan', params.cell.attr.colspan);
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'colspan', params.cell.attr.colspan );
                 }
                 if( params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
                     this.saveBackCell( params.rowIndex, params.colIndex, 'attr.rowspan', +params.newData.attr.rowspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('rowspan', params.cell.attr.rowspan);
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'rowspan', params.cell.attr.rowspan );
                 }
             }
         },
 
-        _handleStretching: function( params ) {
+        '_handleStretching': function( params ) {
             if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
                 for( var i = 0; i < params.remove.length; i++ ) {
                     var el = params.remove[i];
                     this.doMethod('_emptyCell', el.cell);
-                    this.doMethod('_getFrontCell', {'row': el.rowIndex, 'col': el.colIndex, '$td': null, '$group': params.$group}).remove();
-                    if( el.rowIndex ==  params.rowIndex ) {
-                        el.cell.mx = [1,0];
+                    $( this.doMethod('_getFrontCell', {'row': el.rowIndex, 'col': el.colIndex, 'group': params.group}) ).remove();
+                    if( el.rowIndex == params.rowIndex ) {
+                        el.cell.mx = 2;
                     }
-                    else if( el.colIndex ==  params.colIndex ) {
-                        el.cell.mx = [0,1];
+                    else if( el.colIndex == params.colIndex ) {
+                        el.cell.mx = 3;
                     }
                     else {
-                       el.cell.mx = [1,1]; 
+                       el.cell.mx = 4; 
                     }
                 }
                 if( params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
                     this.saveBackCell( params.rowIndex, params.colIndex, 'attr.colspan', +params.newData.attr.colspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('colspan', params.cell.attr.colspan);
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'colspan', params.cell.attr.colspan );
                 }
                 if( params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
                     this.saveBackCell( params.rowIndex, params.colIndex, 'attr.rowspan', +params.newData.attr.rowspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('rowspan', params.cell.attr.rowspan);
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'rowspan', params.cell.attr.rowspan );
                 }
             }
         },
 
-        _emptyCell: function( cell ) {
+        '_emptyCell': function( cell ) {
             for( var key in cell) {
                 delete cell[key];
             }
