@@ -54,9 +54,9 @@ jQuery(document).ready(function($){
                     this.dataTableObject.tbodyArray = data;
                 }
                 else {
-                    if( data.thead ) this.dataTableObject.theadArray = data.thead;
-                    if( data.tbody ) this.dataTableObject.tbodyArray = data.tbody;
-                    if( data.tfoot ) this.dataTableObject.tfootArray = data.tfoot;
+                    if( data.theadArray ) this.dataTableObject.theadArray = data.theadArray;
+                    if( data.tbodyArray ) this.dataTableObject.tbodyArray = data.tbodyArray;
+                    if( data.tfootArray ) this.dataTableObject.tfootArray = data.tfootArray;
                 }
                 // this.dataTbodyArray = JSON.parse($(params.selector).val());
                 return true;
