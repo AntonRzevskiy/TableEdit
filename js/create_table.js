@@ -85,9 +85,14 @@ jQuery(document).ready(function($){
         /**
          * 
          * must return DOM Element if @val defined
+         * @val can be function / it works like jQuery.html
          */
         'html': function( element, val ) {
-            if( val ) {
+            if( typeof val === 'function' ) {
+                val.call( element );
+                return element;
+            }
+            if( val !== undefined ) {
                 element.innerHTML = val;
                 return element;
             }
