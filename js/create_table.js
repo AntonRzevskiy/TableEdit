@@ -145,9 +145,9 @@ jQuery(document).ready(function($){
             }
             if( params.selector instanceof Object ) {
                 try {
-                    this.dataTableObject.theadArray = params.selector.thead || [];
-                    this.dataTableObject.tbodyArray = params.selector.tbody || [];
-                    this.dataTableObject.tfootArray = params.selector.tfoot || [];
+                    this.dataTableObject.theadArray = params.selector.theadArray || [];
+                    this.dataTableObject.tbodyArray = params.selector.tbodyArray || [];
+                    this.dataTableObject.tfootArray = params.selector.tfootArray || [];
                 } catch (e) {
                     console.error(e);
                     this.dataTableObject.tbodyArray = this.dataTableDefaultArray;
