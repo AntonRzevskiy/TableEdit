@@ -1,8 +1,8 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.plugin = {
+    $.TableEdit.plugin = {
 
         '_getSettingsFromCell': function( params ) {
             if( params.$element.attr('rowspan') ) params.attr.rowspan = +params.$element.attr('rowspan');
@@ -40,9 +40,9 @@ jQuery(document).ready(function($){
 
     };
 
-    $.TableEdid.callbacks.refresh();
+    $.TableEdit.callbacks.refresh();
 
-    $.TableEdid.callbacks.defineTypeAfter = function(params) {
+    $.TableEdit.callbacks.defineTypeAfter = function(params) {
 
         if( this.dataTableObject.tbodyArray.length ) return true;
 
@@ -82,7 +82,7 @@ jQuery(document).ready(function($){
         return true;
     };
 
-    $.TableEdid.callbacks.addTableAfter = function( obj ) {
+    $.TableEdit.callbacks.addTableAfter = function( obj ) {
         if( $(obj.selector).is('table') ) $(obj.selector).addClass('hidden');
         return true;
     };

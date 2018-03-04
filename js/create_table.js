@@ -1,8 +1,8 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.localPlugin = {
+    $.TableEdit.localPlugin = {
 
         /**
          * The following four functions set the properties individually for each table
@@ -38,7 +38,7 @@ jQuery(document).ready(function($){
         '_numberOfColumns': false,
     };
 
-    $.TableEdid.plugin = {
+    $.TableEdit.plugin = {
 
         /**
          * 
@@ -558,7 +558,7 @@ jQuery(document).ready(function($){
 
     };
 
-    $.TableEdid.init = function( selector ) {
+    $.TableEdit.init = function( selector ) {
         this.doMethod('_createTableManager', {'selector':selector});
     };
 

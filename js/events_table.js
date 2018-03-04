@@ -1,8 +1,8 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.plugin = {
+    $.TableEdit.plugin = {
 
         '_eventsBind': function() {
             var $table = $( this.table );
@@ -209,7 +209,7 @@ jQuery(document).ready(function($){
                     '$menuContainer': $('body'),
                     '$menuContent': $('' +
                         '<div class="edit-cell edit-cell-content" data-group="'+ object.group +'" data-row="'+ rowIndex +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ that.uniqueID +'">' +
-                            // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
+                            // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEditModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
                         '</div>' +
                     ''),
                     '$menuCss': {
@@ -262,7 +262,7 @@ jQuery(document).ready(function($){
 
     };
 
-    $.TableEdid.init = function() {
+    $.TableEdit.init = function() {
         this.doMethod('_eventsBind');
     };
 

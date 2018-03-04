@@ -1,8 +1,8 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.plugin = {
+    $.TableEdit.plugin = {
 
         /**
          * 

@@ -1,14 +1,14 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.callbacks.refresh();
+    $.TableEdit.callbacks.refresh();
 
-    $.TableEdid.callbacks = {
+    $.TableEdit.callbacks = {
 
         'eventsBindAfter': function() {
 
-            $('#TableEdidModal').on(
+            $('#TableEditModal').on(
                 'show.bs.modal', 
                 this, 
                 function(e) {
@@ -58,7 +58,7 @@ jQuery(document).ready(function($){
                         'val': value
                     });
 
-                    $('#TableEdidModal').modal('hide');
+                    $('#TableEditModal').modal('hide');
                 }
             );
 
@@ -67,14 +67,14 @@ jQuery(document).ready(function($){
 
         'addTableAfter': function() {
 
-            if( ! $('body').find('#TableEdidModal').length ) {
+            if( ! $('body').find('#TableEditModal').length ) {
                 $( this.table ).after(''+
-                    '<div class="modal fade" id="TableEdidModal" tabindex="-1" role="dialog" aria-labelledby="TableEdidModalLabel" aria-hidden="true">' +
+                    '<div class="modal fade" id="TableEditModal" tabindex="-1" role="dialog" aria-labelledby="TableEditModalLabel" aria-hidden="true">' +
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-header">' +
                             '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-                            '<h4 class="modal-title" id="TableEdidModalLabel">Cell attr</h4>' +
+                            '<h4 class="modal-title" id="TableEditModalLabel">Cell attr</h4>' +
                           '</div>' +
                           '<div class="modal-body">' +
                             '<form role="form">' +
@@ -113,7 +113,7 @@ jQuery(document).ready(function($){
         },
 
         'cellEditingStartBefore': function(params) {
-            params.$menuContent.append('<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>');
+            params.$menuContent.append('<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEditModal"><span class="glyphicon glyphicon-pencil"></span></button>');
             return true;
         },
 

@@ -68,7 +68,7 @@
             'theadArray': thead,
             'tbodyArray': rowsGenerate,
         };
-        Table.tableEdid({
+        Table.tableEdit({
             outputMethod: 'prepend',
             maxRowsOutDelay: 1500,
             howCreateOnce: 300,
@@ -99,7 +99,7 @@
 
     jQuery(document).ready(function($){
         
-        $('#from-textarea').tableEdid({
+        $('#from-textarea').tableEdit({
             compileTableAfter: function() {
                 $( this.table ).addClass('table-hover tableEdit');
             }
@@ -160,7 +160,7 @@
 
     jQuery(document).ready(function($){
         
-        $('#from-table').tableEdid({
+        $('#from-table').tableEdit({
             compileTableAfter: function() {
                 $( this.table ).addClass('table-hover tableEdit');
             },

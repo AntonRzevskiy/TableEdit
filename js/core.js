@@ -12,20 +12,20 @@
     /**
      * register the object in jQuery framework
      */
-    $.TableEdid = {};
+    $.TableEdit = {};
 
     /**
      * Use @defineProperties for our object because
      * we need protected properties to use @setters & @getters methods
      * IE<9 not support @defineProperties!
      */
-    Object.defineProperties($.TableEdid, {
+    Object.defineProperties($.TableEdit, {
 
         _plugin: {
             value: {
 
                 doAction: function( name, args, context ) {
-                    var callbacks = $.TableEdid.callbacks;
+                    var callbacks = $.TableEdit.callbacks;
                     if( callbacks[name] && callbacks[name].length ) {
                         for(var i = 0; i < callbacks[name].length; i++ ) {
                             var fn = callbacks[name][i],
@@ -36,7 +36,7 @@
                 },
 
                 init: function( selector ) {
-                    var arrInit = $.TableEdid.init;
+                    var arrInit = $.TableEdit.init;
                     if( arrInit.length ) {
                         for(var i = 0; i < arrInit.length; i++ ) {
                             try {
@@ -82,20 +82,20 @@
             value: {
 
                 refresh: function( object ) {
-                    var obj = object || $.TableEdid.plugin;
+                    var obj = object || $.TableEdit.plugin;
                     var recent = [];
                     for( var method in obj ) {
                         if( method.charAt(0) == '_' && typeof obj[method] == 'function' ) {
-                            if(! $.TableEdid.callbacks[method + 'Before'] ) {
+                            if(! $.TableEdit.callbacks[method + 'Before'] ) {
                                 (function( method ) {
-                                    Object.defineProperty($.TableEdid.callbacks, method + 'Before', {
+                                    Object.defineProperty($.TableEdit.callbacks, method + 'Before', {
                                         value: []
                                     });
                                 })(method);
                             }
-                            if(! $.TableEdid.callbacks[method.substring(1) + 'Before'] ) {
+                            if(! $.TableEdit.callbacks[method.substring(1) + 'Before'] ) {
                                 (function( method ) {
-                                    Object.defineProperty($.TableEdid.callbacks, method.substring(1) + 'Before', {
+                                    Object.defineProperty($.TableEdit.callbacks, method.substring(1) + 'Before', {
                                         get: function() {
                                             return this[method + 'Before'];
                                         },
@@ -111,16 +111,16 @@
                                     recent.push( method.substring(1) + 'Before' );
                                 })(method);
                             }
-                            if(! $.TableEdid.callbacks[method + 'After'] ) {
+                            if(! $.TableEdit.callbacks[method + 'After'] ) {
                                 (function( method ) {
-                                    Object.defineProperty($.TableEdid.callbacks, method + 'After', {
+                                    Object.defineProperty($.TableEdit.callbacks, method + 'After', {
                                         value: []
                                     });
                                 })(method);
                             }
-                            if(! $.TableEdid.callbacks[method.substring(1) + 'After'] ) {
+                            if(! $.TableEdit.callbacks[method.substring(1) + 'After'] ) {
                                 (function( method ) {
-                                    Object.defineProperty($.TableEdid.callbacks, method.substring(1) + 'After', {
+                                    Object.defineProperty($.TableEdit.callbacks, method.substring(1) + 'After', {
                                         get: function() {
                                             return this[method + 'After'];
                                         },
@@ -197,7 +197,7 @@
 
     });
 
-    $.fn.tableEdid = function( options ) {
+    $.fn.tableEdit = function( options ) {
 
         if(
             /**
@@ -222,19 +222,19 @@
 
             var localPlugin = {};
 
-            for( var property in $.TableEdid.localPlugin ) {
-                if( typeof $.TableEdid.localPlugin[ property ] == 'function' ) {
-                    localPlugin[ property ] = $.TableEdid.localPlugin[ property ]();
+            for( var property in $.TableEdit.localPlugin ) {
+                if( typeof $.TableEdit.localPlugin[ property ] == 'function' ) {
+                    localPlugin[ property ] = $.TableEdit.localPlugin[ property ]();
                 }
                 else {
-                    localPlugin[ property ] = $.TableEdid.localPlugin[ property ];
+                    localPlugin[ property ] = $.TableEdit.localPlugin[ property ];
                 }
             }
 
             var options = options || {},
                 that = $.extend(true,
                     localPlugin,
-                    $.TableEdid.plugin,
+                    $.TableEdit.plugin,
                     options
                 );
 
@@ -244,27 +244,27 @@
 
         /**
          * If @this equal to an jQuery.fn.init(2 or more DOM elements contains)
-         * We sort each and call for each function @tableEdid recursively
+         * We sort each and call for each function @tableEdit recursively
          */
         return this.each(function() {
             // @this right here refers to an individual element of the jQuery collection
-            $( this ).tableEdid( options );
+            $( this ).tableEdit( options );
         });
 
     };
 
-    if(! Array.prototype.tableEdid) {
+    if(! Array.prototype.tableEdit) {
 
-        Object.defineProperty(Array.prototype, "tableEdid", {
-            value: $.fn.tableEdid
+        Object.defineProperty(Array.prototype, "tableEdit", {
+            value: $.fn.tableEdit
         });
 
     }
 
-    if(! Object.prototype.tableEdid) {
+    if(! Object.prototype.tableEdit) {
 
-        Object.defineProperty(Object.prototype, "tableEdid", {
-            value: $.fn.tableEdid
+        Object.defineProperty(Object.prototype, "tableEdit", {
+            value: $.fn.tableEdit
         });
 
     }
