@@ -234,7 +234,8 @@ jQuery(document).ready(function($){
                 var $thisVal = $(this).val();
                 $(this).val('').val($thisVal);
             }).focus();
-            params.$menuContainer.append( params.$menuContent.css( params.$menuCss ) );
+            params.$menuContainer.append( params.$menuContent );
+            params.$menuContent.css( params.$menuCss )
         },
 
         'cellEditingStop': function( event, object ) {

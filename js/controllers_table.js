@@ -354,7 +354,12 @@ jQuery(document).ready(function($){
                     $( destination ).after( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
                 }
             }
-            if( d == -1 ) $( o.tr ).prepend( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
+            if( d == -1 && this.controlOrientation == 'right' ) $( o.tr ).prepend( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
+            else if( d == -1 && this.controlOrientation == 'left' ) {
+                var destination = $( o.tr ).find('td:first');
+                if( destination.length ) destination.after( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
+                else $( o.tr ).prepend( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
+            }
         },
 
         'deleteSomeCols': function( options ) {
