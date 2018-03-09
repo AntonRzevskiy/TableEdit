@@ -281,7 +281,7 @@ jQuery(document).ready(function($){
             for( var col = 0; col < params.row.length; col++ ) {
                 if( params.row[col].mx && params.row[col].mx > 1 ) {
                     // special method for skipped cells, not included in the default object
-                    this.doMethod('_skippedCell', $.extend(true, {}, params, {'col': col}));
+                    this.doMethod('_skippedCell', $.extend({}, params, {'col': col}));
                     continue;
                 }
                 params.tr.appendChild( this.createCell(
