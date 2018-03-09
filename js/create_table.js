@@ -279,7 +279,11 @@ jQuery(document).ready(function($){
         '_createRow': function( params ) {
             this.setNumberOfColumns( params.row );
             for( var col = 0; col < params.row.length; col++ ) {
-                if( params.row[col].mx && params.row[col].mx > 1 ) continue;
+                if( params.row[col].mx && params.row[col].mx > 1 ) {
+                    // special method for skipped cells, not included in the default object
+                    this.doMethod('_skippedCell', $.extend(true, {}, params, {'col': col}));
+                    continue;
+                }
                 params.tr.appendChild( this.createCell(
                     params.tr,      // HTML Element
                     params.row,     // Array
