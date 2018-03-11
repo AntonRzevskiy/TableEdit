@@ -477,7 +477,7 @@ jQuery(document).ready(function($){
                 'colIndex': colIndex,
                 'saving': chain,
                 'newValue': newValue,
-                'group': group,
+                'group': ( typeof group === 'string' ) ? this.getGroup( group ) : group,
             });
         },
 
@@ -496,7 +496,7 @@ jQuery(document).ready(function($){
                 }
             }
             o = tmp.pop();
-            $.extend(true, this.getGroup( params.group )[ params.rowIndex ][ params.colIndex ], o);
+            $.extend(true, params.group[ params.rowIndex ][ params.colIndex ], o);
         },
 
         /**
