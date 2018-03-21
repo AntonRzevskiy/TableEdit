@@ -510,7 +510,7 @@ jQuery(document).ready(function($){
                 this.createDelayedRows();
             }
             else {
-                for( row = 0, length = this.getGroup('B').length; row < length; row++ ) {
+                for( var row = 0, length = this.getGroup('B').length; row < length; row++ ) {
                     this.tbody.appendChild( this.doMethod('_createRow', {
                         'tr': this.createEL('tr'),
                         'index': row,
