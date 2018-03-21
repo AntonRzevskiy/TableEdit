@@ -505,6 +505,26 @@ jQuery(document).ready(function($){
          * @td - 
          * @attr - 
          */
+        '_createPage': function() {
+            if( this.hasOwnProperty('maxRowsOutDelay') && this.getGroup('B').length > this.maxRowsOutDelay ) {
+                this.createDelayedRows();
+            }
+            else {
+                for( row = 0, length = this.getGroup('B').length; row < length; row++ ) {
+                    this.tbody.appendChild( this.doMethod('_createRow', {
+                        'tr': this.createEL('tr'),
+                        'index': row,
+                        'row': this.getGroup('B')[row],
+                        'group': this.getGroup('B')
+                    }) );
+                }
+            }
+        },
+
+        /**
+         * @td - 
+         * @attr - 
+         */
         '_createTableManager': function( params ) {
             var row, length;
             this.doMethod('_defineType', params);
@@ -522,20 +542,6 @@ jQuery(document).ready(function($){
                 }
             }
 
-            if( this.hasOwnProperty('maxRowsOutDelay') && this.getGroup('B').length > this.maxRowsOutDelay ) {
-                this.createDelayedRows();
-            }
-            else {
-                for( row = 0, length = this.getGroup('B').length; row < length; row++ ) {
-                    this.tbody.appendChild( this.doMethod('_createRow', {
-                        'tr': this.createEL('tr'),
-                        'index': row,
-                        'row': this.getGroup('B')[row],
-                        'group': this.getGroup('B')
-                    }) );
-                }
-            }
-
             if( this.getGroup('F').length ) {
                 for( row = 0, length = this.getGroup('F').length; row < length; row++ ) {
                     this.tfoot.appendChild( this.doMethod('_createRow', {
@@ -547,6 +553,8 @@ jQuery(document).ready(function($){
                     }) );
                 }
             }
+
+            this.doMethod('_createPage');
 
             if( ! this.getNumOfCols() ) this.setNumberOfColumns( this.getGroup('B')[ 0 ] );
 
