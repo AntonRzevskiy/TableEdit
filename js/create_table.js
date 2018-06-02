@@ -449,7 +449,7 @@ jQuery(document).ready(function($){
         'createDelayedRows': function( td ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
             var context = this,
-                times = Math.ceil( (this.getGroup('B').length - 1) / this.howCreateOnce ),
+                times = Math.ceil( this.getGroup('B').length / this.howCreateOnce ),
                 interation = 0;
             setTimeout(function generateRows() {
                 var save = context.howCreateOnce * interation,
@@ -463,8 +463,12 @@ jQuery(document).ready(function($){
                         'td': td
                     }) );
                 }
-                if( ++interation < times )
+                if( ++interation < times ) {
                     setTimeout(generateRows,0);
+                }
+                else {
+                    context.doAction('createPageAfter');
+                }
             },0);
         },
 
