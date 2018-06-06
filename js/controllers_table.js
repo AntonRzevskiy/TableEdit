@@ -1,4 +1,4 @@
-jQuery(document).ready(function($){
+﻿jQuery(document).ready(function($){
 
     if( !$.TableEdit ) return;
 
@@ -433,6 +433,7 @@ jQuery(document).ready(function($){
                 o = {
                     'condition':    true,
                     'count':        1,
+                    'counter':      0,
                     'scene':        0,
                     'part':         true,
                     'checkedCell':  null,
@@ -448,12 +449,14 @@ jQuery(document).ready(function($){
             $.extend(true, o, options);
             o.pullOutIndex = o.scene;
             while( o.count-- > 0 ) {
+                o.deletedColumn = {};
                 result.push( this.doMethod('_deleteColumn', o) );
+                if( o.getDeleted && typeof o.getDeleted == 'function' ) {
+                    o.getDeleted.call( this, result[ o.counter ] );
+                }
+                o.counter++;
             }
 
-            if( o.getDeleted && typeof o.getDeleted == 'function' ) {
-                o.getDeleted.call( this, result );
-            }
             return result;
         },
 
@@ -472,7 +475,7 @@ jQuery(document).ready(function($){
                 o.group = group;
                 o.data = this.getGroup( o.group );
                 o.deletedColumn[ o.group ] = new Array( o.data.length );
-                if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.data.length > this.maxRowsOutDelay ) {
+                if( o.part && o.group === 'tbody' && this.hasOwnProperty('maxRowsOutDelay') && o.data.length > this.maxRowsOutDelay ) {
                     this.deleteDelayedCols( o );
                 }
                 else {
@@ -492,7 +495,9 @@ jQuery(document).ready(function($){
             if(! this.hasOwnProperty('howCreateOnce')) return;
             var that = this,
                 times = Math.ceil( (o.data.length - 1) / this.howCreateOnce ),
-                interation = 0;
+                interation = 0,
+                deletedColumn = o.deletedColumn,
+                i = o.counter;
             setTimeout(function delCol(){
                 var save = that.howCreateOnce * interation,
                     length = (o.data.length - save) < that.howCreateOnce ? o.data.length - save : that.howCreateOnce;
@@ -500,15 +505,16 @@ jQuery(document).ready(function($){
                     o.tr = that.doMethod('_getFrontRow', {'rowIndex': (row + save), 'group': o.group});
                     o.checkedCell = o.data[ (row + save) ][ o.pullOutIndex ];
                     o.rowIndex = (row + save);
-                    o.deletedColumn[ o.group ][ (row + save) ] = that.doMethod('_deleteCol', o);
+                    deletedColumn[ o.group ][ (row + save) ] = that.doMethod('_deleteCol', o);
                 }
                 if( ++interation < times ) {
                     setTimeout(delCol,0);
                 }
                 else {
+                    o.deletedColumn = $.extend( true, {}, deletedColumn );
                     that.doAction('deleteColumnAfter', o);
                     if( o.getDeleted && typeof o.getDeleted == 'function' ) {
-                        o.getDeleted.call( that, result );
+                        o.getDeleted.call( that, deletedColumn, i );
                     }
                 }
             },0);

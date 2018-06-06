@@ -136,7 +136,7 @@ jQuery(document).ready(function($){
             );
 
             $('body').on(
-                'click._editCell',
+                'click._editCell contextmenu._editCell',
                 this,
                 function(e) {
                     if( e.data.cache && e.data.cache.isEditCell && ! $(e.target).closest('.edit-cell').length ) {
@@ -163,7 +163,7 @@ jQuery(document).ready(function($){
 
         },
         
-        'editingStart': function(e) {
+        'editingStart': function( e, extra ) {
             var $this = $(this);
             var that = e.data;
             if( that.cache && that.cache.editableCell && that.cache.isEditCell && that.cache.editableCell.is( $this ) ) return;
@@ -174,7 +174,8 @@ jQuery(document).ready(function($){
             $( that.table ).trigger('cell:editing:start', {
                 'that': that,
                 'target': $this,
-                'group': group
+                'group': group,
+                'extra': extra,
             });
         },
 
@@ -195,12 +196,18 @@ jQuery(document).ready(function($){
             }
             var that = object.that,
                 params = {
+                    'condition': true,
                     'event': event,
                     '$target': object.target,
                     'group': object.group,
+                    'extra': object.extra,
                     'data': that.getGroup( object.group ),
+                    'rowIndex': rowIndex,
+                    'colIndex': +object.target.attr('data-real-index'),
                     'targetOffset': object.target.offset(),
-                    '$targetContent': $('<textarea/>', {text: object.target.html()}),
+                    'content': function( html ) {
+                        return html;
+                    },
                     '$targetCss': {
                         'height': function() {
                             return object.target.height();
@@ -224,10 +231,14 @@ jQuery(document).ready(function($){
                         'min-height': object.target.outerHeight(true) + 2,
                     }
                 };
+                params.$targetContent = $('<textarea/>', {text: function() {
+                    return params.content( object.target.html(), params );
+                }});
             that.doMethod('_cellEditingStart', params);
         },
 
         '_cellEditingStart': function( params ) {
+            if( params.condition === false ) return;
             params.$target.html( params.$targetContent.css( params.$targetCss ) )
             .addClass('edit-cell')
             .find( params.$targetContent ).focus(function(){
@@ -235,16 +246,22 @@ jQuery(document).ready(function($){
                 $(this).val('').val($thisVal);
             }).focus();
             params.$menuContainer.append( params.$menuContent );
-            params.$menuContent.css( params.$menuCss )
+            params.$menuContent.css( params.$menuCss );
         },
 
         'cellEditingStop': function( event, object ) {
+            var rowIndex = +object.target.closest('tr').index();
+            if( object.target.closest('tr').parent().is('thead') ) {
+                rowIndex -= object.target.closest('tr').parent().find('tr[data-controls]').length;
+            }
             var that = object.that,
                 params = {
+                    'condition': true,
                     'event': event,
                     '$target': object.target,
+                    'rowIndex': rowIndex,
+                    'colIndex': +object.target.attr('data-real-index'),
                     'group': object.group,
-                    'data': that.getGroup( object.group ),
                     'formElement': 'textarea'
                 };
             params.newValue = object.target.find( params.formElement ).val();
@@ -252,11 +269,8 @@ jQuery(document).ready(function($){
         },
 
         '_cellEditingStop': function( params ) {
-            var rowIndex = +params.$target.closest('tr').index();
-            if( params.$target.closest('tr').parent().is('thead') ) {
-                rowIndex -= params.$target.closest('tr').parent().find('tr[data-controls]').length;
-            }
-            this.saveBackCell( rowIndex, +params.$target.attr('data-real-index'), 'val', params.newValue, params.group );
+            if( params.condition === false ) return;
+            this.saveBackCell( params.rowIndex, params.colIndex, 'val', params.newValue, params.group );
             params.$target.html( params.newValue ).removeClass('edit-cell');
             $('body').find( '.edit-cell-content' ).remove();
         },
