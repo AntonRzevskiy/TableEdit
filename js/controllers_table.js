@@ -145,7 +145,7 @@ jQuery(document).ready(function($){
                     }
                 }
                 else {
-                    o.newRow[col] = this.doMethod('_defaultValueNewCell', (o.newRow[ col ] instanceof Object) ? o.newRow[ col ] : {});
+                    o.newRow[col] = this.newCell( o.newRow[ col ], {'group': o.group, 'rowIndex': o.shiftIndex, 'colIndex': col} );
                 }
             }
             o.data.splice( o.shiftIndex, 0, o.newRow );
@@ -159,12 +159,40 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @@ must {} - 
-         * return object
+         * 
+         * @param   object   initial  Input for the new cell.
+         * @param   object   options  Options passed to work with cell.
+         * 
+         * @return  object   New cell.
          */
-        '_defaultValueNewCell': function( params ) {
-            if( ! params.hasOwnProperty('val') ) params.val = '';
-            return params;
+        'newCell': function( initial, options ) {
+
+            var params = {
+                'group': undefined,
+                'rowIndex': undefined,
+                'colIndex': undefined,
+            };
+
+            // ? need copy cell : new obj
+            if( options.copy === undefined || options.copy === true ) {
+                params.cell = ( initial ? $.extend( true, {}, initial ) : {} );
+            }
+            else {
+                params.cell = ( initial ? initial : {} );
+            }
+
+            $.extend( true, params, options || {} );
+
+            return this.doMethod('_newCell', params);
+        },
+
+        /**
+         *  
+         * @return  object  New cell
+         */
+        '_newCell': function( params ) {
+            if( ! params.cell.hasOwnProperty('val') ) params.cell.val = '';
+            return params.cell;
         },
 
         /**
@@ -398,7 +426,7 @@ jQuery(document).ready(function($){
                 }
             }
             else {
-                o.newCol[ o.group ][ o.rowIndex ] = this.doMethod('_defaultValueNewCell', (o.newCol[ o.group ][ o.rowIndex ] instanceof Object) ? o.newCol[ o.group ][ o.rowIndex ] : {});
+                o.newCol[ o.group ][ o.rowIndex ] = this.newCell( o.newCol[ o.group ][ o.rowIndex ], {'group': o.group, 'rowIndex': o.rowIndex, 'colIndex': o.scene} );
             }
             o.data[ o.rowIndex ].splice( o.scene, 0, o.newCol[ o.group ][o.rowIndex] );
             var cell = o.data[ o.rowIndex ][ o.scene ];
@@ -684,9 +712,10 @@ jQuery(document).ready(function($){
                     for( var row = 0; row < countRow; row++ ) {
                         for( var col = 0; col < countCol; col++ ) {
                             params.adding.push({
-                                rowIndex: (params.rowIndex + row),
-                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
-                                cell: params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + row),
+                                'colIndex': (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
+                                'cell': params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
                             });
                         }
                     }
@@ -697,9 +726,10 @@ jQuery(document).ready(function($){
                     for( var row = 0; row < countRow; row++ ) {
                         for( var col = 0; col < countCol; col++ ) {
                             params.adding.push({
-                                rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
-                                colIndex: (params.colIndex + col),
-                                cell: params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
+                                'colIndex': (params.colIndex + col),
+                                'cell': params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
                             });
                         }
                     }
@@ -711,15 +741,17 @@ jQuery(document).ready(function($){
                         for( var col = 0; col < countCol; col++ ) {
                             var checkCell = params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) + col) ];
                             params.remove.push({
-                                rowIndex: (params.rowIndex + row),
-                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
-                                cell: checkCell,
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + row),
+                                'colIndex': (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                'cell': checkCell,
                             });
                             if( params.isStretched(checkCell) ) {
                                 params.stretchError.colspan.push({
-                                    rowIndex: (params.rowIndex + row),
-                                    colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
-                                    cell: checkCell,
+                                    'group': params.group,
+                                    'rowIndex': (params.rowIndex + row),
+                                    'colIndex': (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                    'cell': checkCell,
                                 });
                             }
                         }
@@ -732,15 +764,17 @@ jQuery(document).ready(function($){
                         for( var col = 0; col < countCol; col++ ) {
                             var checkCell = params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ] ? params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ][ (params.colIndex + col) ] : undefined;
                             params.remove.push({
-                                rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
-                                colIndex: (params.colIndex + col),
-                                cell: checkCell,
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                'colIndex': (params.colIndex + col),
+                                'cell': checkCell,
                             });
                             if( params.isStretched(checkCell) ) {
                                 params.stretchError.rowspan.push({
-                                    rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
-                                    colIndex: (params.colIndex + col),
-                                    cell: checkCell,
+                                    'group': params.group,
+                                    'rowIndex': (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                    'colIndex': (params.colIndex + col),
+                                    'cell': checkCell,
                                 });
                             }
                         }
@@ -766,21 +800,21 @@ jQuery(document).ready(function($){
                     var el = params.adding[i];
                     var col = el.colIndex + 1;
                     delete el.cell.mx;
-                    this.doMethod('_defaultValueNewCell', el.cell);
+                    this.newCell( el.cell, {'group': el.group, 'rowIndex': el.rowIndex, 'colIndex': el.colIndex, 'copy': false} );
                     var $tr = $( this.doMethod('_getFrontRow', {'rowIndex': el.rowIndex, 'group': params.group}) );
                     do {
                         if( params.data[ el.rowIndex ][ col ] === undefined ) {
                             if( this.controlOrientation === 'left' ) {
-                                $tr.append( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, 'td' ) );
+                                $tr.append( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, (this.provideGroup( params.group ) === 'tbody' ? 'td' : 'th') ) );
                                 break;
                             }
-                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, 'td' ) );
+                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, (this.provideGroup( params.group ) === 'tbody' ? 'td' : 'th') ) );
                             break;
                         }
                         if( params.data[ el.rowIndex ][ col ].mx == 1 ) {
                             
                             $( this.doMethod('_getFrontCell', {'row': $tr, 'col': col, 'group': params.group}) ).before(
-                                this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, 'td' )
+                                this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, (this.provideGroup( params.group ) === 'tbody' ? 'td' : 'th') )
                             );
                             break;
                         }
