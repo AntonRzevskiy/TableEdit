@@ -75,3 +75,24 @@ var Table = [
 
 Table.tableEdid();
 ```
+
+#### From Object
+```javascript
+var Table = {
+    "thead": [
+        [ {"value":"head 1"}, {"value":"head 2"}, {"value":"head 3"}, {"value":"head 4"}, {"value":"head 5"} ]
+    ],
+    "tbody": [
+        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
+        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
+        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
+        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
+        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ]
+    ],
+    "tfoot": [
+        [ {"value":"foot 1"}, {"value":"foot 2"}, {"value":"foot 3"}, {"value":"foot 4"}, {"value":"foot 5"} ]
+    ]
+};
+
+Table.tableEdid();
+```
