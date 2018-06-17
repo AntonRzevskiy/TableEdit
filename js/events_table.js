@@ -1,142 +1,134 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.plugin = {
+    $.TableEdit.plugin = {
 
-        _eventsBind: function() {
+        '_eventsBind': function() {
+            var $table = $( this.table );
+            var $tbody = $( this.tbody );
+            var $tfoot = $( this.tfoot );
+            var $thead = $( this.thead );
 
-            if( ! this.uniqueID ) this.uniqueID = this._numberOfColumns + this.dataTbodyArray.length + Math.floor(Math.random() * 900 + 100);
+            if( ! this.uniqueID ) this.uniqueID = this.getNumOfCols() + this.getGroup('B').length + Math.floor(Math.random() * 900 + 100);
 
-            this.$thead.on(
+            $thead.on(
                 'click._addRow',
                 '.addrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index() - $(this).closest('tr').parent().find('tr[data-controls]').length;
                     e.data.addNewRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$thead,
-                        'group': 'dataTheadArray', // coz event for thead
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'H', // coz event for thead
                         'td': 'th'
                     });
                 }
             );
 
-            this.$tbody.on(
+            $tbody.on(
                 'click._addRow',
                 '.addrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.addNewRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tbody,
-                        'group': 'dataTbodyArray' // coz event for tbody
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'B' // coz event for tbody
                     });
                 }
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._addRow',
                 '.addrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.addNewRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tfoot,
-                        'group': 'dataTfootArray', // coz event for tfoot
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'F', // coz event for tfoot
                         'td': 'th'
                     });
                 }
             );
 
-            this.$thead.on(
+            $thead.on(
                 'click._delRow',
                 '.delrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index() - $(this).closest('tr').parent().find('tr[data-controls]').length;
                     e.data.deleteSomeRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$thead,
-                        'group': 'dataTheadArray' // coz event for thead
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'H' // coz event for thead
                     });
                 }
             );
 
-            this.$tbody.on(
+            $tbody.on(
                 'click._delRow',
                 '.delrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.deleteSomeRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tbody,
-                        'group': 'dataTbodyArray' // coz event for tbody
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'B' // coz event for tbody
                     });
                 }
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._delRow',
                 '.delrow',
                 this,
                 function(e) {
-                    var thisRowIndex = $(this).closest('tr').index();
                     e.data.deleteSomeRows({
-                        'scene': thisRowIndex,
-                        '$group': e.data.$tfoot,
-                        'group': 'dataTfootArray' // coz event for tfoot
+                        'scene': $(this).closest('tr').index(),
+                        'group': 'F' // coz event for tfoot
                     });
                 }
             );
 
-            this.$thead.on(
+            $thead.on(
                 'click._addCol',
                 '.addCol',
                 this,
                 this.addCol
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._addCol',
                 '.addCol',
                 this,
                 this.addCol
             );
 
-            this.$thead.on(
+            $thead.on(
                 'click._delCol',
                 '.delCol',
                 this,
                 this.delCol
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'click._delCol',
                 '.delCol',
                 this,
                 this.delCol
             );
 
-            this.$thead.on(
+            $thead.on(
                 'dblclick._editCell',
                 'td[data-real-index],th[data-real-index]',
                 this,
                 this.editingStart
             );
 
-            this.$tbody.on(
+            $tbody.on(
                 'dblclick._editCell',
                 'td[data-real-index],th[data-real-index]',
                 this,
                 this.editingStart
             );
 
-            this.$tfoot.on(
+            $tfoot.on(
                 'dblclick._editCell',
                 'td[data-real-index],th[data-real-index]',
                 this,
@@ -144,92 +136,78 @@ jQuery(document).ready(function($){
             );
 
             $('body').on(
-                'click._editCell',
+                'click._editCell contextmenu._editCell',
                 this,
                 function(e) {
                     if( e.data.cache && e.data.cache.isEditCell && ! $(e.target).closest('.edit-cell').length ) {
-                        var group;
-                        switch( e.data.cache.editableCell.parent().parent().prop('nodeName') ) {
-                            case 'THEAD':
-                                group = 'dataTheadArray';
-                                    break;
-                            case 'TBODY':
-                                group = 'dataTbodyArray';
-                                    break;
-                            case 'TFOOT':
-                                group = 'dataTfootArray';
-                                    break;
-                        }
+                        var group = e.data.cache.editableCell.parent().parent().prop('nodeName').toLowerCase();
                         e.data.cache.isEditCell = false;
-                        e.data.$table.trigger('cell:editing:stop', {
-                            $that: e.data,
-                            target: e.data.cache.editableCell,
-                            group: group
+                        $( e.data.table ).trigger('cell:editing:stop', {
+                            'that': e.data,
+                            'target': e.data.cache.editableCell,
+                            'group': group
                         });
                     }
                 }
             );
 
-            this.$table.on(
+            $table.on(
                 'cell:editing:start',
                 this.cellEditingStart
             );
 
-            this.$table.on(
+            $table.on(
                 'cell:editing:stop',
                 this.cellEditingStop
             );
 
         },
         
-        editingStart: function(e) {
+        'editingStart': function( e, extra ) {
             var $this = $(this);
-            var $that = e.data;
-            var group;
-            if( $that.cache && $that.cache.editableCell && $that.cache.isEditCell && $that.cache.editableCell.is( $this ) ) return;
-            if(! $that.cache ) $that.cache = {};
-            $that.cache.editableCell = $this;
-            $that.cache.isEditCell = true;
-            switch( e.delegateTarget.nodeName ) {
-                case 'THEAD':
-                    group = 'dataTheadArray';
-                        break;
-                case 'TBODY':
-                    group = 'dataTbodyArray';
-                        break;
-                case 'TFOOT':
-                    group = 'dataTfootArray';
-                        break;
-            }
-            $that.$table.trigger('cell:editing:start', {
-                '$that': $that,
+            var that = e.data;
+            if( that.cache && that.cache.editableCell && that.cache.isEditCell && that.cache.editableCell.is( $this ) ) return;
+            if(! that.cache ) that.cache = {};
+            that.cache.editableCell = $this;
+            that.cache.isEditCell = true;
+            var group = e.delegateTarget.nodeName.toLowerCase();
+            $( that.table ).trigger('cell:editing:start', {
+                'that': that,
                 'target': $this,
-                'group': group
+                'group': group,
+                'extra': extra,
             });
         },
 
-        addCol: function(e) {
+        'addCol': function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data.addNewCols({scene:thisColIndex});
+            e.data.addNewCols({'scene':thisColIndex});
         },
 
-        delCol: function(e) {
+        'delCol': function(e) {
             var thisColIndex = $(this).closest('td').index();
-            e.data.deleteSomeCols({scene:thisColIndex});
+            e.data.deleteSomeCols({'scene':thisColIndex});
         },
 
-        cellEditingStart: function( event, object ) {
+        'cellEditingStart': function( event, object ) {
             var rowIndex = +object.target.closest('tr').index();
             if( object.target.closest('tr').parent().is('thead') ) {
                 rowIndex -= object.target.closest('tr').parent().find('tr[data-controls]').length;
             }
-            var $that = object.$that,
+            var that = object.that,
                 params = {
+                    'condition': true,
                     'event': event,
                     '$target': object.target,
-                    'group': $that[ object.group ],
+                    'group': object.group,
+                    'extra': object.extra,
+                    'data': that.getGroup( object.group ),
+                    'rowIndex': rowIndex,
+                    'colIndex': +object.target.attr('data-real-index'),
                     'targetOffset': object.target.offset(),
-                    '$targetContent': $('<textarea/>', {text: object.target.html()}),
+                    'content': function( html ) {
+                        return html;
+                    },
                     '$targetCss': {
                         'height': function() {
                             return object.target.height();
@@ -237,8 +215,8 @@ jQuery(document).ready(function($){
                     },
                     '$menuContainer': $('body'),
                     '$menuContent': $('' +
-                        '<div class="edit-cell edit-cell-content" data-group="'+ object.group +'" data-row="'+ rowIndex +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ $that.uniqueID +'">' +
-                            // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEdidModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
+                        '<div class="edit-cell edit-cell-content" data-group="'+ object.group +'" data-row="'+ rowIndex +'" data-col="'+ object.target.attr('data-real-index') +'" data-uniq="'+ that.uniqueID +'">' +
+                            // '<button type="button" class="btn btn-default btn-xs edit-cell" data-toggle="modal" data-target="#TableEditModal"><span class="glyphicon glyphicon-pencil"></span></button>' +
                         '</div>' +
                     ''),
                     '$menuCss': {
@@ -246,51 +224,60 @@ jQuery(document).ready(function($){
                             return params.targetOffset.top - 1;
                         },
                         'left': function() {
-                            if( $that.controlOrientation == 'right' )
+                            if( that.controlOrientation == 'right' )
                                 return (params.targetOffset.left + object.target.outerWidth(true) + 1);
                             return (params.targetOffset.left - $(this).outerWidth(true) - 1);
                         },
                         'min-height': object.target.outerHeight(true) + 2,
                     }
                 };
-            $that.doMethod('_cellEditingStart', params);
+                params.$targetContent = $('<textarea/>', {text: function() {
+                    return params.content( object.target.html(), params );
+                }});
+            that.doMethod('_cellEditingStart', params);
         },
 
-        _cellEditingStart: function( params ) {
+        '_cellEditingStart': function( params ) {
+            if( params.condition === false ) return;
             params.$target.html( params.$targetContent.css( params.$targetCss ) )
             .addClass('edit-cell')
             .find( params.$targetContent ).focus(function(){
                 var $thisVal = $(this).val();
                 $(this).val('').val($thisVal);
             }).focus();
-            params.$menuContainer.append( params.$menuContent.css( params.$menuCss ) );
+            params.$menuContainer.append( params.$menuContent );
+            params.$menuContent.css( params.$menuCss );
         },
 
-        cellEditingStop: function( event, object ) {
-            var $that = object.$that,
+        'cellEditingStop': function( event, object ) {
+            var rowIndex = +object.target.closest('tr').index();
+            if( object.target.closest('tr').parent().is('thead') ) {
+                rowIndex -= object.target.closest('tr').parent().find('tr[data-controls]').length;
+            }
+            var that = object.that,
                 params = {
+                    'condition': true,
                     'event': event,
                     '$target': object.target,
-                    'group': $that[object.group],
+                    'rowIndex': rowIndex,
+                    'colIndex': +object.target.attr('data-real-index'),
+                    'group': object.group,
                     'formElement': 'textarea'
                 };
             params.newValue = object.target.find( params.formElement ).val();
-            $that.doMethod('_cellEditingStop', params);
+            that.doMethod('_cellEditingStop', params);
         },
 
-        _cellEditingStop: function( params ) {
-            var rowIndex = +params.$target.closest('tr').index();
-            if( params.$target.closest('tr').parent().is('thead') ) {
-                rowIndex -= params.$target.closest('tr').parent().find('tr[data-controls]').length;
-            }
-            this.saveBackCell( rowIndex, +params.$target.attr('data-real-index'), 'value', params.newValue, params.group );
+        '_cellEditingStop': function( params ) {
+            if( params.condition === false ) return;
+            this.saveBackCell( params.rowIndex, params.colIndex, 'val', params.newValue, params.group );
             params.$target.html( params.newValue ).removeClass('edit-cell');
             $('body').find( '.edit-cell-content' ).remove();
         },
 
     };
 
-    $.TableEdid.init = function() {
+    $.TableEdit.init = function() {
         this.doMethod('_eventsBind');
     };
 

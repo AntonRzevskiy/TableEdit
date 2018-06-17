@@ -1,162 +1,361 @@
 jQuery(document).ready(function($){
 
-    if( !$.TableEdid ) return;
+    if( !$.TableEdit ) return;
 
-    $.TableEdid.plugin = {
+    $.TableEdit.plugin = {
 
-        addNewRows: function( options ) {
+        /**
+         * 
+         * @@ this method use @toLowerCase
+         * return an actual name of group like Element.nodeName
+         */
+        'provideGroup': function( group ) {
+            switch( group.toLowerCase() ) {
+                case 'tbodyarray':
+                // short aliases
+                case 'tbody': case 'b':
+                 return 'tbody';
+                  break;
+
+                case 'theadarray':
+                // short aliases
+                case 'thead': case 'h':
+                 return 'thead';
+                  break;
+
+                case 'tfootarray':
+                // short aliases
+                case 'tfoot': case 'f':
+                 return 'tfoot';
+                  break;
+
+                default:
+                 console.error('failed to provide ' + group);
+            }
+        },
+
+        /**
+         * 
+         * @@ this method use @toLowerCase
+         * return an actual link to HTML Element
+         */
+        'getNodeGroup': function( group ) {
+            switch( group.toLowerCase() ) {
+                case 'tbodyarray':
+                // short aliases
+                case 'tbody': case 'b':
+                 return this.tbody;
+                  break;
+
+                case 'theadarray':
+                // short aliases
+                case 'thead': case 'h':
+                 return this.thead;
+                  break;
+
+                case 'tfootarray':
+                // short aliases
+                case 'tfoot': case 'f':
+                 return this.tfoot;
+                  break;
+
+                default:
+                 console.error('failed to define ' + group);
+            }
+        },
+
+        /**
+         * 
+         * @group - must be actual link to data // use method @getGroup before call
+         * return object contain @rowIndex, @colIndex, @cell
+         */
+        'getParent': function( group, rowIndex, colIndex ) {
+            var checkedCell;
+            while( true ) {
+                checkedCell = group[ +rowIndex ][ +colIndex ];
+                if( checkedCell.mx == 1 ) {
+                    return {
+                        // absolute link on rowIndex in matrix
+                        'rowIndex': rowIndex,
+
+                        // same on colIndex
+                        'colIndex': colIndex,
+
+                        // back-end cell
+                        'cell': checkedCell,
+                    }
+                    break; // just
+                }
+                if( checkedCell.mx == 4 ) {
+                    rowIndex--;
+                    colIndex--;
+                    continue;
+                }
+                if( checkedCell.mx == 2 ) {
+                    colIndex--;
+                    continue;
+                }
+                if( checkedCell.mx == 3 ) {
+                    rowIndex--;
+                    continue;
+                }
+            }
+        },
+
+        'addNewRows': function( options ) {
             var o = {
                     'condition': true,
                     'count':     1,
-                    'direction': 'top',
-                    'scene':     0,
+                    'direction': 'bottom',
+                    'scene':     0,         // front index
+                    'shiftIndex':0,         // data index    
                     'group':     '',
-                    '$group':    null,
-                    'newRow':    null,
+                    'data':      null,
+                    'newRow':    undefined, // array must (one row only)
                     'td':        '',
                 };
             $.extend(true, o, options);
-            o.shiftIndex = o.direction === 'top' ? o.scene : o.scene + 1;
-            o.group = this[ o.group ];
-            o.checkedRow = o.group[ o.shiftIndex ];
+            if( o.direction === 'bottom' ) o.scene += 1;
+            o.shiftIndex = o.scene;
+
+            if( this.getNodeGroup( o.group ).nodeName.toLowerCase() == 'thead' )
+                o.shiftIndex -= this.thead.querySelectorAll('tr[data-controls]').length;
+
+            o.data = this.getGroup( o.group );
+            o.checkedRow = o.data[ o.shiftIndex ];
             while( o.count-- > 0 ) {
-                o.newRow = new Array( this._numberOfColumns );
+                if( o.newRow === undefined ) o.newRow = new Array( this.getNumOfCols() );
                 this.doMethod('_addNewRow', o);
             }
         },
 
-        _addNewRow: function( o ) {
+        '_addNewRow': function( o ) {
             if( o.condition === false ) return;
             for( var col = 0; col < o.newRow.length; col++ ) {
-                if( o.checkedRow !== undefined && o.checkedRow[col].matrix[1] == 1 ) {
-                    o.newRow[col] = {matrix: o.checkedRow[col].matrix};
-                    if( o.checkedRow[col].matrix[0] == 0 ) {
+                if( o.checkedRow !== undefined && ( o.checkedRow[col].mx == 3 || o.checkedRow[col].mx == 4 ) ) {
+                    o.newRow[col] = {'mx': o.checkedRow[col].mx};
+                    if( o.checkedRow[col].mx == 3 ) {
                         this.doMethod('_correctCell', {
                             'rowIndex': (o.shiftIndex - 1),
                             'colIndex': col,
                             'correct': 1,
                             'property': 'rowspan',
-                            'group': o.group,
-                            '$group': o.$group
+                            'group': o.group
                         });
                     }
                 }
                 else {
-                    o.newRow[col] = this.doMethod('_defaultValueNewCell', (o.newRow[ col ] instanceof Object) ? o.newRow[ col ] : {});
+                    o.newRow[col] = this.newCell( o.newRow[ col ], {'group': o.group, 'rowIndex': o.shiftIndex, 'colIndex': col} );
                 }
             }
-            o.group.splice( o.shiftIndex, 0, o.newRow );
-            var $add = this.doMethod('_getFrontRow', {'rowIndex': o.shiftIndex, '$tr': null, '$group': o.$group});
-            if( $add.length ) {
-                $add.before( this.doMethod('_createRow', {'$tr':$('<tr/>'),'row':o.group[o.shiftIndex],'index':o.shiftIndex,'group':o.group,'td':o.td}) );
+            o.data.splice( o.shiftIndex, 0, o.newRow );
+            var add = this.doMethod('_getFrontRow', {'rowIndex': o.shiftIndex, 'group': o.group});
+            if( add !== undefined ) {
+                $( add ).before( this.doMethod('_createRow', {'tr':this.createEL('tr'),'row':o.data[o.shiftIndex],'index':o.shiftIndex,'group':o.data,'td':o.td}) );
             }
             else {
-                o.$group.append( this.doMethod('_createRow', {'$tr':$('<tr/>'),'row':o.group[o.shiftIndex],'index':o.shiftIndex,'group':o.group,'td':o.td}) );
+                this.getNodeGroup( o.group ).appendChild( this.doMethod('_createRow', {'tr':this.createEL('tr'),'row':o.data[o.shiftIndex],'index':o.shiftIndex,'group':o.data,'td':o.td}) );
             }
         },
 
-        _defaultValueNewCell: function( params ) {
-            if( ! params.hasOwnProperty('value') ) params.value = '';
-            return params;
+        /**
+         * 
+         * @param   object   initial  Input for the new cell.
+         * @param   object   options  Options passed to work with cell.
+         * 
+         * @return  object   New cell.
+         */
+        'newCell': function( initial, options ) {
+
+            var params = {
+                'group': undefined,
+                'rowIndex': undefined,
+                'colIndex': undefined,
+            };
+
+            // ? need copy cell : new obj
+            if( options.copy === undefined || options.copy === true ) {
+                params.cell = ( initial ? $.extend( true, {}, initial ) : {} );
+            }
+            else {
+                params.cell = ( initial ? initial : {} );
+            }
+
+            $.extend( true, params, options || {} );
+
+            return this.doMethod('_newCell', params);
         },
 
-        _correctCell: function( params ) {
-            if( params.property === 'rowspan' ) {
-                do {
-                    if( params.group[ params.rowIndex ][ params.colIndex ].matrix[1] == 0 ) {
-                        params.group[ params.rowIndex ][ params.colIndex ].settings.rowspan += params.correct;
-                        var $wanted = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group});
-                        $wanted.attr('rowspan', +$wanted.attr('rowspan') + params.correct);
-                        break;
+        /**
+         *  
+         * @return  object  New cell
+         */
+        '_newCell': function( params ) {
+            if( ! params.cell.hasOwnProperty('val') ) params.cell.val = '';
+            return params.cell;
+        },
+
+        /**
+         * 
+         * @group
+         * @rowIndex
+         * @colIndex
+         * @correct
+         * @property
+         * 
+         */
+        '_correctCell': function( params ) {
+            var parent = this.getParent( this.getGroup( params.group ), params.rowIndex, params.colIndex );
+            var node = this.doMethod('_getFrontCell', {'row': parent.rowIndex, 'col': parent.colIndex, 'group': params.group});
+
+            parent.cell.attr[ params.property ] += params.correct;
+            this.attr( node,
+                params.property,
+                (+this.attr( node, params.property ) + params.correct)
+            );
+        },
+
+        /**
+         * This method shift cell & reduce col or rowspan
+         * 
+         * @group {string}
+         * @rowIndex {number}
+         * @colIndex {number}
+         * @direction {string}
+         * 
+         */
+        'shiftCell': function( group, rowIndex, colIndex, direction, count ) {
+            return this.doMethod('_shiftCell', {
+
+                'group': group,
+                'rowIndex': +rowIndex,
+                'colIndex': +colIndex,
+                'direction': direction,
+
+            });
+        },
+
+        '_shiftCell': function( params ) {
+
+            var data = this.getGroup( params.group ),
+
+                movable, wanted,
+                rowIndex, colIndex;
+
+            if( params.direction === 'rowspan' ) {
+                data[ params.rowIndex ][ params.colIndex ].attr.rowspan -= 1;
+                data[ params.rowIndex + 1 ][ params.colIndex ] = $.extend( true, {}, data[ params.rowIndex ][ params.colIndex ] );
+                movable = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group});
+                wanted = this.doMethod('_getFrontCell', {'row': (params.rowIndex + 1), 'col': (params.colIndex + (+this.attr( movable, 'colspan' ) || 1)), 'group': params.group});
+                if( wanted == undefined ) {
+                    if( this.controlOrientation == 'right' ) {
+                        $( this.doMethod('_getFrontRow', {'rowIndex': (params.rowIndex + 1), 'group': params.group}) )
+                            .find('td:not([data-real-index])')
+                            .before( this.attr( movable, 'rowspan', (+this.attr( movable, 'rowspan' ) - 1) ) );
                     }
-                } while( params.rowIndex-- >= 0 );
-            }
-            else if( params.property === 'colspan' ) {
-                do {
-                    if( params.group[ params.rowIndex ][ params.colIndex ].matrix[0] == 0 ) {
-                        params.group[ params.rowIndex ][ params.colIndex ].settings.colspan += params.correct;
-                        var $wanted = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group});
-                        $wanted.attr('colspan', +$wanted.attr('colspan') + params.correct);
-                        break;
+                    else {
+                        this.doMethod('_getFrontRow', {'rowIndex': (params.rowIndex + 1), 'group': params.group}).
+                            appendChild( this.attr( movable, 'rowspan', (+this.attr( movable, 'rowspan' ) - 1) ) );
                     }
-                } while( params.colIndex-- >= 0 );
+                }
+                else {
+                    $( wanted ).before( this.attr( movable, 'rowspan', (+this.attr( movable, 'rowspan' ) - 1) ) );
+                }
+
+                colIndex = params.colIndex;
+                while( data[ params.rowIndex ][ ++colIndex ] && data[ params.rowIndex ][ colIndex ].mx == 2 ) {
+
+                    data[ params.rowIndex + 1 ][ colIndex ].mx = 2;
+
+                }
             }
+
+            if( params.direction === 'colspan' ) {
+                data[ params.rowIndex ][ params.colIndex ].attr.colspan -= 1;
+                data[ params.rowIndex ][ params.colIndex + 1 ] = $.extend( true, {}, data[ params.rowIndex ][ params.colIndex ] );
+                wanted = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group});
+                this.attr( wanted, 'colspan', (+this.attr( wanted, 'colspan') - 1) );
+
+                rowIndex = params.rowIndex;
+                while( data[ ++rowIndex ] && data[ rowIndex ][ params.colIndex ] && data[ rowIndex ][ params.colIndex ].mx == 3 ) {
+
+                    data[ rowIndex ][ params.colIndex + 1 ].mx = 3;
+
+                }
+            }
+
         },
 
-        deleteSomeRows: function( options ) {
-            var o = {
-                    'condition': true,
-                    'count': 1,
-                    'direction': 'bottom',
-                    'scene': 0,
-                    'group': '',
-                    '$group': this.$tbody,
+        'deleteSomeRows': function( options ) {
+            var result = [], // will contain deleted rows
+                o = {
+                    'condition':    true,
+                    'count':        1,
+                    'direction':    'bottom',
+                    'scene':        0,
+                    'group':        '',
+                    'data':         null,
+                    'pullOutIndex': 0,
+                    'pullOutRow':   null,
+                    'nextRow':      null,
+                    'deleted':      null,
                 };
             $.extend(true, o, options);
             o.pullOutIndex = o.scene;
-            o.pullOutRow = null;
-            o.nextRow = null;
-            o.group = this[ o.group ];
-            while( o.count-- > 0 && o.group[ o.pullOutIndex ] !== undefined ) {
-                o.pullOutRow = o.group[ o.pullOutIndex ];
-                o.nextRow = o.group[ o.pullOutIndex + 1 ];
-                this.doMethod('_deleteRow', o);
+
+            if( this.getNodeGroup( o.group ).nodeName.toLowerCase() == 'thead' )
+                o.pullOutIndex -= $( this.thead ).find('tr[data-controls]').length;
+
+            o.data = this.getGroup( o.group );
+            while( o.count-- > 0 && o.data[ o.pullOutIndex ] !== undefined ) {
+                o.pullOutRow = o.data[ o.pullOutIndex ];
+                o.nextRow = o.data[ o.pullOutIndex + 1 ];
+                result.push( this.doMethod('_deleteRow', o) );
             }
+
+            return result;
         },
 
-        _deleteRow: function( o ) {
+        '_deleteRow': function( o ) {
             if( o.condition === false ) return;
             for( var col = 0; col < o.pullOutRow.length; col++ ) {
-                if( o.pullOutRow[ col ].hasOwnProperty('settings') && o.pullOutRow[ col ].settings.hasOwnProperty('rowspan') && o.pullOutRow[ col ].settings.rowspan > 1 ) {
-                    o.pullOutRow[ col ].settings.rowspan -= 1;
-                    o.nextRow[col] = o.pullOutRow[ col ];
-                    var $movable = this.doMethod('_getFrontCell', {'row': o.pullOutIndex, 'col': col, '$td': null, '$group': o.$group});
-                    var $wanted = this.doMethod('_getFrontCell', {'row': (o.pullOutIndex + 1), 'col': (col + (+$movable.attr('colspan') || 1)), '$td': null, '$group': o.$group});
-                    if( ! $wanted.length ) {
-                        if( this.controlOrientation == 'right' ) {
-                            this.doMethod('_getFrontRow', {'rowIndex': (o.pullOutIndex + 1), '$tr': null, '$group': o.$group}).find('td:not([data-real-index])').
-                                before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
-                        }
-                        else {
-                            this.doMethod('_getFrontRow', {'rowIndex': (o.pullOutIndex + 1), '$tr': null, '$group': o.$group}).
-                                append( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
-                        }
-                    }
-                    else {
-                        $wanted.before( $movable.attr('rowspan', +$movable.attr('rowspan') - 1) );
-                    }
+                if( o.pullOutRow[ col ].hasOwnProperty('attr') && o.pullOutRow[ col ].attr.hasOwnProperty('rowspan') && o.pullOutRow[ col ].attr.rowspan > 1 ) {
+
+                    this.shiftCell( o.group, o.pullOutIndex, col, 'rowspan' );
                 }
-                if( o.pullOutRow[ col ].matrix[0] == 1 && o.pullOutRow[ col ].matrix[1] == 0 ) {
-                    if( o.nextRow && o.nextRow[col].matrix[0] == 1 ) o.nextRow[col] = o.pullOutRow[ col ];
-                }
-                if( o.pullOutRow[col].matrix[0] == 0 && o.pullOutRow[col].matrix[1] == 1 ) {
+                if( o.pullOutRow[col].mx == 3 ) {
                     this.doMethod('_correctCell', {
                         'rowIndex': o.pullOutIndex,
                         'colIndex': col,
                         'correct': -1,
                         'property': 'rowspan',
-                        'group': o.group,
-                        '$group': o.$group
+                        'group': o.group
                     });
                 }
             }
-            o.group.splice( o.pullOutIndex, 1 );
-            this.doMethod('_getFrontRow', {'rowIndex': o.pullOutIndex, '$tr': null, '$group': o.$group}).remove();
+            o.deleted = o.data.splice( o.pullOutIndex, 1 ) /* get first coz count equal one */[0];
+            $( this.doMethod('_getFrontRow', {'rowIndex': o.pullOutIndex, 'group': o.group}) ).remove();
             if( o.count && o.direction === 'top' ) o.pullOutIndex--;
+            return o.deleted;
         },
 
-        addNewCols: function( options ) {
+        'addNewCols': function( options ) {
             var o = {
                     'condition': true,
                     'count': 1,
                     'scene': 0,
                     'part': true,
-                    'newCol': null,
+                    'newCol': {
+                        'thead': undefined,
+                        'tfoot': undefined,
+                        'tbody': undefined
+                    },
                     'checkedCell': null,
-                    'rowIndex': null,
-                    'group': null,
-                    '$group': null,
-                    'td': '',
+                    'rowIndex': 0,
+                    'group': '',
+                    'data': null,
+                    'tr': null,
+                    'td': ''
                 };
             $.extend(true, o, options);
             while( o.count-- > 0 ) {
@@ -164,223 +363,236 @@ jQuery(document).ready(function($){
             }
         },
 
-        _addNewColumn: function( o ) {
+        '_addNewColumn': function( o ) {
             if( o.condition === false ) return;
             this._numberOfColumns += 1;
-            var $method = this.controlOrientation == 'left' ? 'after' : 'before';
-            this.$thead.find('tr[data-controls]').find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.topControlsElements ) );
-            this.$tfoot.find('tr[data-controls]').find('td').eq( o.scene )[ $method ]( $('<td/>').html( this.bottomControlsElements ) );
-            var row, length;
-
-            o.newCol = new Array( this.dataTheadArray.length );
-            o.group = this.dataTheadArray;
-            o.$group = this.$thead;
-            o.td = 'th';
-            for( row = 0, length = o.newCol.length; row < length; row++ ) {
-                o.checkedCell = o.group[ row ][ o.scene ];
-                o.rowIndex = row;
-                this.doMethod('_addNewCol', o);
-            }
-
-            o.newCol = new Array( this.dataTfootArray.length );
-            o.group = this.dataTfootArray;
-            o.$group = this.$tfoot;
-            o.td = 'th';
-            for( row = 0, length = o.newCol.length; row < length; row++ ) {
-                o.checkedCell = o.group[ row ][ o.scene ];
-                o.rowIndex = row;
-                this.doMethod('_addNewCol', o);
-            }
-
-            o.newCol = new Array( this.dataTbodyArray.length );
-            o.group = this.dataTbodyArray;
-            o.$group = this.$tbody;
-            o.td = 'td';
-            if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.newCol.length > this.maxRowsOutDelay ) {
-                this.addNewDelayedCols( o );
-            }
-            else {
-                for( row = 0, length = o.newCol.length; row < length; row++ ) {
-                    o.checkedCell = o.group[ row ][ o.scene ];
-                    o.rowIndex = row;
-                    this.doMethod('_addNewCol', o);
+            var method = this.controlOrientation == 'left' ? 'after' : 'before';
+            $( this.thead ).find('tr[data-controls]').find('td').eq( o.scene )[ method ]( this.html( this.createEL('td'), this.topControlsElements ) );
+            $( this.tfoot ).find('tr[data-controls]').find('td').eq( o.scene )[ method ]( this.html( this.createEL('td'), this.bottomControlsElements ) );
+            var row, length, groups = {
+                'thead': 'th',
+                'tfoot': 'th',
+                'tbody': 'td'
+            };
+            for( var group in groups ) {
+                o.group = group;
+                o.data = this.getGroup( o.group );
+                if( o.newCol[ o.group ] === undefined ) o.newCol[ o.group ] = new Array( o.data.length );
+                o.td = groups[ o.group ];
+                if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.newCol.length > this.maxRowsOutDelay ) {
+                    this.addNewDelayedCols( o );
+                }
+                else {
+                    for( row = 0, length = o.newCol[ o.group ].length; row < length; row++ ) {
+                        o.checkedCell = o.data[ row ][ o.scene ];
+                        o.rowIndex = row;
+                        o.tr = this.doMethod('_getFrontRow', {'rowIndex': o.rowIndex, 'group': o.group});
+                        this.doMethod('_addNewCol', o);
+                    }
                 }
             }
         },
 
-        addNewDelayedCols: function( o ) {
+        'addNewDelayedCols': function( o ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
-            var $that = this,
-                times = Math.ceil( (o.newCol.length - 1) / this.howCreateOnce ),
+            var that = this,
+                times = Math.ceil( o.newCol[ o.group ].length / this.howCreateOnce ),
                 interation = 0;
             setTimeout(function generateCol(){
-                var save = $that.howCreateOnce * interation,
-                    length = (o.newCol.length - save) < $that.howCreateOnce ? o.newCol.length - save : $that.howCreateOnce;
+                var save = that.howCreateOnce * interation,
+                    length = (o.newCol[ o.group ].length - save) < that.howCreateOnce ? o.newCol[ o.group ].length - save : that.howCreateOnce;
                 for( var row = 0; row < length; row++ ) {
-                    o.checkedCell = o.group[ (row + save) ][ o.scene ];
+                    o.checkedCell = o.data[ (row + save) ][ o.scene ];
                     o.rowIndex = (row + save);
-                    $that.doMethod('_addNewCol', o);
+                    o.tr = that.doMethod('_getFrontRow', {'rowIndex': o.rowIndex, 'group': o.group});
+                    that.doMethod('_addNewCol', o);
                 }
-                if( ++interation < times )
+                if( ++interation < times ) {
                     setTimeout(generateCol,0);
+                }
+                else {
+                    this.doAction('addNewColumnAfter', o);
+                }
             },0);
         },
 
-        _addNewCol: function( o ) {
-            if( o.checkedCell !== undefined && o.checkedCell.matrix[0] == 1 ) {
-                o.newCol[ o.rowIndex ] = {matrix: o.checkedCell.matrix};
-                if( o.checkedCell.matrix[1] == 0 ) {
-                    this.doMethod('_correctCell', {'rowIndex':o.rowIndex,'colIndex':o.scene,'correct':1,'property':'colspan','group':o.group,'$group': o.$group});
+        '_addNewCol': function( o ) {
+            if( o.checkedCell !== undefined && (o.checkedCell.mx == 2 || o.checkedCell.mx == 4) ) {
+                if( o.newCol[ o.group ][ o.rowIndex ] === undefined || o.newCol[ o.group ][ o.rowIndex ].mx === undefined ) {
+                    o.newCol[ o.group ][ o.rowIndex ] = {'mx': o.checkedCell.mx};
+                }
+                if( o.checkedCell.mx == 2 ) {
+                    this.doMethod('_correctCell', {'rowIndex':o.rowIndex,'colIndex':o.scene,'correct':1,'property':'colspan','group':o.group});
                 }
             }
             else {
-                o.newCol[ o.rowIndex ] = this.doMethod('_defaultValueNewCell', (o.newCol[ o.rowIndex ] instanceof Object) ? o.newCol[ o.rowIndex ] : {});
+                o.newCol[ o.group ][ o.rowIndex ] = this.newCell( o.newCol[ o.group ][ o.rowIndex ], {'group': o.group, 'rowIndex': o.rowIndex, 'colIndex': o.scene} );
             }
-            o.group[ o.rowIndex ].splice( o.scene, 0, o.newCol[o.rowIndex] );
-            var cell = o.group[ o.rowIndex ][ o.scene ],
-                $tr = this.doMethod('_getFrontRow', {'rowIndex': o.rowIndex, '$tr': null, '$group': o.$group});
-            $tr.find('td[data-real-index],th[data-real-index]').filter(function(){
-                var $this = $(this);
-                if( $this.attr('data-real-index') >= o.scene )
-                    $this.attr('data-real-index', +$this.attr('data-real-index') + 1);
+            o.data[ o.rowIndex ].splice( o.scene, 0, o.newCol[ o.group ][o.rowIndex] );
+            var cell = o.data[ o.rowIndex ][ o.scene ];
+            var that = this;
+            $( o.tr ).find('td[data-real-index],th[data-real-index]').each(function(){
+                if( that.attr( this, 'data-real-index' ) >= o.scene )
+                    that.attr( this, 'data-real-index', (+that.attr( this, 'data-real-index' ) + 1) );
             });
-            var $destination = this.doMethod('_getFrontCell', {'row': $tr, 'col': (o.scene + 1), '$td': null, '$group': o.$group});
-            if( $destination.length ) {
-                $destination.before( this.createCell( $tr, o.group[o.rowIndex], cell, o.rowIndex, o.scene, o.group, o.td ) );
+            if( cell.mx && cell.mx > 1 ) return; // exit if no need to create front cell
+
+            var d = o.scene;
+            while( --d >= 0 ) { // shift to left
+                // try to find close left parent cell
+                if( o.data[ o.rowIndex ][ d ].mx == 1 ) break;
             }
-            else {
-                var d = o.scene;
-                while( --d >= 0 ) {
-                    $destination = this.doMethod('_getFrontCell', {'row': $tr, 'col': d, '$td': null, '$group': o.$group});
-                    if( $destination.length ) {
-                        $destination.after( this.createCell( $tr, o.group[o.rowIndex], cell, o.rowIndex, o.scene, o.group, o.td ) );
-                        break;
-                    }
+            if( d >= 0 ) {
+                var destination = this.doMethod('_getFrontCell', {'row': o.tr, 'col': d, 'group': o.group});
+                if( destination !== undefined ) {
+                    $( destination ).after( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
                 }
-                if( d == -1 ) $tr.prepend( this.createCell( $tr, o.group[o.rowIndex], cell, o.rowIndex, o.scene, o.group, o.td ) );
+            }
+            if( d == -1 && this.controlOrientation == 'right' ) $( o.tr ).prepend( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
+            else if( d == -1 && this.controlOrientation == 'left' ) {
+                var destination = $( o.tr ).find('td:first');
+                if( destination.length ) destination.after( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
+                else $( o.tr ).prepend( this.createCell( o.tr, o.data[o.rowIndex], cell, o.rowIndex, o.scene, o.data, o.td ) );
             }
         },
 
-        deleteSomeCols: function( options ) {
-            var o = {
-                    'condition': true,
-                    'count': 1,
-                    'scene': 0,
-                    'part': true,
-                    '$tr': null,
-                    'checkedCell': null,
-                    'rowIndex': null,
-                    'group': null,
-                    '$group': null,
+        'deleteSomeCols': function( options ) {
+            var result = [], // will contain deleted columns
+                o = {
+                    'condition':    true,
+                    'count':        1,
+                    'counter':      0,
+                    'scene':        0,
+                    'part':         true,
+                    'checkedCell':  null,
+                    'rowIndex':     0,
+                    'pullOutIndex': 0,
+                    'group':        '',
+                    'data':         null,
+                    'tr':           null,
+                    'deletedColumn':{},
+                    'deleted':      null,
+                    'getDeleted':   undefined,
                 };
             $.extend(true, o, options);
             o.pullOutIndex = o.scene;
             while( o.count-- > 0 ) {
-                this.doMethod('_deleteColumn', o);
+                o.deletedColumn = {};
+                result.push( this.doMethod('_deleteColumn', o) );
+                if( o.getDeleted && typeof o.getDeleted == 'function' ) {
+                    o.getDeleted.call( this, result[ o.counter ] );
+                }
+                o.counter++;
             }
+
+            return result;
         },
 
-        _deleteColumn: function( o ) {
+        '_deleteColumn': function( o ) {
             if( o.condition === false ) return;
             this._numberOfColumns -= 1;
-            this.$thead.find('tr[data-controls]').find('td').eq( o.pullOutIndex ).remove();
-            this.$tfoot.find('tr[data-controls]').find('td').eq( o.pullOutIndex ).remove();
+            $( this.thead ).find('tr[data-controls]').find('td').eq( o.pullOutIndex ).remove();
+            $( this.tfoot ).find('tr[data-controls]').find('td').eq( o.pullOutIndex ).remove();
             if( this.controlOrientation == 'left' ) o.pullOutIndex -= 1;
-            var row, length;
-
-            o.group = this.dataTheadArray;
-            o.$group = this.$thead;
-            for( row = 0, length = o.group.length; row < length; row++ ) {
-                o.$tr = this.doMethod('_getFrontRow', {'rowIndex': row, '$tr': null, '$group': o.$group});
-                o.checkedCell = o.group[ row ][ o.pullOutIndex ];
-                o.rowIndex = row;
-                this.doMethod('_deleteCol', o);
-            }
-
-            o.group = this.dataTfootArray;
-            o.$group = this.$tfoot;
-            for( row = 0, length = o.group.length; row < length; row++ ) {
-                o.$tr = this.doMethod('_getFrontRow', {'rowIndex': row, '$tr': null, '$group': o.$group});
-                o.checkedCell = o.group[ row ][ o.pullOutIndex ];
-                o.rowIndex = row;
-                this.doMethod('_deleteCol', o);
-            }
-
-            o.group = this.dataTbodyArray;
-            o.$group = this.$tbody;
-            if( o.part && this.hasOwnProperty('maxRowsOutDelay') && o.group.length > this.maxRowsOutDelay ) {
-                this.deleteDelayedCols( o );
-            }
-            else {
-                for( row = 0, length = o.group.length; row < length; row++ ) {
-                    o.$tr = this.doMethod('_getFrontRow', {'rowIndex': row, '$tr': null, '$group': o.$group});
-                    o.checkedCell = o.group[ row ][ o.pullOutIndex ];
-                    o.rowIndex = row;
-                    this.doMethod('_deleteCol', o);
+            var row, length, groups = {
+                'thead': 'th',
+                'tfoot': 'th',
+                'tbody': 'td'
+            };
+            for( var group in groups ) {
+                o.group = group;
+                o.data = this.getGroup( o.group );
+                o.deletedColumn[ o.group ] = new Array( o.data.length );
+                if( o.part && o.group === 'tbody' && this.hasOwnProperty('maxRowsOutDelay') && o.data.length > this.maxRowsOutDelay ) {
+                    this.deleteDelayedCols( o );
+                }
+                else {
+                    for( row = 0, length = o.data.length; row < length; row++ ) {
+                        o.checkedCell = o.data[ row ][ o.pullOutIndex ];
+                        o.rowIndex = row;
+                        o.tr = this.doMethod('_getFrontRow', {'rowIndex': o.rowIndex, 'group': o.group});
+                        o.deletedColumn[ o.group ][ row ] = this.doMethod('_deleteCol', o);
+                    }
                 }
             }
+
+            return o.deletedColumn;
         },
 
-        deleteDelayedCols: function( o ) {
+        'deleteDelayedCols': function( o ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
-            var $that = this,
-                times = Math.ceil( (o.group.length - 1) / this.howCreateOnce ),
-                interation = 0;
+            var that = this,
+                times = Math.ceil( (o.data.length - 1) / this.howCreateOnce ),
+                interation = 0,
+                deletedColumn = o.deletedColumn,
+                i = o.counter;
             setTimeout(function delCol(){
-                var save = $that.howCreateOnce * interation,
-                    length = (o.group.length - save) < $that.howCreateOnce ? o.group.length - save : $that.howCreateOnce;
+                var save = that.howCreateOnce * interation,
+                    length = (o.data.length - save) < that.howCreateOnce ? o.data.length - save : that.howCreateOnce;
                 for( var row = 0; row < length; row++ ) {
-                    o.$tr = $that.doMethod('_getFrontRow', {'rowIndex': (row + save), '$tr': null, '$group': o.$group});
-                    o.checkedCell = o.group[ (row + save) ][ o.pullOutIndex ];
+                    o.tr = that.doMethod('_getFrontRow', {'rowIndex': (row + save), 'group': o.group});
+                    o.checkedCell = o.data[ (row + save) ][ o.pullOutIndex ];
                     o.rowIndex = (row + save);
-                    $that.doMethod('_deleteCol', o);
+                    deletedColumn[ o.group ][ (row + save) ] = that.doMethod('_deleteCol', o);
                 }
-                if( ++interation < times )
+                if( ++interation < times ) {
                     setTimeout(delCol,0);
+                }
+                else {
+                    o.deletedColumn = $.extend( true, {}, deletedColumn );
+                    that.doAction('deleteColumnAfter', o);
+                    if( o.getDeleted && typeof o.getDeleted == 'function' ) {
+                        o.getDeleted.call( that, deletedColumn, i );
+                    }
+                }
             },0);
         },
 
-        _deleteCol: function( o ) {
+        '_deleteCol': function( o ) {
             var remove = true;
-            if( o.checkedCell.hasOwnProperty('settings') && o.checkedCell.settings.hasOwnProperty('colspan') && o.checkedCell.settings.colspan > 1 ) {
-                o.checkedCell.settings.colspan -= 1;
-                o.group[ o.rowIndex ][ o.pullOutIndex + 1 ] = o.checkedCell;
-                var $wanted = this.doMethod('_getFrontCell', {'row': o.$tr, 'col': o.pullOutIndex, '$td': null, '$group': o.$group});
-                $wanted.attr('colspan', +$wanted.attr('colspan') - 1);
+            if( o.checkedCell.hasOwnProperty('attr') && o.checkedCell.attr.hasOwnProperty('colspan') && o.checkedCell.attr.colspan > 1 ) {
+
+                this.shiftCell( o.group, o.rowIndex, o.pullOutIndex, 'colspan' );
                 remove = false;
             }
-            if( o.checkedCell.matrix[0] == 0 && o.checkedCell.matrix[1] == 1 &&
-                o.group[ o.rowIndex ][ o.pullOutIndex + 1 ] !== undefined &&
-                o.group[ o.rowIndex ][ o.pullOutIndex + 1 ].matrix[0] == 1 && o.group[ o.rowIndex ][ o.pullOutIndex + 1 ].matrix[1] == 1
-            ) {
-                o.group[ o.rowIndex ][ o.pullOutIndex + 1 ] = o.checkedCell;
+            if( o.checkedCell.mx == 2 ) {
+                this.doMethod('_correctCell', {'rowIndex':o.rowIndex,'colIndex':o.pullOutIndex,'correct':-1,'property':'colspan','group':o.group});
                 remove = false;
             }
-            if( o.checkedCell.matrix[0] == 1 && o.checkedCell.matrix[1] == 0 ) {
-                this.doMethod('_correctCell', {'rowIndex':o.rowIndex,'colIndex':o.pullOutIndex,'correct':-1,'property':'colspan','group':o.group,'$group': o.$group});
-                remove = false;
-            }
-            o.group[ o.rowIndex ].splice( o.pullOutIndex, 1 );
-            if( remove ) this.doMethod('_getFrontCell', {'row': o.$tr, 'col': o.pullOutIndex, '$td': null, '$group': o.$group}).remove();
-            o.$tr.find('td[data-real-index],th[data-real-index]').filter(function(){
-                var $this = $(this);
-                if( $this.attr('data-real-index') > o.pullOutIndex )
-                    $this.attr('data-real-index', +$this.attr('data-real-index') - 1);
+            o.deleted = o.data[ o.rowIndex ].splice( o.pullOutIndex, 1 ) /* get first coz count equal one */[0];
+            if( remove ) $( this.doMethod('_getFrontCell', {'row': o.tr, 'col': o.pullOutIndex, 'group': o.group}) ).remove();
+            var that = this;
+            $( o.tr ).find('td[data-real-index],th[data-real-index]').each(function(){
+                if( that.attr( this, 'data-real-index' ) > o.pullOutIndex )
+                    that.attr( this, 'data-real-index', (+that.attr( this, 'data-real-index') - 1) );
             });
+            return o.deleted;
         },
 
-        saveBackCell: function( rowIndex, colIndex, saving, newValue, group ) {
+        /**
+         * 
+         * @@ Method use jQuery extend( true ) for deep extends
+         * 
+         * @rowIndex - 
+         * @colIndex - 
+         * @saving - string separate .(dot) / will convert to array for callback
+         * @newValue - 
+         * @group - string for define chain in @dataTableObject
+         * 
+         * return ?
+         */
+        'saveBackCell': function( rowIndex, colIndex, saving, newValue, group ) {
             var chain = saving.split('.');
             this.doMethod('_saveBackCell', {
                 'rowIndex': rowIndex,
                 'colIndex': colIndex,
                 'saving': chain,
                 'newValue': newValue,
-                'group': group,
+                'group': ( typeof group === 'string' ) ? this.getGroup( group ) : group,
             });
         },
 
-        _saveBackCell: function( params ) {
+        '_saveBackCell': function( params ) {
             var tmp = [],
                 o = {};
             for(var i = params.saving.length - 1, lastKey = params.saving.length - 1; i >= 0; i--  ) {
@@ -398,133 +610,173 @@ jQuery(document).ready(function($){
             $.extend(true, params.group[ params.rowIndex ][ params.colIndex ], o);
         },
 
-        _getFrontRow: function( params ) {
-            if( params.$group.is('thead') ) {
-                // minus controls rows for thead only
-                params.rowIndex += params.$group.find('tr[data-controls]').length;
+        /**
+         * @group - 
+         * @rowIndex - 
+         * @@ stabilize - this method will 
+         * return HTML Element 
+         */
+        '_getFrontRow': function( params ) {
+            if( params.group.nodeName ) {
+                if( params.group.nodeName.toLowerCase() === 'thead' ) {
+                    params.rowIndex += params.group.querySelectorAll('tr[data-controls]').length;
+                }
+                return params.tr = params.group.rows[ +params.rowIndex ];
             }
-            return params.$tr = params.$group.find('tr').eq( +params.rowIndex );
+
+            if( params.group instanceof jQuery ) {
+                if( params.group.is('thead') ) {
+                    params.rowIndex += params.group.find('tr[data-controls]').length;
+                }
+                return params.tr = params.group.find('tr').eq( +params.rowIndex )[ 0 ];
+            }
+
+            if( typeof params.group === 'string' ) {
+                if( this.provideGroup(params.group) === 'thead' ) {
+                    params.rowIndex += this.getNodeGroup( params.group ).querySelectorAll('tr[data-controls]').length;
+                }
+                return params.tr = this.getNodeGroup( params.group ).rows[ +params.rowIndex ];
+            }
+
+            if( Array.isArray( params.group ) ) {
+                // so difficult
+            }
         },
 
-        _getFrontCell: function( params ) {
-            if( typeof params.row === 'object' ) {
-                return params.$td = params.row.find('td[data-real-index='+ +params.col +'],th[data-real-index='+ +params.col +']');
+        /**
+         * @group - 
+         * @row - ( int || string || jQuery )
+         * @col -  
+         * return HTML Element 
+         */
+        '_getFrontCell': function( params ) {
+            if( params.row instanceof jQuery ) {
+                return params.td = params.row.find('td[data-real-index="'+ +params.col +'"],th[data-real-index="'+ +params.col +'"]')[ 0 ];
             }
-            else {
-                return params.$td = this.doMethod('_getFrontRow', {'rowIndex': params.row, '$tr': null, '$group': params.$group}).find('td[data-real-index='+ +params.col +'],th[data-real-index='+ +params.col +']');
+
+            if( params.row.nodeName ) {
+                return params.td = params.row.querySelector('td[data-real-index="'+ +params.col +'"],th[data-real-index="'+ +params.col +'"]');
             }
+
+                return params.td = this.doMethod('_getFrontRow', {'rowIndex': params.row, 'group': params.group})
+                    .querySelector('td[data-real-index="'+ +params.col +'"],th[data-real-index="'+ +params.col +'"]');
+
         },
 
-        change: function( group, rowIndex, colIndex, newData ) {
+        /**
+         * 
+         * @group - string
+         * @rowIndex - 
+         * @colIndex - 
+         * @newData - object
+         * 
+         * return ? 
+         */
+        'change': function( group, rowIndex, colIndex, newData ) {
             var params = {
-                    group: this[ group ],
-                    $group: null,
-                    rowIndex: +rowIndex,
-                    colIndex: +colIndex,
-                    newData: newData,
-                    adding: [],
-                    remove: [],
-                    cell: this[ group ][ +rowIndex ][ +colIndex ],
-                    stretchError: {
-                        colspan: [],
-                        rowspan: []
+                    'group': group,
+                    'data': this.getGroup( group ),
+                    'rowIndex': +rowIndex,
+                    'colIndex': +colIndex,
+                    'newData': newData || {},
+                    'adding': [],
+                    'remove': [],
+                    'cell': this.getGroup( group )[ +rowIndex ][ +colIndex ],
+                    'stretchError': {
+                        'colspan': [],
+                        'rowspan': []
                     },
-                    getTune: function( interest, obj, replace ) {
+                    'getTune': function( interest, obj, replace ) {
                         replace = replace || 1;
-                        return obj.settings && obj.settings[interest] ? +obj.settings[interest] : replace;
+                        return obj.attr && obj.attr[interest] ? +obj.attr[interest] : replace;
                     },
-                    isStretched: function( cell ) {
+                    'isStretched': function( cell ) {
                         if( cell === undefined ) return true;
-                        if( cell.matrix ) {
-                            if( cell.matrix[0] != 0 || cell.matrix[1] != 0 ) return true;
-                        }
+                        if( cell.mx && cell.mx > 1 ) return true;
                         if( this.getTune('colspan',cell) > 1 ) return true;
                         if( this.getTune('rowspan',cell) > 1 ) return true;
                         return false;
                     }
                 };
-            switch( group ) {
-                case 'dataTheadArray':
-                    params.$group = this.$thead;
-                        break;
-                case 'dataTbodyArray':
-                    params.$group = this.$tbody;
-                        break;
-                case 'dataTfootArray':
-                    params.$group = this.$tfoot;
-                        break;
-            }
             return this.doMethod('_change', params);
         },
 
-        _change: function( params ) {
+        '_change': function( params ) {
             var countCol,
                 countRow;
 
-            if( params.newData.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
-                countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData);
-                countRow = params.getTune('rowspan',params.cell);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        params.adding.push({
-                            rowIndex: (params.rowIndex + row),
-                            colIndex: (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
-                            cell: params.group[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
-                        });
-                    }
-                }
-            }
-            if( params.newData.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
-                countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData) > 0 ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
-                countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        params.adding.push({
-                            rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
-                            colIndex: (params.colIndex + col),
-                            cell: params.group[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
-                        });
-                    }
-                }
-            }
-            if( params.newData.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
-                countCol = params.getTune('colspan',params.newData) - params.getTune('colspan',params.cell);
-                countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData) > 0 ? params.getTune('rowspan',params.newData) : params.getTune('rowspan',params.cell);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        var checkCell = params.group[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) + col) ];
-                        params.remove.push({
-                            rowIndex: (params.rowIndex + row),
-                            colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
-                            cell: checkCell,
-                        });
-                        if( params.isStretched(checkCell) ) {
-                            params.stretchError.colspan.push({
-                                rowIndex: (params.rowIndex + row),
-                                colIndex: (params.colIndex + params.getTune('colspan',params.cell) + col),
-                                cell: checkCell,
+            if( params.newData.hasOwnProperty('attr') ) {
+                if( params.newData.attr.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData);
+                    countRow = params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            params.adding.push({
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + row),
+                                'colIndex': (params.colIndex + params.getTune('colspan',params.cell) - 1 - col),
+                                'cell': params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) - 1 - col) ],
                             });
                         }
                     }
                 }
-            }
-            if( params.newData.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
-                countCol = params.newData.settings.colspan ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
-                countRow = params.getTune('rowspan',params.newData) - params.getTune('rowspan',params.cell);
-                for( var row = 0; row < countRow; row++ ) {
-                    for( var col = 0; col < countCol; col++ ) {
-                        var checkCell = params.group[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ] ? params.group[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ][ (params.colIndex + col) ] : undefined;
-                        params.remove.push({
-                            rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
-                            colIndex: (params.colIndex + col),
-                            cell: checkCell,
-                        });
-                        if( params.isStretched(checkCell) ) {
-                            params.stretchError.rowspan.push({
-                                rowIndex: (params.rowIndex + params.getTune('rowspan',params.cell) + row),
-                                colIndex: (params.colIndex + col),
-                                cell: checkCell,
+                if( params.newData.attr.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.cell) - params.getTune('colspan',params.newData) > 0 ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            params.adding.push({
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row),
+                                'colIndex': (params.colIndex + col),
+                                'cell': params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) - 1 - row) ][ (params.colIndex + col) ],
                             });
+                        }
+                    }
+                }
+                if( params.newData.attr.hasOwnProperty('colspan') && params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
+                    countCol = params.getTune('colspan',params.newData) - params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.cell) - params.getTune('rowspan',params.newData) > 0 ? params.getTune('rowspan',params.newData) : params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            var checkCell = params.data[ (params.rowIndex + row) ][ (params.colIndex + params.getTune('colspan',params.cell) + col) ];
+                            params.remove.push({
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + row),
+                                'colIndex': (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                'cell': checkCell,
+                            });
+                            if( params.isStretched(checkCell) ) {
+                                params.stretchError.colspan.push({
+                                    'group': params.group,
+                                    'rowIndex': (params.rowIndex + row),
+                                    'colIndex': (params.colIndex + params.getTune('colspan',params.cell) + col),
+                                    'cell': checkCell,
+                                });
+                            }
+                        }
+                    }
+                }
+                if( params.newData.attr.hasOwnProperty('rowspan') && params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
+                    countCol = params.newData.attr.colspan ? params.getTune('colspan',params.newData) : params.getTune('colspan',params.cell);
+                    countRow = params.getTune('rowspan',params.newData) - params.getTune('rowspan',params.cell);
+                    for( var row = 0; row < countRow; row++ ) {
+                        for( var col = 0; col < countCol; col++ ) {
+                            var checkCell = params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ] ? params.data[ (params.rowIndex + params.getTune('rowspan',params.cell) + row) ][ (params.colIndex + col) ] : undefined;
+                            params.remove.push({
+                                'group': params.group,
+                                'rowIndex': (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                'colIndex': (params.colIndex + col),
+                                'cell': checkCell,
+                            });
+                            if( params.isStretched(checkCell) ) {
+                                params.stretchError.rowspan.push({
+                                    'group': params.group,
+                                    'rowIndex': (params.rowIndex + params.getTune('rowspan',params.cell) + row),
+                                    'colIndex': (params.colIndex + col),
+                                    'cell': checkCell,
+                                });
+                            }
                         }
                     }
                 }
@@ -532,81 +784,81 @@ jQuery(document).ready(function($){
 
             if( params.adding.length ) this.doMethod('_handleContraction', params );
             if( params.remove.length ) this.doMethod('_handleStretching', params );
-            if( params.newData.hasOwnProperty('value') ) this.doMethod('_handleValueChanging', params );
+            if( params.newData.hasOwnProperty('val') ) this.doMethod('_handleValueChanging', params );
         },
 
-        _handleValueChanging: function( params ) {
-            if( params.cell.hasOwnProperty('value') && params.cell.value != params.newData.value ) {
-                this.saveBackCell( params.rowIndex, params.colIndex, 'value', params.newData.value, params.group );
-                params.$cell = this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).html( params.newData.value );
+        '_handleValueChanging': function( params ) {
+            if( params.cell.hasOwnProperty('val') && params.cell.val != params.newData.val ) {
+                this.saveBackCell( params.rowIndex, params.colIndex, 'val', params.newData.val, params.group );
+                params.td = this.html( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), params.newData.val );
             }
         },
 
-        _handleContraction: function( params ) {
+        '_handleContraction': function( params ) {
             if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
                 for( var i = 0; i < params.adding.length; i++ ) {
                     var el = params.adding[i];
                     var col = el.colIndex + 1;
-                    delete el.cell.matrix;
-                    this.doMethod('_defaultValueNewCell', el.cell);
-                    var $tr = this.doMethod('_getFrontRow', {'rowIndex': el.rowIndex, '$tr': null, '$group': params.$group});
+                    delete el.cell.mx;
+                    this.newCell( el.cell, {'group': el.group, 'rowIndex': el.rowIndex, 'colIndex': el.colIndex, 'copy': false} );
+                    var $tr = $( this.doMethod('_getFrontRow', {'rowIndex': el.rowIndex, 'group': params.group}) );
                     do {
-                        if( params.group[ el.rowIndex ][ col ] === undefined ) {
+                        if( params.data[ el.rowIndex ][ col ] === undefined ) {
                             if( this.controlOrientation === 'left' ) {
-                                $tr.append( this.createCell( $tr, params.group[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.group, 'td' ) );
+                                $tr.append( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, (this.provideGroup( params.group ) === 'tbody' ? 'td' : 'th') ) );
                                 break;
                             }
-                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr, params.group[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.group, 'td' ) );
+                            $tr.find('td,th').eq( -1 ).before( this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, (this.provideGroup( params.group ) === 'tbody' ? 'td' : 'th') ) );
                             break;
                         }
-                        if( params.group[ el.rowIndex ][ col ].matrix[0] == 0 && params.group[ el.rowIndex ][ col ].matrix[1] == 0 ) {
+                        if( params.data[ el.rowIndex ][ col ].mx == 1 ) {
                             
-                            this.doMethod('_getFrontCell', {'row': $tr, 'col': col, '$td': null, '$group': params.$group}).before(
-                                this.createCell( $tr, params.group[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.group, 'td' )
+                            $( this.doMethod('_getFrontCell', {'row': $tr, 'col': col, 'group': params.group}) ).before(
+                                this.createCell( $tr[0], params.data[el.rowIndex], el.cell, el.rowIndex, el.colIndex, params.data, (this.provideGroup( params.group ) === 'tbody' ? 'td' : 'th') )
                             );
                             break;
                         }
                     }while( col++ < this._numberOfColumns );
                 }
                 if( params.getTune('colspan',params.newData) < params.getTune('colspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', +params.newData.settings.colspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('colspan', params.cell.settings.colspan);
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'attr.colspan', +params.newData.attr.colspan, params.group );
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'colspan', params.cell.attr.colspan );
                 }
                 if( params.getTune('rowspan',params.newData) < params.getTune('rowspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', +params.newData.settings.rowspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('rowspan', params.cell.settings.rowspan);
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'attr.rowspan', +params.newData.attr.rowspan, params.group );
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'rowspan', params.cell.attr.rowspan );
                 }
             }
         },
 
-        _handleStretching: function( params ) {
+        '_handleStretching': function( params ) {
             if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
                 for( var i = 0; i < params.remove.length; i++ ) {
                     var el = params.remove[i];
                     this.doMethod('_emptyCell', el.cell);
-                    this.doMethod('_getFrontCell', {'row': el.rowIndex, 'col': el.colIndex, '$td': null, '$group': params.$group}).remove();
-                    if( el.rowIndex ==  params.rowIndex ) {
-                        el.cell.matrix = [1,0];
+                    $( this.doMethod('_getFrontCell', {'row': el.rowIndex, 'col': el.colIndex, 'group': params.group}) ).remove();
+                    if( el.rowIndex == params.rowIndex ) {
+                        el.cell.mx = 2;
                     }
-                    else if( el.colIndex ==  params.colIndex ) {
-                        el.cell.matrix = [0,1];
+                    else if( el.colIndex == params.colIndex ) {
+                        el.cell.mx = 3;
                     }
                     else {
-                       el.cell.matrix = [1,1]; 
+                       el.cell.mx = 4; 
                     }
                 }
                 if( params.getTune('colspan',params.newData) > params.getTune('colspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.colspan', +params.newData.settings.colspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('colspan', params.cell.settings.colspan);
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'attr.colspan', +params.newData.attr.colspan, params.group );
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'colspan', params.cell.attr.colspan );
                 }
                 if( params.getTune('rowspan',params.newData) > params.getTune('rowspan',params.cell) ) {
-                    this.saveBackCell( params.rowIndex, params.colIndex, 'settings.rowspan', +params.newData.settings.rowspan, params.group );
-                    this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, '$td': null, '$group': params.$group}).attr('rowspan', params.cell.settings.rowspan);
+                    this.saveBackCell( params.rowIndex, params.colIndex, 'attr.rowspan', +params.newData.attr.rowspan, params.group );
+                    this.attr( this.doMethod('_getFrontCell', {'row': params.rowIndex, 'col': params.colIndex, 'group': params.group}), 'rowspan', params.cell.attr.rowspan );
                 }
             }
         },
 
-        _emptyCell: function( cell ) {
+        '_emptyCell': function( cell ) {
             for( var key in cell) {
                 delete cell[key];
             }
