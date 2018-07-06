@@ -44,12 +44,12 @@ jQuery(document).ready(function($){
 <textarea id="from-textarea" class="hidden">
 
     [
-        [ {"value":"head 1"}, {"value":"head 2"}, {"value":"head 3"}, {"value":"head 4"}, {"value":"head 5","settings":{"class":"danger"}} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value","settings":{"class":"warning"}} ]
+        [ {"val":"head 1"}, {"val":"head 2"}, {"val":"head 3"}, {"val":"head 4"}, {"val":"head 5","settings":{"class":"danger"}} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","settings":{"class":"warning"}} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","settings":{"class":"warning"}} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","settings":{"class":"warning"}} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","settings":{"class":"warning"}} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","settings":{"class":"warning"}} ]
     ]
 
 </textarea>
@@ -62,35 +62,34 @@ jQuery(document).ready(function($){
 });
 ```
 
-#### From Array or Json
+#### From Array or Json (TBody section only)
 ```javascript
 var Table = [
-    [ {"value":"head 1"}, {"value":"head 2"}, {"value":"head 3"}, {"value":"head 4"}, {"value":"head 5"} ],
-    [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-    [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-    [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-    [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-    [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ]
+    [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+    [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+    [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+    [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+    [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ]
 ];
 
 Table.tableEdid();
 ```
 
-#### From Object
+#### From Object (ALL Sections)
 ```javascript
 var Table = {
-    "thead": [
-        [ {"value":"head 1"}, {"value":"head 2"}, {"value":"head 3"}, {"value":"head 4"}, {"value":"head 5"} ]
+    "theadArray": [
+        [ {"val":"head 1"}, {"val":"head 2"}, {"val":"head 3"}, {"val":"head 4"}, {"val":"head 5"} ]
     ],
-    "tbody": [
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ],
-        [ {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"}, {"value":"value"} ]
+    "tbodyArray": [
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ],
+        [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"} ]
     ],
-    "tfoot": [
-        [ {"value":"foot 1"}, {"value":"foot 2"}, {"value":"foot 3"}, {"value":"foot 4"}, {"value":"foot 5"} ]
+    "tfootArray": [
+        [ {"val":"foot 1"}, {"val":"foot 2"}, {"val":"foot 3"}, {"val":"foot 4"}, {"val":"foot 5"} ]
     ]
 };
 
