@@ -96,7 +96,7 @@ jQuery(document).ready(function($){
     $.TableEdit.plugin = {
 
         /**
-         * The default data table array
+         * The default data table array.
          *
          * @since    0.0.1
          *
@@ -110,6 +110,8 @@ jQuery(document).ready(function($){
          * This method use @toLowerCase javaScript.
          *
          * @since    0.0.1
+         *
+         * @global   object   this     $.TableEdit.plugin — object context.
          *
          * @param    string   group    Name of group.
          *
@@ -176,8 +178,15 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * must return DOM Element if @val defined
+         * Set/Get Attr of Node element.
+         *
+         * @since    0.0.1
+         *
+         * @param    Node              element    Link to HTML element.
+         * @param    string            attr       Name of attribute.
+         * @param    mixed             val        Optional. Value to need set.
+         *
+         * @return   mixed/undefined   DOM Element if success. @undefined if fail.
          */
         'attr': function( element, attr, val ) {
             if( val !== undefined ) {
@@ -191,14 +200,24 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
+         * Get count of table columns.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this     $.TableEdit.plugin — object context.
+         *
+         * @return   int      Number of data columns.
          */
         'getNumOfCols': function() {
             return this._numberOfColumns || 0;
         },
 
         /**
-         * 
+         * Compile table.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this     $.TableEdit.plugin — object context.
          */
         '_compileTable': function() {
             this.table.appendChild( this.thead );
@@ -207,8 +226,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @selector - 
+         * Define type of data passed.
+         *
+         * Function set data to @dataTableObject.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   mixed    selector  Parent object for function called.
+         *
+         * }
          */
         '_defineType': function( params ) {
             if( Array.isArray( params.selector ) ) {
@@ -232,7 +262,12 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
+         * Orientation of control elements.
+         *
+         * @since    0.0.1
+         *
+         * @var      string    controlOrientation    Optional. Orientation of controls: left or right available.
+         *                                           Default right.
          */
         'controlOrientation': 'right',
 
