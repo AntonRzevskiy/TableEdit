@@ -1,3 +1,20 @@
+/**
+ * Plugin for creating an editable table from an array, textarea, table and not only.
+ * You can easily add and delete rows, cells.
+ * The plugin contains enough options and callback functions for quick customization for your task.
+ *
+ * @author     Rzhevskiy Anton <antonrzhevskiy@gmail.com>
+ */
+
+/**
+ * Functions for creating a table from data.
+ *
+ * @link       https://github.com/AntonRzevskiy/TableEdit/edit/master/js/create_table.js
+ * @since      0.0.1
+ *
+ * @package    TableEdit
+ * @subpackage TableEdit/js
+ */
 jQuery(document).ready(function($){
 
     if( !$.TableEdit ) return;
@@ -5,24 +22,58 @@ jQuery(document).ready(function($){
     $.TableEdit.localPlugin = {
 
         /**
-         * The following four functions set the properties individually for each table
+         * HTML element TABLE.
+         *
+         * @since    0.0.1
+         *
+         * @var      Node    table    HTML Node.
          */
         'table': function(){
             return document.createElement('table');
         },
+
+        /**
+         * HTML element THEAD.
+         *
+         * @since    0.0.1
+         *
+         * @var      Node    thead    HTML Node.
+         */
         'thead': function(){
             return document.createElement('thead');
         },
+
+        /**
+         * HTML element TFOOT.
+         *
+         * @since    0.0.1
+         *
+         * @var      Node    tfoot    HTML Node.
+         */
         'tfoot': function(){
             return document.createElement('tfoot');
         },
+
+        /**
+         * HTML element TBODY.
+         *
+         * @since    0.0.1
+         *
+         * @var      Node    tbody    HTML Node.
+         */
         'tbody': function(){
             return document.createElement('tbody');
         },
 
         /**
+         * General object with table data.
+         *
          * @dataTableArray contains @dataTbodyArray, @dataTheadArray & @dataTfootArray
-         * to combine data into one array
+         * to combine data into one array.
+         *
+         * @since    0.0.1
+         *
+         * @var      object     dataTableObject    Table data.
          */
         'dataTableObject': function() {
             return {
@@ -33,7 +84,11 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @_numberOfColumns property is responsible for the number of columns
+         * Number of columns.
+         *
+         * @since    0.0.1
+         *
+         * @var      bool/int     _numberOfColumns    Count table columns.
          */
         '_numberOfColumns': false,
     };
@@ -41,15 +96,24 @@ jQuery(document).ready(function($){
     $.TableEdit.plugin = {
 
         /**
-         * 
+         * The default data table array
+         *
+         * @since    0.0.1
+         *
+         * @var      array    dataTableDefaultArray    Optional. Tboody data. Default empty.
          */
         'dataTableDefaultArray': [],
 
         /**
-         * 
-         * @@ this method use @toLowerCase
-         * return an actual link to data
-         * must return empty array if @group not defined
+         * Retrieve group data.
+         *
+         * This method use @toLowerCase javaScript.
+         *
+         * @since    0.0.1
+         *
+         * @param    string   group    Name of group.
+         *
+         * @return   array    Actual link to data. Empty array if failed.
          */
         'getGroup': function( group ) {
             switch( group.toLowerCase() ) {
@@ -76,16 +140,28 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
+         * Create HTML Node element.
+         *
+         * @since    0.0.1
+         *
+         * @param    string   name    Name of HTML element.
+         *
+         * @return   Node     Link to HTML element.
          */
         'createEL': function( name ) {
             return document.createElement( name );
         },
 
         /**
-         * 
-         * must return DOM Element if @val defined
-         * @val can be function / it works like jQuery.html
+         * Set/Get HTML of Node element.
+         *
+         * @since    0.0.1
+         *
+         * @param    Node              element    Link to HTML element.
+         * @param    string/function   val        Optional. String will be inserted in element.
+         *                                        Function will receive element as a context.
+         *
+         * @return   Node/string       DOM Element if @val defined. Element content otherwise.
          */
         'html': function( element, val ) {
             if( typeof val === 'function' ) {
