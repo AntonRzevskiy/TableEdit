@@ -9,7 +9,7 @@
 /**
  * Functions for creating a table from data.
  *
- * @link       https://github.com/AntonRzevskiy/TableEdit/edit/master/js/create_table.js
+ * @link       https://github.com/AntonRzevskiy/TableEdit/blob/master/js/create_table.js
  * @since      0.0.1
  *
  * @package    TableEdit
