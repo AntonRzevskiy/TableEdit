@@ -272,21 +272,62 @@ jQuery(document).ready(function($){
         'controlOrientation': 'right',
 
         /**
-         * 
+         * Control elements in table header.
+         *
+         * @since    0.0.1
+         *
+         * @var      string    topControlsElements    Optional. Controls in head: usually HTML.
+         *                                            Default 2 HTML LINKS with classes (addCol & delCol) for fire actions.
          */
         'topControlsElements': '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
                              '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
+        /**
+         * Control elements in table footer.
+         *
+         * @since    0.0.1
+         *
+         * @var      string    bottomControlsElements Optional. Controls in foot: usually HTML.
+         *                                            Default 2 HTML LINKS with classes (addCol & delCol) for fire actions.
+         */
         'bottomControlsElements': '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
                                 '<a class="delCol" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
+        /**
+         * Control elements in table rows.
+         *
+         * @since    0.0.1
+         *
+         * @var      string    rowControlsElements    Optional. Controls in each row: usually HTML.
+         *                                            Default 2 HTML LINKS with classes (addrow & delrow) for fire actions.
+         */
         'rowControlsElements': '<a class="addrow" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>' +
                              '<a class="delrow" href="javascript://" role="button"><span class="glyphicon glyphicon-minus"></span></a>',
 
+        /**
+         * Control elements in table corners.
+         *
+         * @since    0.0.1
+         *
+         * @var      string    stubElements           Optional. Controls in corner: usually HTML.
+         *                                            Default HTML LINK with class (addCol) for fire action.
+         */
         'stubElements': '<a class="addCol" href="javascript://" role="button"><span class="glyphicon glyphicon-plus"></span></a>',
 
         /**
-         * @tr - 
+         * Add HTML Node in 2 table corners.
+         *
+         * Function create two cells & add it depend on @controlOrientation.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     tr        HTML Node Element ROW
+         *
+         * }
          */
         '_addStub': function( params ) {
             if( this.controlOrientation === 'right' ) {
