@@ -325,7 +325,7 @@ jQuery(document).ready(function($){
          *
          * @param    object   params    {
          *
-         *   @type   Node     tr        HTML Node Element ROW
+         *   @type   Node     tr        HTML Node Element ROW.
          *
          * }
          */
@@ -343,7 +343,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @tr - 
+         * Set controls ROW in table header.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_addStub
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     tr        HTML Node Element ROW.
+         *
+         * }
          */
         '_createTopControls': function( params ) {
             for( var i = 0; i < this.getNumOfCols(); i++ ) {
@@ -356,7 +368,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @tr - 
+         * Set controls ROW in table footer.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_addStub
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     tr        HTML Node Element ROW.
+         *
+         * }
          */
         '_createBottomControls': function( params ) {
             for( var i = 0; i < this.getNumOfCols(); i++ ) {
@@ -369,7 +393,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @tr - 
+         * Set controls TD in each TBODY ROW.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     tr        HTML Node Element ROW.
+         *
+         * }
+         *
+         * @return   Node     HTML Node Element ROW.
          */
         '_createRowControls': function( params ) {
             if( this.controlOrientation === 'right' ) {
