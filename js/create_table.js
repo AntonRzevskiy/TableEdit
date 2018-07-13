@@ -4,6 +4,7 @@
  * The plugin contains enough options and callback functions for quick customization for your task.
  *
  * @author     Rzhevskiy Anton <antonrzhevskiy@gmail.com>
+ * @license:   GPLv3 - https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
 /**
@@ -422,12 +423,26 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @selector - 
+         * Define HTML Container for display table.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_defineOutputMethod
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     selector  Parent object for function called.
+         *
+         * }
+         *
+         * @return   string   CSS selector. Default @body.
          */
-        '_defineOutputConteiner': function( params ) {
-            if( this.hasOwnProperty('outputConteiner') && $(this.outputConteiner).length ) {
-                // return this.outputConteiner;
-                params.selector = this.outputConteiner;
+        '_defineOutputContainer': function( params ) {
+            if( this.hasOwnProperty('outputContainer') && $(this.outputContainer).length ) {
+                // return this.outputContainer;
+                params.selector = this.outputContainer;
             }
             else if( $('body').find(params.selector).length ) {
                 // return selector;
@@ -441,10 +456,25 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @method - 
+         * Define jQuery method for add table into DOM.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   string   method    Name of jQuery fn.
+         *
+         * }
+         *
+         * @return   string   Name of jQuery fn. Default @after.
          */
         '_defineOutputMethod': function( params ) {
-            if( this.hasOwnProperty('outputMethod') && $.fn.hasOwnProperty( this.outputMethod ) ) {
+            if( params.method && $.fn.hasOwnProperty( params.method ) ) {
+                // doing nothing
+            }
+            else if( this.hasOwnProperty('outputMethod') && $.fn.hasOwnProperty( this.outputMethod ) ) {
                 // return this.outputMethod;
                 params.method = this.outputMethod;
             } else {
@@ -455,14 +485,48 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @selector - 
+         * Add table into DOM.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_defineOutputContainer
+         * @see      this::_defineOutputMethod
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     selector  Parent object for function called.
+         *
+         * }
          */
         '_addTable': function( params ) {
-            $( this.doMethod('_defineOutputConteiner', {'selector':params.selector}) )[ this.doMethod('_defineOutputMethod', {}) ]( this.table );
+            $( this.doMethod('_defineOutputContainer', {'selector':params.selector}) )[ this.doMethod('_defineOutputMethod', {}) ]( this.table );
         },
 
         /**
-         * @tr - 
+         * Add ROW into DOM.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::setNumberOfColumns
+         * @see      this::_skippedCell
+         * @see      this::createCell
+         * @see      this::_createRowControls
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     tr        HTML Element ROW.
+         *   @type   array    row       Array with cells object.
+         *   @type   int      index     Index of row in data.
+         *   @type   array    group     Parent array of current row.
+         *   @type   string   td        Optional. Which cells to create.
+         *
+         * }
+         *
+         * @return   Node     HTML Element ROW.
          */
         '_createRow': function( params ) {
             this.setNumberOfColumns( params.row );
@@ -488,7 +552,24 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @tr - 
+         * Add CELL into DOM.
+         * This wrap function for @_createCell.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_createCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    Node     tr        HTML Element ROW.
+         * @param    array    row       Array with cells object.
+         * @param    object   col       Cell object.
+         * @param    int      rowIndex  Index of row in data.
+         * @param    int      colIndex  Index of col in data.
+         * @param    array    group     Parent array of current row.
+         * @param    string   td        Optional. Which cells to create.
+         *
+         * @return   Node     HTML Element CELL.
          */
         'createCell': function( tr, row, col, rowIndex, colIndex, group, td ) {
             if( col.mx && col.mx > 1 ) return;
