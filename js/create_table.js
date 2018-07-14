@@ -505,7 +505,7 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * Add ROW into DOM.
+         * Create HTML Element ROW.
          *
          * @since    0.0.1
          *
@@ -552,7 +552,7 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * Add CELL into DOM.
+         * Create HTML Element CELL.
          * This wrap function for @_createCell.
          *
          * @since    0.0.1
@@ -586,7 +586,29 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @tr - 
+         * Create HTML Element CELL.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_cellConfiguration
+         * @see      this::_setMatrix
+         * @see      this::_doDelayedFunction
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     tr        HTML Element ROW.
+         *   @type   array    row       Array with cells object.
+         *   @type   object   col       Cell object.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   array    group     Parent array of current row.
+         *   @type   Node     td        HTML Element CELL.
+         *
+         * }
+         *
+         * @return   Node     HTML Element CELL.
          */
         '_createCell': function( params ) {
             if( params.col.attr )
@@ -604,7 +626,25 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @tr - 
+         * Create a matrix for the data.
+         * This function fills the array with missing cells.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   object    {
+         *
+         *   @type   array    row       Array with cells object.
+         *   @type   object   col       Cell object.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   array    group     Parent array of current row.
+         *   @type   Node     td        HTML Element CELL.
+         *
+         * }
+         *
+         * @return   Node     HTML Element CELL.
          */
         '_setMatrix': function( object ) {
 
@@ -666,7 +706,15 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @row - 
+         * Recount columns in row data.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    array    row       Array with cells object.
+         *
+         * @return   int      Number of columns in table.
          */
         'setNumberOfColumns': function( row ) {
             if( this._numberOfColumns == false ) {
@@ -698,8 +746,18 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @td - 
-         * @attr - 
+         * Set attributes to cell.
+         *
+         * @since    0.0.1
+         *
+         * @param    object   params    {
+         *
+         *   @type   object   attr      Optional. Object where prop is name of attr, val is value.
+         *   @type   Node     td        HTML Element CELL.
+         *
+         * }
+         *
+         * @return   Node     HTML Element CELL.
          */
         '_cellConfiguration': function( params ) {
             if( params.attr && typeof params.attr === 'object' ) {
