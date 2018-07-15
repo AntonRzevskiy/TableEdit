@@ -770,8 +770,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @td - 
-         * @attr - 
+         * Add ROW's in parts to BODY section.
+         * This is wrapper function that allows you to create rows for tbody without loading the browser.
+         * This function adds rows after the table has been added to DOM.
+         * This function use @howCreateOnce property which response - how many rows will created at once.
+         * After all interations will fired action @createPageAfter.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_createRow
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    string   td        Optional. Which cells to create.
          */
         'createDelayedRows': function( td ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
@@ -800,8 +811,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @td - 
-         * @attr - 
+         * Do function from cell.
+         *
+         * @since    0.0.1
+         *
+         * @deprecated 1.0.0
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   obj       {
+         *
+         *   @type   object   col       CELL object where @callbacks array with functions to call.
+         *
+         * }
          */
         '_doDelayedFunction': function( obj ) {
             if( obj.col.callbacks.length ) {
@@ -812,29 +834,36 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @td - 
-         * @attr - 
+         * Add callback function to cell.
+         *
+         * @since    0.0.1
+         *
+         * @deprecated 1.0.0
+         *
+         * @param    object   params    {
+         *
+         *   @type   object   destination CELL object where @callbacks array with functions to call.
+         *   @type   function fn        Function with will added.
+         *
+         * }
          */
-        '_setDelayedFunction': function( destination, fn ) {
-            var name = 'setDelayedFunction',
-                params = {'destination':destination,'fn':fn};
-            this.doAction( name + 'Before', params );
-            if(this[name + 'Before'] && typeof this[name + 'Before'] == 'function' && this[name + 'Before'](params) == true || !this[name + 'Before']) {
-                if( params.destination.hasOwnProperty('callbacks') && Array.isArray(params.destination.callbacks) && typeof params.fn == 'function' ) {
-                    params.destination.callbacks.push( params.fn );
-                }
-                else if( ! params.destination.hasOwnProperty('callbacks') && typeof params.fn == 'function' ) {
-                    params.destination.callbacks = [ params.fn ];
-                }
+        '_setDelayedFunction': function( params ) {
+            if( params.destination.hasOwnProperty('callbacks') && Array.isArray(params.destination.callbacks) && typeof params.fn == 'function' ) {
+                params.destination.callbacks.push( params.fn );
             }
-            if(this[name + 'After'] && typeof this[name + 'After'] == 'function')
-                this[name + 'After'](params);
-            this.doAction( name + 'After', params );
+            else if( ! params.destination.hasOwnProperty('callbacks') && typeof params.fn == 'function' ) {
+                params.destination.callbacks = [ params.fn ];
+            }
         },
 
         /**
-         * @td - 
-         * @attr - 
+         * Add ROW's to BODY section.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_createRow
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
          */
         '_createPage': function() {
             if( this.hasOwnProperty('maxRowsOutDelay') && this.getGroup('B').length > this.maxRowsOutDelay ) {
@@ -853,8 +882,25 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @td - 
-         * @attr - 
+         * Create Table.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_defineType
+         * @see      this::_compileTable
+         * @see      this::_createRow
+         * @see      this::_createPage
+         * @see      this::_createTopControls
+         * @see      this::_createBottomControls
+         * @see      this::_addTable
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   Node     selector  Parent object for function called.
+         *
+         * }
          */
         '_createTableManager': function( params ) {
             var row, length;
@@ -901,6 +947,17 @@ jQuery(document).ready(function($){
 
     };
 
+    /**
+     * Add module to init.
+     *
+     * @since    0.0.1
+     *
+     * @see      this::_createTableManager
+     *
+     * @global   object   this      $.TableEdit.plugin — object context.
+     *
+     * @param    Node     selector  Parent object for function called.
+     */
     $.TableEdit.init = function( selector ) {
         this.doMethod('_createTableManager', {'selector':selector});
     };
