@@ -1,3 +1,21 @@
+/**
+ * Plugin for creating an editable table from an array, textarea, table and not only.
+ * You can easily add and delete rows, cells.
+ * The plugin contains enough options and callback functions for quick customization for your task.
+ *
+ * @author     Rzhevskiy Anton <antonrzhevskiy@gmail.com>
+ * @license:   GPLv3 - https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
+/**
+ * Functions that organize the connection between the public part and the data object.
+ *
+ * @link       https://github.com/AntonRzevskiy/TableEdit/blob/master/js/controllers_table.js
+ * @since      0.0.1
+ *
+ * @package    TableEdit
+ * @subpackage TableEdit/js
+ */
 jQuery(document).ready(function($){
 
     if( !$.TableEdit ) return;
@@ -5,9 +23,14 @@ jQuery(document).ready(function($){
     $.TableEdit.plugin = {
 
         /**
-         * 
-         * @@ this method use @toLowerCase
-         * return an actual name of group like Element.nodeName
+         * Get stable group name.
+         * This method use @toLowerCase javaScript.
+         *
+         * @since    0.0.1
+         *
+         * @param    string   group     Name of group.
+         *
+         * @return   string   Name of group. Print console.error if failed.
          */
         'provideGroup': function( group ) {
             switch( group.toLowerCase() ) {
@@ -35,9 +58,14 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @@ this method use @toLowerCase
-         * return an actual link to HTML Element
+         * Get section node element.
+         * This method use @toLowerCase javaScript.
+         *
+         * @since    0.0.1
+         *
+         * @param    string   group     Name of group.
+         *
+         * @return   Node     HTML Element section. Print console.error if failed.
          */
         'getNodeGroup': function( group ) {
             switch( group.toLowerCase() ) {
@@ -65,9 +93,21 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @group - must be actual link to data // use method @getGroup before call
-         * return object contain @rowIndex, @colIndex, @cell
+         * Get parent cell.
+         *
+         * @since    0.0.1
+         *
+         * @param    array    group     Link to data section.
+         * @param    int      rowIndex  Index of row in data.
+         * @param    int      colIndex  Index of col in data.
+         *
+         * @return   object   {
+         *
+         *   @type   object   cell      Parent cell.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *
+         * }
          */
         'getParent': function( group, rowIndex, colIndex ) {
             var checkedCell;
