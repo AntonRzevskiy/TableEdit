@@ -364,6 +364,7 @@ jQuery(document).ready(function($){
          * @see      this::_getFrontCell
          *
          * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   string   controlOrientation Orientation of controls.
          *
          * @param    object   params    {
          *
@@ -524,6 +525,24 @@ jQuery(document).ready(function($){
             return o.deleted;
         },
 
+        /**
+         * Add new columns into DOM & data.
+         * This wrap function for @_addNewColumn.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   options   {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_addNewColumn in case FALSE. Default TRUE.
+         *   @type   int      count     Number of cols to be created. Default 1.
+         *   @type   int      scene     Front index (where action was). Default 0 (first row).
+         *   @type   bool     part      Create cells in part for TBODY section. Default TRUE.
+         *   @type   object   newCol    Prepared column. Default (auto).
+         *
+         * }
+         */
         'addNewCols': function( options ) {
             var o = {
                     'condition': true,
@@ -548,6 +567,28 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Add new column into DOM & data.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::addNewDelayedCols
+         * @see      this::_addNewCol
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   int      maxRowsOutDelay The limit of rows processed without delay.
+         * @global   string   controlOrientation Orientation of controls.
+         *
+         * @param    object   o         {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_addNewColumn in case FALSE.
+         *   @type   int      scene     Front index (where action was).
+         *   @type   bool     part      Create cells in part for TBODY section.
+         *   @type   object   newCol    Prepared column. Default (auto).
+         *
+         * }
+         */
         '_addNewColumn': function( o ) {
             if( o.condition === false ) return;
             this._numberOfColumns += 1;
@@ -578,6 +619,27 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Add new column in part into DOM & data.
+         * After all interations will fired action @addNewColumnAfter.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::_addNewCol
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   int      howCreateOnce The number of rows processed at a time.
+         *
+         * @param    object   o         {
+         *
+         *   @type   int      scene     Front index (where action was).
+         *   @type   object   newCol    Prepared column. Default (auto).
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *
+         * }
+         */
         'addNewDelayedCols': function( o ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
             var that = this,
@@ -601,6 +663,31 @@ jQuery(document).ready(function($){
             },0);
         },
 
+        /**
+         * Add new cell into DOM & data.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_correctCell
+         * @see      this::_getFrontCell
+         * @see      this::createCell
+         * @see      this::newCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   string   controlOrientation Orientation of controls.
+         *
+         * @param    object   o         {
+         *
+         *   @type   int      scene     Front index (where action was).
+         *   @type   object   newCol    Prepared column. Default (auto).
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   Node     tr        HTML Element ROW.
+         *   @type   string   td        Optional. Which cells to create.
+         *
+         * }
+         */
         '_addNewCol': function( o ) {
             if( o.checkedCell !== undefined && (o.checkedCell.mx == 2 || o.checkedCell.mx == 4) ) {
                 if( o.newCol[ o.group ][ o.rowIndex ] === undefined || o.newCol[ o.group ][ o.rowIndex ].mx === undefined ) {

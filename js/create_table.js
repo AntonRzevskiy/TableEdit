@@ -317,12 +317,12 @@ jQuery(document).ready(function($){
 
         /**
          * Add HTML Node in 2 table corners.
-         *
          * Function create two cells & add it depend on @controlOrientation.
          *
          * @since    0.0.1
          *
          * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   string   controlOrientation Orientation of controls.
          *
          * @param    object   params    {
          *
@@ -399,6 +399,7 @@ jQuery(document).ready(function($){
          * @since    0.0.1
          *
          * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   string   controlOrientation Orientation of controls.
          *
          * @param    object   params    {
          *
@@ -781,6 +782,7 @@ jQuery(document).ready(function($){
          * @see      this::_createRow
          *
          * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   int      howCreateOnce The number of rows processed at a time.
          *
          * @param    string   td        Optional. Which cells to create.
          */
@@ -864,6 +866,7 @@ jQuery(document).ready(function($){
          * @see      this::_createRow
          *
          * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   int      maxRowsOutDelay The limit of rows processed without delay.
          */
         '_createPage': function() {
             if( this.hasOwnProperty('maxRowsOutDelay') && this.getGroup('B').length > this.maxRowsOutDelay ) {
