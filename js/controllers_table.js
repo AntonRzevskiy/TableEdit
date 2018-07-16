@@ -63,6 +63,8 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.1
          *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
          * @param    string   group     Name of group.
          *
          * @return   Node     HTML Element section. Print console.error if failed.
@@ -142,11 +144,31 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Add new rows into DOM & data.
+         * This wrap function for @_addNewRow.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   options   {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_addNewRow in case FALSE. Default TRUE.
+         *   @type   int      count     Number of rows to be created. Default 1.
+         *   @type   string   direction The direction in which the rows will be created. Default bottom.
+         *   @type   int      scene     Front index (where action was). Default 0 (first row).
+         *   @type   string   group     Name of section.
+         *   @type   array    newRow    An array that contains cells. Default undefined (auto).
+         *   @type   string   td        Optional. Which cells to create.
+         *
+         * }
+         */
         'addNewRows': function( options ) {
             var o = {
                     'condition': true,
                     'count':     1,
-                    'direction': 'bottom',
+                    'direction': 'bottom',  // top
                     'scene':     0,         // front index
                     'shiftIndex':0,         // data index    
                     'group':     '',
@@ -169,6 +191,28 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Add new row into DOM & data.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_correctCell
+         * @see      this::newCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   o         {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function if FALSE.
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Array of section.
+         *   @type   array    newRow    Array that contains cells.
+         *   @type   array    checkedRow Next door row in data.
+         *   @type   int      shiftIndex Insertion index.
+         *   @type   string   td        Optional. Which cells to create.
+         *
+         * }
+         */
         '_addNewRow': function( o ) {
             if( o.condition === false ) return;
             for( var col = 0; col < o.newRow.length; col++ ) {
@@ -199,11 +243,23 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @param   object   initial  Input for the new cell.
-         * @param   object   options  Options passed to work with cell.
-         * 
-         * @return  object   New cell.
+         * Handle new cell in data.
+         * This wrap function for @_newCell.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   initial   Optional. Source object for the new cell.
+         * @param    object   options   {
+         *
+         *   @type   string   group     Optional. Name of section.
+         *   @type   int      rowIndex  Optional. Index of row in data.
+         *   @type   int      colIndex  Optional. Index of col in data.
+         *
+         * }
+         *
+         * @return   object   New cell.
          */
         'newCell': function( initial, options ) {
 
@@ -227,8 +283,17 @@ jQuery(document).ready(function($){
         },
 
         /**
-         *  
-         * @return  object  New cell
+         * Handle new cell in data.
+         *
+         * @since    0.0.1
+         *
+         * @param    object   params    {
+         *
+         *   @type   object   cell      Cell data object.
+         *
+         * }
+         *
+         * @return   object   New cell.
          */
         '_newCell': function( params ) {
             if( ! params.cell.hasOwnProperty('val') ) params.cell.val = '';
@@ -236,13 +301,24 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @group
-         * @rowIndex
-         * @colIndex
-         * @correct
-         * @property
-         * 
+         * Correct parent cell.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::getParent
+         * @see      this::_getFrontCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   string   group     Name of section.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   string   property  Name of property to correct.
+         *   @type   int      correct   Correction value.
+         *
+         * }
          */
         '_correctCell': function( params ) {
             var parent = this.getParent( this.getGroup( params.group ), params.rowIndex, params.colIndex );
@@ -256,15 +332,19 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * This method shift cell & reduce col or rowspan
-         * 
-         * @group {string}
-         * @rowIndex {number}
-         * @colIndex {number}
-         * @direction {string}
-         * 
+         * Shift cell & reduce col or rowspan.
+         * This wrap function for @_shiftCell.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    string   group     Name of section.
+         * @param    int      rowIndex  Index of row in data.
+         * @param    int      colIndex  Index of col in data.
+         * @param    string   direction Direction of reduction.
          */
-        'shiftCell': function( group, rowIndex, colIndex, direction, count ) {
+        'shiftCell': function( group, rowIndex, colIndex, direction ) {
             return this.doMethod('_shiftCell', {
 
                 'group': group,
@@ -275,6 +355,25 @@ jQuery(document).ready(function($){
             });
         },
 
+        /**
+         * Shift cell & reduce col or rowspan.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::_getFrontCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   string   group     Name of section.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   string   direction Direction of reduction.
+         *
+         * }
+         */
         '_shiftCell': function( params ) {
 
             var data = this.getGroup( params.group ),
@@ -326,6 +425,26 @@ jQuery(document).ready(function($){
 
         },
 
+        /**
+         * Delete rows from DOM & data.
+         * This wrap function for @_deleteRow.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   options   {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_deleteRow in case FALSE. Default TRUE.
+         *   @type   int      count     Number of rows to be deleted. Default 1.
+         *   @type   string   direction The direction in which the rows will be deleted. Default bottom.
+         *   @type   int      scene     Front index (where action was). Default 0 (first row).
+         *   @type   string   group     Name of section.
+         *
+         * }
+         *
+         * @return   array    Deleted rows.
+         */
         'deleteSomeRows': function( options ) {
             var result = [], // will contain deleted rows
                 o = {
@@ -356,6 +475,32 @@ jQuery(document).ready(function($){
             return result;
         },
 
+        /**
+         * Delete row from DOM & data.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::shiftCell
+         * @see      this::_correctCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   o         {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_deleteRow in case FALSE.
+         *   @type   int      count     Number of rows to be deleted.
+         *   @type   string   direction The direction in which the rows will be deleted.
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *   @type   int      pullOutIndex Index of deleted row.
+         *   @type   array    pullOutRow The row to delete.
+         *   @type   array    deleted   Row which was deleted.
+         *
+         * }
+         *
+         * @return   array    Deleted row.
+         */
         '_deleteRow': function( o ) {
             if( o.condition === false ) return;
             for( var col = 0; col < o.pullOutRow.length; col++ ) {
