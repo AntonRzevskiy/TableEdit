@@ -991,10 +991,21 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @group - 
-         * @rowIndex - 
-         * @@ stabilize - this method will 
-         * return HTML Element 
+         * Get HTML Element ROW by data index.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   mixed    group     String - name of section.
+         *                              Node or jQuery Element - HTML Element section.
+         *
+         * }
+         *
+         * @return   Node     HTML Element ROW.
          */
         '_getFrontRow': function( params ) {
             if( params.group.nodeName ) {
@@ -1024,10 +1035,25 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * @group - 
-         * @row - ( int || string || jQuery )
-         * @col -  
-         * return HTML Element 
+         * Get HTML Element CELL by data index.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      col       Index of cell in data.
+         *   @type   mixed    rowIndex  Int - Index of row in data.
+         *                              Node or jQuery Element - HTML Element section.
+         *   @type   mixed    group     String - name of section.
+         *                              Node or jQuery Element - HTML Element section.
+         *
+         * }
+         *
+         * @return   Node     HTML Element CELL.
          */
         '_getFrontCell': function( params ) {
             if( params.row instanceof jQuery ) {
@@ -1044,13 +1070,17 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @group - string
-         * @rowIndex - 
-         * @colIndex - 
-         * @newData - object
-         * 
-         * return ? 
+         * Change cell.
+         * This wrap function for @_change.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    string   group     Name of section.
+         * @param    int      rowIndex  Index of row in data.
+         * @param    int      colIndex  Index of col in data.
+         * @param    object   newData   Value to save.
          */
         'change': function( group, rowIndex, colIndex, newData ) {
             var params = {
@@ -1081,6 +1111,33 @@ jQuery(document).ready(function($){
             return this.doMethod('_change', params);
         },
 
+        /**
+         * Set property in cell.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_handleContraction
+         * @see      this::_handleStretching
+         * @see      this::_handleValueChanging
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   object   newData   Value to save.
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *   @type   array    adding
+         *   @type   array    remove
+         *   @type   object   cell      Cell object.
+         *   @type   object   stretchError
+         *   @type   function getTune
+         *   @type   function isStretched
+         *
+         * }
+         */
         '_change': function( params ) {
             var countCol,
                 countRow;
