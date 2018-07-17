@@ -728,6 +728,26 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Delete columns from DOM & data.
+         * This wrap function for @_deleteColumn.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   options   {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_deleteColumn in case FALSE. Default TRUE.
+         *   @type   int      count     Number of cols to be deleted. Default 1.
+         *   @type   int      scene     Front index (where action was). Default 0 (first row).
+         *   @type   bool     part      Delete cells in part for TBODY section. Default TRUE.
+         *   @type   function getDeleted User function for get deleted column. Default undefined.
+         *
+         * }
+         *
+         * @return   array    Deleted columns.
+         */
         'deleteSomeCols': function( options ) {
             var result = [], // will contain deleted columns
                 o = {
@@ -760,6 +780,29 @@ jQuery(document).ready(function($){
             return result;
         },
 
+        /**
+         * Delete column from DOM & data.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::deleteDelayedCols
+         * @see      this::_deleteCol
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   int      maxRowsOutDelay The limit of rows processed without delay.
+         * @global   string   controlOrientation Orientation of controls.
+         *
+         * @param    object   o         {
+         *
+         *   @type   bool     condition Boolean var that interrupt the function @_addNewColumn in case FALSE.
+         *   @type   int      pullOutIndex Front index (where action was).
+         *   @type   bool     part      Delete cells in part for TBODY section.
+         *
+         * }
+         *
+         * @return   object   Deleted column.
+         */
         '_deleteColumn': function( o ) {
             if( o.condition === false ) return;
             this._numberOfColumns -= 1;
@@ -791,6 +834,28 @@ jQuery(document).ready(function($){
             return o.deletedColumn;
         },
 
+        /**
+         * Delete column in part from DOM & data.
+         * After all interations will fired action @deleteColumnAfter.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::_deleteCol
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         * @global   int      howCreateOnce The number of rows processed at a time.
+         *
+         * @param    object   o         {
+         *
+         *   @type   int      pullOutIndex Front index (where action was).
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *   @type   object   deletedColumn Column which was deleted.
+         *   @type   int      counter   The iteration number of a function (for @getDeleted).
+         *
+         * }
+         */
         'deleteDelayedCols': function( o ) {
             if(! this.hasOwnProperty('howCreateOnce')) return;
             var that = this,
@@ -820,6 +885,30 @@ jQuery(document).ready(function($){
             },0);
         },
 
+        /**
+         * Delete cell from DOM & data.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::shiftCell
+         * @see      this::_correctCell
+         * @see      this::_getFrontCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   o         {
+         *
+         *   @type   int      pullOutIndex Front index (where action was).
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   object   checkedCell Cell in data.
+         *   @type   Node     tr        HTML Element ROW.
+         *
+         * }
+         *
+         * @return   object   Deleted cell.
+         */
         '_deleteCol': function( o ) {
             var remove = true;
             if( o.checkedCell.hasOwnProperty('attr') && o.checkedCell.attr.hasOwnProperty('colspan') && o.checkedCell.attr.colspan > 1 ) {
@@ -842,16 +931,18 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * 
-         * @@ Method use jQuery extend( true ) for deep extends
-         * 
-         * @rowIndex - 
-         * @colIndex - 
-         * @saving - string separate .(dot) / will convert to array for callback
-         * @newValue - 
-         * @group - string for define chain in @dataTableObject
-         * 
-         * return ?
+         * Set property in cell.
+         * This wrap function for @_saveBackCell.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    int      rowIndex  Index of row in data.
+         * @param    int      colIndex  Index of col in data.
+         * @param    string   saving    Path to property. String separate .(dot)
+         * @param    mixed    newValue  Value to save.
+         * @param    string   group     Name of section.
          */
         'saveBackCell': function( rowIndex, colIndex, saving, newValue, group ) {
             var chain = saving.split('.');
@@ -864,6 +955,23 @@ jQuery(document).ready(function($){
             });
         },
 
+        /**
+         * Set property in cell.
+         *
+         * @since    0.0.1
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   array    saving    Path to property.
+         *   @type   mixed    newValue  Value to save.
+         *   @type   array    group     Data of section.
+         *
+         * }
+         */
         '_saveBackCell': function( params ) {
             var tmp = [],
                 o = {};
