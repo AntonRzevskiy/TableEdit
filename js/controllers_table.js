@@ -1224,6 +1224,25 @@ jQuery(document).ready(function($){
             if( params.newData.hasOwnProperty('val') ) this.doMethod('_handleValueChanging', params );
         },
 
+        /**
+         * Set value in data cell & front cell.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   object   newData   Value to save.
+         *   @type   string   group     Name of section.
+         *   @type   object   cell      Cell object.
+         *
+         * }
+         */
         '_handleValueChanging': function( params ) {
             if( params.cell.hasOwnProperty('val') && params.cell.val != params.newData.val ) {
                 this.saveBackCell( params.rowIndex, params.colIndex, 'val', params.newData.val, params.group );
@@ -1231,6 +1250,32 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Handle cell contraction.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontRow
+         * @see      this::_getFrontCell
+         * @see      this::createCell
+         * @see      this::saveBackCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   object   newData   Value to save.
+         *   @type   string   group     Name of section.
+         *   @type   array    data      Data of section.
+         *   @type   array    adding
+         *   @type   object   cell      Cell object.
+         *   @type   object   stretchError
+         *   @type   function getTune
+         *
+         * }
+         */
         '_handleContraction': function( params ) {
             if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
                 for( var i = 0; i < params.adding.length; i++ ) {
@@ -1268,6 +1313,30 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Handle cell stretching.
+         *
+         * @since    0.0.1
+         *
+         * @see      this::_getFrontCell
+         * @see      this::_emptyCell
+         * @see      this::saveBackCell
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *   @type   object   newData   Value to save.
+         *   @type   string   group     Name of section.
+         *   @type   array    remove
+         *   @type   object   cell      Cell object.
+         *   @type   object   stretchError
+         *   @type   function getTune
+         *
+         * }
+         */
         '_handleStretching': function( params ) {
             if( params.stretchError.rowspan.length == 0 && params.stretchError.colspan.length == 0 ) {
                 for( var i = 0; i < params.remove.length; i++ ) {
@@ -1295,6 +1364,13 @@ jQuery(document).ready(function($){
             }
         },
 
+        /**
+         * Empty cell.
+         *
+         * @since    0.0.1
+         *
+         * @param    object   cell      Cell object.
+         */
         '_emptyCell': function( cell ) {
             for( var key in cell) {
                 delete cell[key];
