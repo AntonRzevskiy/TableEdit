@@ -8,7 +8,7 @@
  */
 
 /**
- * Functions for creating a table from data.
+ * Functions processing user events.
  *
  * @link       https://github.com/AntonRzevskiy/TableEdit/blob/master/js/events_table.js
  * @since      0.0.1
