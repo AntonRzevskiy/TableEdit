@@ -23,6 +23,15 @@ jQuery(document).ready(function($){
     $.TableEdit.localPlugin = {
 
         /**
+         * Search by the table.
+         *
+         * @since    0.0.2
+         *
+         * @var      bool    search    Search by the table. Default false.
+         */
+        'search': false,
+
+        /**
          * Word stock for the section tbody.
          *
          * @since    0.0.2
@@ -33,9 +42,31 @@ jQuery(document).ready(function($){
             return [];
         },
 
+        /**
+         * DOM element for search.
+         *
+         * @since    0.0.2
+         *
+         * @var      Node    searchElement HTML Node.
+         */
+        'searchElement': function(){
+            return document.createElement('input');
+        },
+
     };
 
     $.TableEdit.plugin = {
+
+        /**
+         * Display search element.
+         *
+         * @since    0.0.2
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        '_addSearchElement': function() {
+            $( this.table ).before( this.searchElement );
+        },
 
         'setVocabulary': function() {},
 
@@ -46,6 +77,28 @@ jQuery(document).ready(function($){
         'updateVocabulary': function() {},
 
         'iSearch': function() {},
+
+    };
+
+    $.TableEdit.callbacks.refresh();
+
+    $.TableEdit.callbacks = {
+
+        /**
+         * Display search element if @search enabled.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_addTable::callbacks
+         * @see      this::_addSearchElement
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'addTableAfter': function() {
+
+            if( this.search === true ) this.doMethod('_addSearchElement');
+
+        },
 
     };
 
