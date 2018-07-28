@@ -20,6 +20,7 @@
 <script src="js/events_table.js"></script>
 <script src="js/callbacks_bootstrap_modal.js"></script>
 <script src="js/callbacks_define_types.js"></script>
+<script src="js/search.js"></script>
 
     <script>
 
@@ -170,6 +171,340 @@
             }
         });
         
+    });
+
+    </script>
+
+    <table id="search-table" class="table table-bordered">
+
+        <!-- Table header -->
+        <thead>
+            <tr>
+                <th>Rank</th><th>Title</th><th>Genre</th><th>Studio</th><th>Lifetime Gross</th><th>Year</th>
+            </tr>
+        </thead>
+        <!-- /Table header -->
+
+        <!-- Table body -->
+        <tbody>
+
+            <tr>
+                <td>1</td><td>Star Wars: The Force Awakens</td><td>Science Fiction</td><td>BV</td><td>935,832,832.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>2</td><td>Avatar</td><td>Science Fiction</td><td>Fox</td><td>760,507,648.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>3</td><td>Titanic</td><td>Drama</td><td>Par.</td><td>658,672,320.00</td><td>1997</td>
+            </tr>
+            <tr>
+                <td>4</td><td>Jurassic World</td><td>Science Fiction</td><td>Uni.</td><td>652,270,656.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>5</td><td>Marvel's The Avengers</td><td>Adventure</td><td>BV</td><td>623,357,888.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>6</td><td>The Dark Knight</td><td>Action</td><td>WB</td><td>534,858,432.00</td><td>2008</td>
+            </tr>
+            <tr>
+                <td>7</td><td>Star Wars: Episode I - The Phantom Menace</td><td>Science Fiction</td><td>Fox</td><td>474,544,672.00</td><td>1999</td>
+            </tr>
+            <tr>
+                <td>8</td><td>Star Wars</td><td>Science Fiction</td><td>Fox</td><td>460,998,016.00</td><td>1977</td>
+            </tr>
+            <tr>
+                <td>9</td><td>Avengers: Age of Ultron</td><td>Action</td><td>BV</td><td>459,005,856.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>10</td><td>The Dark Knight Rises</td><td>Action</td><td>WB</td><td>448,139,104.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>11</td><td>Shrek 2</td><td>Comedy</td><td>DW</td><td>441,226,240.00</td><td>2004</td>
+            </tr>
+            <tr>
+                <td>12</td><td>E.T.: The Extra-Terrestrial</td><td>Science Fiction</td><td>Uni.</td><td>435,110,560.00</td><td>1982</td>
+            </tr>
+            <tr>
+                <td>13</td><td>The Hunger Games: Catching Fire</td><td>Science Fiction</td><td>LGF</td><td>424,668,032.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>14</td><td>Pirates of the Caribbean: Dead Man's Chest</td><td>Adventure</td><td>BV</td><td>423,315,808.00</td><td>2006</td>
+            </tr>
+            <tr>
+                <td>15</td><td>The Lion King</td><td>Adventure</td><td>BV</td><td>422,783,776.00</td><td>1994</td>
+            </tr>
+            <tr>
+                <td>16</td><td>Toy Story 3</td><td>Comedy</td><td>BV</td><td>415,004,864.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>17</td><td>Iron Man 3</td><td>Adventure</td><td>BV</td><td>409,013,984.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>18</td><td>The Hunger Games</td><td>Drama</td><td>LGF</td><td>408,010,688.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>19</td><td>Spider-Man</td><td>Science Fiction</td><td>Sony</td><td>403,706,368.00</td><td>2002</td>
+            </tr>
+            <tr>
+                <td>20</td><td>Jurassic Park</td><td>Science Fiction</td><td>Uni.</td><td>402,453,888.00</td><td>1993</td>
+            </tr>
+            <tr>
+                <td>21</td><td>Transformers: Revenge of the Fallen</td><td>Science Fiction</td><td>P/DW</td><td>402,111,872.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>22</td><td>Frozen</td><td>Comedy</td><td>BV</td><td>400,738,016.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>23</td><td>Harry Potter and the Deathly Hallows Part 2</td><td>Science Fiction</td><td>WB</td><td>381,011,232.00</td><td>2011</td>
+            </tr>
+            <tr>
+                <td>24</td><td>Finding Nemo</td><td>Adventure</td><td>BV</td><td>380,843,264.00</td><td>2003</td>
+            </tr>
+            <tr>
+                <td>25</td><td>Star Wars: Episode III - Revenge of the Sith</td><td>Science Fiction</td><td>Fox</td><td>380,270,592.00</td><td>2005</td>
+            </tr>
+            <tr>
+                <td>26</td><td>The Lord of the Rings: The Return of the King</td><td>Adventure</td><td>NL</td><td>377,845,920.00</td><td>2003</td>
+            </tr>
+            <tr>
+                <td>27</td><td>Spider-Man 2</td><td>Science Fiction</td><td>Sony</td><td>373,585,824.00</td><td>2004</td>
+            </tr>
+            <tr>
+                <td>28</td><td>The Passion of the Christ</td><td>Drama</td><td>NM</td><td>370,782,944.00</td><td>2004</td>
+            </tr>
+            <tr>
+                <td>29</td><td>Despicable Me 2</td><td>Comedy</td><td>Uni.</td><td>368,061,280.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>30</td><td>Deadpool</td><td>Science Fiction</td><td>Fox</td><td>360,087,904.00</td><td>2016</td>
+            </tr>
+            <tr>
+                <td>31</td><td>Inside Out</td><td>Historical</td><td>BV</td><td>356,461,696.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>32</td><td>Furious 7</td><td>Action</td><td>Uni.</td><td>353,007,008.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>33</td><td>Transformers: Dark of the Moon</td><td>Science Fiction</td><td>P/DW</td><td>352,390,528.00</td><td>2011</td>
+            </tr>
+            <tr>
+                <td>34</td><td>American Sniper</td><td>Action</td><td>WB</td><td>350,126,368.00</td><td>2014</td>
+            </tr>
+            <tr>
+                <td>35</td><td>The Lord of the Rings: The Two Towers</td><td>Adventure</td><td>NL</td><td>342,551,360.00</td><td>2002</td>
+            </tr>
+            <tr>
+                <td>36</td><td>The Hunger Games: Mockingjay - Part 1</td><td>Adventure</td><td>LGF</td><td>337,135,872.00</td><td>2014</td>
+            </tr>
+            <tr>
+                <td>37</td><td>Spider-Man 3</td><td>Science Fiction</td><td>Sony</td><td>336,530,304.00</td><td>2007</td>
+            </tr>
+            <tr>
+                <td>38</td><td>Minions</td><td>Comedy</td><td>Uni.</td><td>336,045,760.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>39</td><td>Alice in Wonderland (2010)</td><td>Adventure</td><td>BV</td><td>334,191,104.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>40</td><td>Guardians of the Galaxy</td><td>Science Fiction</td><td>BV</td><td>333,176,608.00</td><td>2014</td>
+            </tr>
+            <tr>
+                <td>41</td><td>Forrest Gump</td><td>Adventure</td><td>Par.</td><td>330,252,192.00</td><td>1994</td>
+            </tr>
+            <tr>
+                <td>42</td><td>Shrek the Third</td><td>Comedy</td><td>P/DW</td><td>322,719,936.00</td><td>2007</td>
+            </tr>
+            <tr>
+                <td>43</td><td>Transformers</td><td>Science Fiction</td><td>P/DW</td><td>319,246,208.00</td><td>2007</td>
+            </tr>
+            <tr>
+                <td>44</td><td>Iron Man</td><td>Science Fiction</td><td>Par.</td><td>318,412,096.00</td><td>2008</td>
+            </tr>
+            <tr>
+                <td>45</td><td>Harry Potter and the Sorcerer's Stone</td><td>Adventure</td><td>WB</td><td>317,575,552.00</td><td>2001</td>
+            </tr>
+            <tr>
+                <td>46</td><td>Indiana Jones and the Kingdom of the Crystal Skull</td><td>Adventure</td><td>Par.</td><td>317,101,120.00</td><td>2008</td>
+            </tr>
+            <tr>
+                <td>47</td><td>The Lord of the Rings: The Fellowship of the Ring</td><td>Adventure</td><td>NL</td><td>315,544,736.00</td><td>2001</td>
+            </tr>
+            <tr>
+                <td>48</td><td>Iron Man 2</td><td>Science Fiction</td><td>Par.</td><td>312,433,344.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>49</td><td>Batman v Superman: Dawn of Justice</td><td>Science Fiction</td><td>WB</td><td>311,330,080.00</td><td>2016</td>
+            </tr>
+            <tr>
+                <td>50</td><td>Star Wars: Episode II - Attack of the Clones</td><td>Science Fiction</td><td>Fox</td><td>310,676,736.00</td><td>2002</td>
+            </tr>
+            <tr>
+                <td>51</td><td>Pirates of the Caribbean: At World's End</td><td>Adventure</td><td>BV</td><td>309,420,416.00</td><td>2007</td>
+            </tr>
+            <tr>
+                <td>52</td><td>Return of the Jedi</td><td>Science Fiction</td><td>Fox</td><td>309,306,176.00</td><td>1983</td>
+            </tr>
+            <tr>
+                <td>53</td><td>Zootopia</td><td>Comedy</td><td>BV</td><td>307,386,400.00</td><td>2016</td>
+            </tr>
+            <tr>
+                <td>54</td><td>Independence Day</td><td>Science Fiction</td><td>Fox</td><td>306,169,280.00</td><td>1996</td>
+            </tr>
+            <tr>
+                <td>55</td><td>Pirates of the Caribbean: The Curse of the Black Pearl</td><td>Adventure</td><td>BV</td><td>305,413,920.00</td><td>2003</td>
+            </tr>
+            <tr>
+                <td>56</td><td>Skyfall</td><td>Action</td><td>Sony</td><td>304,360,288.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>57</td><td>The Hobbit: An Unexpected Journey</td><td>Adventure</td><td>WB (NL)</td><td>303,003,584.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>58</td><td>Harry Potter and the Half-Blood Prince</td><td>Adventure</td><td>WB</td><td>301,959,200.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>59</td><td>The Twilight Saga: Eclipse</td><td>Drama</td><td>Sum.</td><td>300,531,744.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>60</td><td>The Twilight Saga: New Moon</td><td>Drama</td><td>Sum.</td><td>296,623,648.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>61</td><td>Harry Potter and the Deathly Hallows Part 1</td><td>Adventure</td><td>WB</td><td>295,983,296.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>62</td><td>The Sixth Sense</td><td>Drama</td><td>BV</td><td>293,506,304.00</td><td>1999</td>
+            </tr>
+            <tr>
+                <td>63</td><td>Up</td><td>Comedy</td><td>BV</td><td>293,004,160.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>64</td><td>Inception</td><td>Science Fiction</td><td>WB</td><td>292,576,192.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>65</td><td>The Twilight Saga: Breaking Dawn Part 2</td><td>Drama</td><td>LG/S</td><td>292,324,736.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>66</td><td>Harry Potter and the Order of the Phoenix</td><td>Adventure</td><td>WB</td><td>292,004,736.00</td><td>2007</td>
+            </tr>
+            <tr>
+                <td>67</td><td>The Chronicles of Narnia: The Lion, the Witch and the Wardrobe</td><td>Adventure</td><td>BV</td><td>291,710,944.00</td><td>2005</td>
+            </tr>
+            <tr>
+                <td>68</td><td>Man of Steel</td><td>Science Fiction</td><td>WB</td><td>291,045,504.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>69</td><td>The Empire Strikes Back</td><td>Science Fiction</td><td>Fox</td><td>290,475,072.00</td><td>1980</td>
+            </tr>
+            <tr>
+                <td>70</td><td>Harry Potter and the Goblet of Fire</td><td>Adventure</td><td>WB</td><td>290,013,024.00</td><td>2005</td>
+            </tr>
+            <tr>
+                <td>71</td><td>Monsters, Inc.</td><td>Science Fiction</td><td>BV</td><td>289,916,256.00</td><td>2001</td>
+            </tr>
+            <tr>
+                <td>72</td><td>Home Alone</td><td>Comedy</td><td>Fox</td><td>285,761,248.00</td><td>1990</td>
+            </tr>
+            <tr>
+                <td>73</td><td>The Hunger Games: Mockingjay - Part 2</td><td>Drama</td><td>LGF</td><td>281,723,904.00</td><td>2015</td>
+            </tr>
+            <tr>
+                <td>74</td><td>The Matrix Reloaded</td><td>Science Fiction</td><td>WB</td><td>281,576,448.00</td><td>2003</td>
+            </tr>
+            <tr>
+                <td>75</td><td>The Twilight Saga: Breaking Dawn Part 1</td><td>Drama</td><td>Sum.</td><td>281,287,136.00</td><td>2011</td>
+            </tr>
+            <tr>
+                <td>76</td><td>Meet the Fockers</td><td>Comedy</td><td>Uni.</td><td>279,261,152.00</td><td>2004</td>
+            </tr>
+            <tr>
+                <td>77</td><td>The Hangover</td><td>Comedy</td><td>WB</td><td>277,322,496.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>78</td><td>Gravity</td><td>Science Fiction</td><td>WB</td><td>274,092,704.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>79</td><td>Monsters University</td><td>Comedy</td><td>BV</td><td>268,492,768.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>80</td><td>Shrek</td><td>Comedy</td><td>DW</td><td>267,665,008.00</td><td>2001</td>
+            </tr>
+            <tr>
+                <td>81</td><td>The Amazing Spider-Man</td><td>Science Fiction</td><td>Sony</td><td>262,030,656.00</td><td>2012</td>
+            </tr>
+            <tr>
+                <td>82</td><td>Harry Potter and the Chamber of Secrets</td><td>Adventure</td><td>WB</td><td>261,988,480.00</td><td>2002</td>
+            </tr>
+            <tr>
+                <td>83</td><td>The Incredibles</td><td>Comedy</td><td>BV</td><td>261,441,088.00</td><td>2004</td>
+            </tr>
+            <tr>
+                <td>84</td><td>How the Grinch Stole Christmas</td><td>Comedy</td><td>Uni.</td><td>260,044,832.00</td><td>2000</td>
+            </tr>
+            <tr>
+                <td>85</td><td>Jaws</td><td>Adventure</td><td>Uni.</td><td>260,000,000.00</td><td>1975</td>
+            </tr>
+            <tr>
+                <td>86</td><td>Captain America: The Winter Soldier</td><td>Adventure</td><td>BV</td><td>259,766,576.00</td><td>2014</td>
+            </tr>
+            <tr>
+                <td>87</td><td>The Hobbit: The Desolation of Smaug</td><td>Adventure</td><td>WB (NL)</td><td>258,366,848.00</td><td>2013</td>
+            </tr>
+            <tr>
+                <td>88</td><td>The LEGO Movie</td><td>Comedy</td><td>WB</td><td>257,760,688.00</td><td>2014</td>
+            </tr>
+            <tr>
+                <td>89</td><td>Star Trek</td><td>Science Fiction</td><td>Par.</td><td>257,730,016.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>90</td><td>I Am Legend</td><td>Science Fiction</td><td>WB</td><td>256,393,008.00</td><td>2007</td>
+            </tr>
+            <tr>
+                <td>91</td><td>The Blind Side</td><td>Drama</td><td>WB</td><td>255,959,472.00</td><td>2009</td>
+            </tr>
+            <tr>
+                <td>92</td><td>The Hobbit: The Battle of the Five Armies</td><td>Adventure</td><td>WB (NL)</td><td>255,119,792.00</td><td>2014</td>
+            </tr>
+            <tr>
+                <td>93</td><td>The Hangover Part II</td><td>Comedy</td><td>WB</td><td>254,464,304.00</td><td>2011</td>
+            </tr>
+            <tr>
+                <td>94</td><td>Despicable Me</td><td>Gangster</td><td>Uni.</td><td>251,513,984.00</td><td>2010</td>
+            </tr>
+            <tr>
+                <td>95</td><td>Batman</td><td>Science Fiction</td><td>WB</td><td>251,188,928.00</td><td>1989</td>
+            </tr>
+            <tr>
+                <td>96</td><td>Night at the Museum</td><td>Adventure</td><td>Fox</td><td>250,863,264.00</td><td>2006</td>
+            </tr>
+            <tr>
+                <td>97</td><td>Men in Black</td><td>Science Fiction</td><td>Sony</td><td>250,690,544.00</td><td>1997</td>
+            </tr>
+            <tr>
+                <td>98</td><td>Harry Potter and the Prisoner of Azkaban</td><td>Adventure</td><td>WB</td><td>249,541,072.00</td><td>2004</td>
+            </tr>
+            <tr>
+                <td>99</td><td>Raiders of the Lost Ark</td><td>Adventure</td><td>Par.</td><td>248,159,968.00</td><td>1981</td>
+            </tr>
+            <tr>
+                <td>100</td><td>Toy Story 2</td><td>Comedy</td><td>BV</td><td>245,852,176.00</td><td>1999</td>
+            </tr>
+
+        </tbody>
+        <!-- /Table body -->
+
+    </table>
+
+    <script>
+
+    jQuery(document).ready(function($){
+
+        $('#search-table').tableEdit({
+            compileTableAfter: function() {
+                $( this.table ).addClass('tableEdit');
+            },
+            search: true
+        });
+
     });
 
     </script>
