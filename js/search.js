@@ -32,6 +32,15 @@ jQuery(document).ready(function($){
         'search': false,
 
         /**
+         * Search initial length.
+         *
+         * @since    0.0.2
+         *
+         * @var      int     searchInitLength    The initial length of the search string. Default 3 symbols.
+         */
+        'searchInitLength': 3,
+
+        /**
          * Word stock for the section tbody.
          *
          * @since    0.0.2
@@ -47,10 +56,22 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
-         * @var      Node    searchElement HTML Node.
+         * @var      Node    searchElement HTML Node. Default @input.
          */
         'searchElement': function(){
             return document.createElement('input');
+        },
+
+        /**
+         * The relationship between the rows of the visual table and the data.
+         *
+         * @since    0.0.2
+         *
+         * @var      array   taxonomy    The relationship between front-table & data-table.
+         *                               Front-index => data-index.
+         */
+        'taxonomy': function(){
+            return [];
         },
 
     };
@@ -68,15 +89,82 @@ jQuery(document).ready(function($){
             $( this.table ).before( this.searchElement );
         },
 
-        'setVocabulary': function() {},
+        /**
+         * Set search string in vocabulary cell.
+         *
+         * @since    0.0.2
+         *
+         * @param    object   {
+         *
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *
+         * }
+         */
+        '_setVocabulary': function( params ) {
 
-        'getVocabulary': function() {},
+            var parent = this.getParent( this.getGroup('B'), params.rowIndex, params.colIndex );
 
-        'createVocabulary': function() {},
+            this.vocabulary[ params.rowIndex ][ params.colIndex ] = parent.cell.val;
 
-        'updateVocabulary': function() {},
+        },
 
-        'iSearch': function() {},
+        '_getVocabulary': function( params ) {
+
+            return this.vocabulary.length ? this.vocabulary :
+                   this.doMethod('_createVocabulary', params);
+
+        },
+
+        '_createVocabulary': function( params ) {
+
+            var dataBody = this.getGroup('B'),
+                length = dataBody.length,
+                row, col;
+
+            this.vocabulary = new Array( length );
+
+            for( row = 0; row < length; row++ ) {
+
+                this.vocabulary[ row ] = new Array( dataBody[row].length );
+
+                for( col = 0; col < dataBody[row].length; col++ ) {
+
+                    this.doMethod('_setVocabulary', {
+
+                        'rowIndex': row,
+                        'colIndex': col,
+
+                    });
+
+                }
+
+            }
+
+            return this.vocabulary;
+        },
+
+        /**
+         * Prepare search activation.
+         *
+         * @since    0.0.2
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    string   value     Search query.
+         */
+        'iSearch': function( value ) {
+
+            if( this.searchInitLength > value.length ) return;
+
+            console.time( '_getVocabulary' );
+            // console.log( this.doMethod('_getVocabulary', {}) );
+            this.doMethod('_getVocabulary', {});
+            console.timeEnd( '_getVocabulary' );
+
+            console.log( value );
+
+        },
 
     };
 
@@ -96,8 +184,41 @@ jQuery(document).ready(function($){
          */
         'addTableAfter': function() {
 
-            if( this.search === true ) this.doMethod('_addSearchElement');
+            if( this.search === false ) return true; // exit
 
+            this.doMethod('_addSearchElement');
+
+            return true;
+        },
+
+        /**
+         * Bind events if @search enabled.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_eventsBind::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'eventsBindAfter': function() {
+
+            if( this.search === false ) return true; // exit
+
+            $(this.searchElement).on(
+                'input.iSearch keyup.iSearch change.iSearch',
+                this,
+                function(e) {
+
+                    // Leave only one event.
+                    if( e.type === 'input' ) $(this).off('keyup.iSearch').off('change.iSearch');
+                    if( e.type === 'keyup' ) $(this).off('input.iSearch').off('change.iSearch');
+                    if( e.type === 'change' ) $(this).off('keyup.iSearch').off('input.iSearch');
+
+                    return e.data.iSearch( $(this).val() );
+                }
+            );
+
+            return true;
         },
 
     };
