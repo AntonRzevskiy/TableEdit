@@ -143,31 +143,6 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * Get the property of the object, using synonyms for the search.
-         *
-         * @since    0.0.2
-         *
-         * @see      this::getProp
-         *
-         * @global   object   this     $.TableEdit.plugin — object context.
-         *
-         * @param    object   obj      Object to search.
-         * @param    string   synonyms The path to the property in the object is separated by dots.
-         *                             For synonyms, use a double vertical line separator ||.
-         *
-         * @return   mixed/undefined   Value of property. UNDEFINED if failed.
-         */
-        'getProps': function( obj, synonyms ) {
-            var paths = synonyms.split('||'),
-                prop;
-            for( var p = 0; p < paths.length; p++ ) {
-                prop = this.getProp( obj, paths[p] );
-                if( prop !== undefined ) return prop;
-            }
-            return undefined;
-        },
-
-        /**
          * Get the property of the object.
          *
          * @since    0.0.2
