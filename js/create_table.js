@@ -720,14 +720,14 @@ jQuery(document).ready(function($){
 
             if( object.col.mx && object.row.length == this._numberOfColumns ) return this.attr( object.td, 'data-real-index', object.colIndex );
 
-            if( object.col.attr && object.col.attr.colspan && object.col.attr.rowspan ) {
+            if( this.getProp( object.col, 'attr.colspan' ) && this.getProp( object.col, 'attr.rowspan' ) ) {
                 var colspan = object.col.attr.colspan - 1;
                 var rowspan = object.col.attr.rowspan - 1;
                 while( rowspan > 0 ) {
                     var shiftIndex = object.colIndex;
                     for( var j = 0; j < object.colIndex; j++ ) {
                         var inspectionCol = object.group[ object.rowIndex + rowspan ][ j ];
-                        if( inspectionCol.attr && inspectionCol.attr.colspan ) {
+                        if( this.getProp( inspectionCol, 'attr.colspan' ) ) {
                             shiftIndex -= (inspectionCol.attr.colspan - 1);
                             j += (inspectionCol.attr.colspan - 1);
                         }
@@ -744,7 +744,7 @@ jQuery(document).ready(function($){
                 object.group[ object.rowIndex ][ object.colIndex ].mx = 1;
                 return this.attr( object.td, 'data-real-index', object.colIndex );
             }
-            else if( object.col.attr && object.col.attr.colspan ) {
+            else if( this.getProp( object.col, 'attr.colspan' ) ) {
                 var colspan = object.col.attr.colspan - 1;
                 while( colspan-- > 0 ) {
                     object.group[ object.rowIndex ].splice( object.colIndex + 1, 0, {mx: 2} );
@@ -752,13 +752,13 @@ jQuery(document).ready(function($){
                 object.group[ object.rowIndex ][ object.colIndex ].mx = 1;
                 return this.attr( object.td, 'data-real-index', object.colIndex );
             }
-            else if( object.col.attr && object.col.attr.rowspan ) {
+            else if( this.getProp( object.col, 'attr.rowspan' ) ) {
                 var rowspan = object.col.attr.rowspan - 1;
                 while( rowspan > 0 ) {
                     var shiftIndex = object.colIndex;
                     for( var j = 0; j < object.colIndex; j++ ) {
                         var inspectionCol = object.group[ object.rowIndex + rowspan ][ j ];
-                        if( inspectionCol.attr && inspectionCol.attr.colspan ) {
+                        if( this.getProp( inspectionCol, 'attr.colspan' ) ) {
                             shiftIndex -= (inspectionCol.attr.colspan - 1);
                             j += (inspectionCol.attr.colspan - 1);
                         }
@@ -847,6 +847,7 @@ jQuery(document).ready(function($){
          * After all interations will fired action @createPageAfter.
          *
          * @since    0.0.1
+         * @since    0.0.2    Used @createDocumentFragment to add rows.
          *
          * @see      this::_createRow
          *
@@ -862,9 +863,10 @@ jQuery(document).ready(function($){
                 interation = 0;
             setTimeout(function generateRows() {
                 var save = context.howCreateOnce * interation,
-                    length = (context.getGroup('B').length - save) < context.howCreateOnce ? context.getGroup('B').length - save : context.howCreateOnce;
+                    length = (context.getGroup('B').length - save) < context.howCreateOnce ? context.getGroup('B').length - save : context.howCreateOnce,
+                    fragment = document.createDocumentFragment();
                 for( var row = 0; row < length; row++ ) {
-                    context.tbody.appendChild( context.doMethod('_createRow', {
+                    fragment.appendChild( context.doMethod('_createRow', {
                         'tr': context.createEL('tr'),
                         'row': context.getGroup('B')[row + save],
                         'index': (row + save),
@@ -872,6 +874,7 @@ jQuery(document).ready(function($){
                         'td': td
                     }) );
                 }
+                context.tbody.appendChild( fragment );
                 if( ++interation < times ) {
                     setTimeout(generateRows,0);
                 }
