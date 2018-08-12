@@ -53,15 +53,33 @@
                     }
                 },
 
+                /**
+                 * Initialize the modules of the object.
+                 *
+                 * The caller function can be part of object TableEdit.plugin or global.
+                 *
+                 * @since    0.0.1
+                 *
+                 * @since    0.0.2    Modules are called async.
+                 *
+                 * @global   object   this     $.TableEdit.plugin — object context.
+                 *
+                 * @param    mixed    selector Parent object for function called.
+                 */
                 init: function( selector ) {
-                    var arrInit = $.TableEdit.init;
+                    var arrInit = $.TableEdit.init,
+                        that = this;
                     if( arrInit.length ) {
                         for(var i = 0; i < arrInit.length; i++ ) {
-                            try {
-                                this[ arrInit[ i ] ].apply(this,[selector,arrInit,i]);
-                            } catch (e) {
-                                arrInit[ i ].apply(this,[selector,arrInit,i]);
-                            }
+                            (function( queue, index, data, ctx ) {
+                                setTimeout(function() {
+                                    try {
+                                        ctx[ queue[ index ] ].apply(ctx,[data,queue,index]);
+                                    } catch (e) {
+                                        queue[ index ].apply(ctx,[data,queue,index]);
+                                    }
+                                }, 0);
+                            })( arrInit, i, selector, that);
                         }
                     }
                 },
@@ -215,7 +233,7 @@
 
     });
 
-    $.fn.tableEdit = function( options ) {
+    $.fn.tableEdit = function( options, callback ) {
 
         if(
             /**
@@ -256,7 +274,26 @@
                     options
                 );
 
-            that.init( this );
+            var error;
+
+            try {
+                that.init( this );
+            }
+            catch( ex ) {
+                error = ex;
+            };
+
+            /**
+             * async callback function
+             * it will have 2 params ( @error - if error defined, @ctx - TableEdit.plugin )
+             * this - will set null
+             */
+            if( typeof callback === 'function' ) {
+                setTimeout(function() {
+                    callback.call( null, error, that );
+                }, 0);
+            }
+
             return this;
         }
 

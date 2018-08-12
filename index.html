@@ -25,11 +25,11 @@
     <script>
 
     jQuery(document).ready(function($){
-        
+
         var R = 0,
             rowsGenerate = new Array(1000);
         for(var i = 0; i < rowsGenerate.length; i++) {
-            
+
             var randomPosition = -1;
             if( i % 10 == 0 ) {
                 randomPosition = Math.floor(Math.random() * 8 + 0);
@@ -77,6 +77,13 @@
                 $( this.table ).addClass('tableEdit');
                 return true;
             },
+        },
+        function( err, ctx ) {
+
+            if( err ) return;
+
+            console.log( ctx );
+
         });
 
     });
@@ -84,7 +91,7 @@
     </script>
 
     <textarea id="from-textarea" class="hidden">
-    
+
         [
             [ {"val":"head 1"}, {"val":"head 2"}, {"val":"head 3"}, {"val":"head 4"}, {"val":"head 5","attr":{"class":"danger"}} ],
             [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ],
@@ -93,7 +100,7 @@
             [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ],
             [ {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value"}, {"val":"value","attr":{"class":"warning"}} ]
         ]
-    
+
     </textarea>
     
     <script>
@@ -160,7 +167,7 @@
     <script>
 
     jQuery(document).ready(function($){
-        
+
         $('#from-table').tableEdit({
             compileTableAfter: function() {
                 $( this.table ).addClass('table-hover tableEdit');
@@ -170,7 +177,7 @@
                 return obj.attr;
             }
         });
-        
+
     });
 
     </script>
