@@ -229,6 +229,21 @@
                     $.extend(true, this._localPlugin, object);
                 }
             }
+        },
+
+        _public: {
+            value: {}
+        },
+
+        public: {
+            get: function() {
+                return this._public;
+            },
+            set: function( object ) {
+                if( object instanceof Object ) {
+                    $.extend(true, this._public, object);
+                }
+            }
         }
 
     });
@@ -284,13 +299,20 @@
             };
 
             /**
+             * This is a special object with a set of public methods.
+             * It implements the impurity, obtaining as prototype an uninitialized table object.
+             * It is designed to release the current namespace in the table object.
+             */
+            var publicApi = $.extend( Object.create( that ), $.TableEdit.public );
+
+            /**
              * async callback function
-             * it will have 2 params ( @error - if error defined, @ctx - TableEdit.plugin )
+             * it will have 2 params ( @error - if error defined, @ctx - publicApi )
              * this - will set null
              */
             if( typeof callback === 'function' ) {
                 setTimeout(function() {
-                    callback.call( null, error, that );
+                    callback.call( null, error, publicApi );
                 }, 0);
             }
 
