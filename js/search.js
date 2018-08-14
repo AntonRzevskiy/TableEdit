@@ -145,6 +145,50 @@ jQuery(document).ready(function($){
         },
 
         /**
+         * Join dictionary cells to strings for searching.
+         *
+         * @since    0.0.2
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   {
+         *
+         *   @type   object   cols      Object with the column numbers to merge. Default all.
+         *   @type   string   separator Delimiter when merging. Default space.
+         *
+         * }
+         *
+         * @return   array    Array of strings suitable for searching.
+         */
+        '_joinVocabulary': function( params ) {
+
+            if( ! params.result ) params.result = [];
+
+            var length = this.vocabulary.length,
+                row = 0;
+
+            for( ; row < length; row++ ) {
+
+                params.result.push(
+
+                    this.vocabulary[ row ].filter( function( element, index ) {
+
+                        if( ! params.cols ) return true;
+
+                        if( params.cols[ index ] ) return true;
+
+                        return false;
+
+                    } ).join( params.separator || ' ' )
+
+                );
+
+            }
+
+            return params.result;
+        },
+
+        /**
          * Prepare search activation.
          *
          * @since    0.0.2
@@ -158,8 +202,17 @@ jQuery(document).ready(function($){
             if( this.searchInitLength > value.length ) return;
 
             console.time( '_getVocabulary' );
-            // console.log( this.doMethod('_getVocabulary', {}) );
             this.doMethod('_getVocabulary', {});
+            this.doMethod('_joinVocabulary', {
+                cols: {
+                    '0': false,
+                    '1': false,
+                    '2': true,
+                    '3': true,
+                    '4': false,
+                    '5': false,
+                }
+            });
             console.timeEnd( '_getVocabulary' );
 
             console.log( value );
