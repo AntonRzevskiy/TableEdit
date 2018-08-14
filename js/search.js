@@ -94,7 +94,7 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
-         * @param    object   {
+         * @params   object   {
          *
          *   @type   int      rowIndex  Index of row in data.
          *   @type   int      colIndex  Index of col in data.
@@ -109,14 +109,14 @@ jQuery(document).ready(function($){
 
         },
 
-        '_getVocabulary': function( params ) {
+        '_getVocabulary': function() {
 
             return this.vocabulary.length ? this.vocabulary :
-                   this.doMethod('_createVocabulary', params);
+                   this.doMethod('_createVocabulary');
 
         },
 
-        '_createVocabulary': function( params ) {
+        '_createVocabulary': function() {
 
             var dataBody = this.getGroup('B'),
                 length = dataBody.length,
@@ -151,7 +151,7 @@ jQuery(document).ready(function($){
          *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
-         * @param    object   {
+         * @params   object   {
          *
          *   @type   object   cols      Object with the column numbers to merge. Default all.
          *   @type   string   separator Delimiter when merging. Default space.
@@ -164,14 +164,15 @@ jQuery(document).ready(function($){
 
             if( ! params.result ) params.result = [];
 
-            var length = this.vocabulary.length,
+            var vocabulary = this.doMethod('_getVocabulary'),
+                length = vocabulary.length,
                 row = 0;
 
             for( ; row < length; row++ ) {
 
                 params.result.push(
 
-                    this.vocabulary[ row ].filter( function( element, index ) {
+                    vocabulary[ row ].filter( function( element, index ) {
 
                         if( ! params.cols ) return true;
 
@@ -196,26 +197,62 @@ jQuery(document).ready(function($){
          * @global   object   this      $.TableEdit.plugin — object context.
          *
          * @param    string   value     Search query.
+         * @param    mixed    cols      Columns that are involved in the search. Default undefined (All).
          */
-        'iSearch': function( value ) {
+        'iSearch': function( value, cols ) {
 
             if( this.searchInitLength > value.length ) return;
 
-            console.time( '_getVocabulary' );
-            this.doMethod('_getVocabulary', {});
-            this.doMethod('_joinVocabulary', {
-                cols: {
-                    '0': false,
-                    '1': false,
-                    '2': true,
-                    '3': true,
-                    '4': false,
-                    '5': false,
-                }
-            });
-            console.timeEnd( '_getVocabulary' );
+            var params = {
+
+                'value': value,
+                'cols': cols || {},
+                'regexp': new RegExp( value, 'i' ),
+                'reset': true
+
+            };
+
+            console.time( 'iSearch' );
+
+            this.doMethod('_iSearch', params);
+
+            console.timeEnd( 'iSearch' );
 
             console.log( value );
+            console.log( this.taxonomy );
+
+        },
+
+        /**
+         * Search rows.
+         *
+         * @since    0.0.2
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @params   object   {
+         *
+         *   @type   object   regexp    Regular expression for search.
+         *   @type   object   cols      Columns that are involved in the search. Default undefined (All).
+         *   @type   bool     reset     Reset previous search result. Default TRUE.
+         *
+         * }
+         */
+        '_iSearch': function( params ) {
+
+            var rows = this.doMethod('_joinVocabulary', params.cols );
+
+            if( params.reset ) this.taxonomy = [];
+
+            for( var row = 0; row < rows.length; row++ ) {
+
+                if( params.regexp.test( rows[ row ] ) ) {
+
+                    this.taxonomy.push( row );
+
+                }
+
+            }
 
         },
 
