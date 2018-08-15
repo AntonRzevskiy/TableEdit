@@ -256,6 +256,29 @@ jQuery(document).ready(function($){
 
         },
 
+        /**
+         * Find original row in taxonomy.
+         *
+         * @since    0.0.2
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @params   object   {
+         *
+         *   @type   int      index     Finding index of data.
+         *   @type   int      start     Start position of find. Default undefined.
+         *
+         * }
+         *
+         * @return   bool     TRUE if index in taxonomy. FALSE if not.
+         */
+        '_inTaxonomy': function( params ) {
+
+            params.result = this.taxonomy.indexOf( +params.index, params.start || 0 );
+
+            return !!( params.result >= 0 );
+        },
+
     };
 
     $.TableEdit.callbacks.refresh();
