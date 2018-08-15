@@ -207,7 +207,7 @@ jQuery(document).ready(function($){
 
                 'value': value,
                 'cols': cols || {},
-                'regexp': new RegExp( value, 'i' ),
+                'regexp': new RegExp( this.doMethod('_prepareSearchingValue', {'value': value}), 'im' ),
                 'reset': true
 
             };
@@ -277,6 +277,32 @@ jQuery(document).ready(function($){
             params.result = this.taxonomy.indexOf( +params.index, params.start || 0 );
 
             return !!( params.result >= 0 );
+        },
+
+        /**
+         * Prepare value to search.
+         *
+         * @since    0.0.2
+         *
+         * @params   object   {
+         *
+         *   @type   string   value     Search query.
+         *
+         * }
+         *
+         * @return   string   Valid string for RegExp class.
+         */
+        '_prepareSearchingValue': function( params ) {
+
+            params.matcher = params.matcher || function( match ) {
+
+                return '\\\\\\' + match;
+
+            };
+
+            params.regexp = params.regexp || /\^|\(|\)/gmi;
+
+            return params.filtered = params.value.replace( params.regexp, params.matcher );
         },
 
     };
