@@ -149,6 +149,8 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
+         * @see      this::_getVocabulary
+         *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
          * @params   object   {
@@ -194,6 +196,10 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
+         * @see      this::_prepareSearchingValue
+         * @see      this::_createPage
+         * @see      this::_iSearch
+         *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
          * @param    string   value     Search query.
@@ -201,7 +207,18 @@ jQuery(document).ready(function($){
          */
         'iSearch': function( value, cols ) {
 
-            if( this.searchInitLength > value.length ) return;
+            if( this.searchInitLength > value.length ) {
+
+                if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return;
+
+                this.setProp( this, 'cache.isSearchedPage', false );
+
+                this.taxonomy = [];
+
+                $( this.tbody ).empty();
+
+                return this.doMethod('_createPage');
+            }
 
             var params = {
 
@@ -228,6 +245,10 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
+         * @see      this::_joinVocabulary
+         * @see      this::_createRow
+         * @see      this::_createEmptySearchPage
+         *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
          * @params   object   {
@@ -240,11 +261,15 @@ jQuery(document).ready(function($){
          */
         '_iSearch': function( params ) {
 
-            var rows = this.doMethod('_joinVocabulary', params.cols );
+            var rows = this.doMethod('_joinVocabulary', params.cols ),
+                row, tx,
+                length;
 
             if( params.reset ) this.taxonomy = [];
 
-            for( var row = 0; row < rows.length; row++ ) {
+            this.setProp( this, 'cache.isSearchedPage', true );
+
+            for( row = 0, length = rows.length; row < length; row++ ) {
 
                 if( params.regexp.test( rows[ row ] ) ) {
 
@@ -252,6 +277,27 @@ jQuery(document).ready(function($){
 
                 }
 
+            }
+
+            $( this.tbody ).empty();
+
+            if( this.taxonomy.length ) {
+
+                for( row = 0, length = this.taxonomy.length; row < length; row++ ) {
+                    tx = this.taxonomy[ row ];
+                    this.tbody.appendChild( this.doMethod('_createRow', {
+                        'tr': this.createEL('tr'),
+                        'index': tx,
+                        'row': this.getGroup('B')[tx],
+                        'group': this.getGroup('B')
+                    }) );
+                }
+
+            }
+
+            else {
+                // if the search fails
+                this.doMethod('_createEmptySearchPage', params);
             }
 
         },
@@ -300,7 +346,7 @@ jQuery(document).ready(function($){
 
             };
 
-            params.regexp = params.regexp || /\^|\(|\)/gmi;
+            params.regexp = params.regexp || /\^|\(|\)|\[|\]|\{|\}|\.|\$|\*|\+|\?/gmi;
 
             return params.filtered = params.value.replace( params.regexp, params.matcher );
         },
