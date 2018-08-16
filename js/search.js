@@ -353,6 +353,12 @@ jQuery(document).ready(function($){
 
     };
 
+    if( $.TableEdit.plugin.hasOwnProperty( '_skippedCell' ) === false ) {
+
+        $.TableEdit.plugin._skippedCell = function() {};
+
+    }
+
     $.TableEdit.callbacks.refresh();
 
     $.TableEdit.callbacks = {
@@ -402,6 +408,95 @@ jQuery(document).ready(function($){
                     return e.data.iSearch( $(this).val() );
                 }
             );
+
+            return true;
+        },
+
+        /**
+         * Set rowspan = 1 if @isSearchedPage.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_createCell::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'createCellAfter': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) || params.td.nodeName.toLowerCase() !== 'td' ) return true;
+
+            if( this.getProp( params.col, 'mx' ) === 1 && this.getProp( params.col, 'attr.rowspan' ) > 1 ) {
+
+                this.attr( params.td, 'rowspan', 1 );
+
+            }
+
+            return true;
+        },
+
+        /**
+         * Get parent cell & set rowspan = 1 & append if @isSearchedPage.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_skippedCell::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'skippedCellAfter': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) || params.row[ params.col ].mx !== 3 ) return true;
+
+            var parent = $.extend( true, {}, this.getParent( params.group, params.index, params.col ) );
+
+            this.setProp( parent.cell, 'attr.rowspan', 1 );
+
+            params.tr.appendChild( this.createCell(
+                params.tr,      // HTML Element
+                params.row,     // Array
+                parent.cell,    // insted of current
+                params.index,   // Number Index of row
+                params.col,     // Number Index of col
+                params.group,   // Array
+                params.td       // String optional
+            ) );
+
+            return true;
+        },
+
+        /**
+         * Normalize params for edit.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_cellEditingStart::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'cellEditingStartBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            if( this.provideGroup( params.group ) === 'tbody' ) {
+
+                params.rowIndex = this.taxonomy[ params.rowIndex ];
+
+                params.$menuContent.attr('data-row', params.rowIndex);
+
+            }
+
+            return true;
+        },
+
+        'cellEditingStopBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            if( this.provideGroup( params.group ) === 'tbody' ) {
+
+                params.rowIndex = this.taxonomy[ params.rowIndex ];
+
+            }
 
             return true;
         },
