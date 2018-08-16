@@ -465,7 +465,7 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * Normalize params for edit.
+         * Normalize params for inline edit.
          *
          * @since    0.0.2
          *
@@ -481,13 +481,22 @@ jQuery(document).ready(function($){
 
                 params.rowIndex = this.taxonomy[ params.rowIndex ];
 
-                params.$menuContent.attr('data-row', params.rowIndex);
+                // params.$menuContent.attr('data-row', params.rowIndex);
 
             }
 
             return true;
         },
 
+        /**
+         * Normalize params for inline edit.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_cellEditingStop::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
         'cellEditingStopBefore': function( params ) {
 
             if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
@@ -499,6 +508,52 @@ jQuery(document).ready(function($){
             }
 
             return true;
+        },
+
+        /**
+         * Normalize params for get row.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_getFrontRow::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'getFrontRowBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            if( this.provideGroup( params.group ) === 'tbody' && this.doMethod('_inTaxonomy', {index: params.rowIndex}) ) {
+
+                params.rowIndex = this.taxonomy.indexOf( params.rowIndex );
+
+            }
+
+            return true;
+
+        },
+
+        /**
+         * Normalize params for global edit.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_change::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'changeBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            if( this.provideGroup( params.group ) === 'tbody' && this.doMethod('_inTaxonomy', {index: params.rowIndex}) ) {
+
+                params.rowIndex = this.taxonomy[ params.rowIndex ];
+
+            }
+
+            return true;
+
         },
 
     };
