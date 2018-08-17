@@ -465,23 +465,21 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * Normalize params for inline edit.
+         * Normalize params for get cell object.
          *
          * @since    0.0.2
          *
-         * @see      this::_cellEditingStart::callbacks
+         * @see      this::_getDataCell::callbacks
          *
          * @global   object   this      $.TableEdit.plugin — object context.
          */
-        'cellEditingStartBefore': function( params ) {
+        'getDataCellBefore': function( params ) {
 
             if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
 
             if( this.provideGroup( params.group ) === 'tbody' ) {
 
                 params.rowIndex = this.taxonomy[ params.rowIndex ];
-
-                // params.$menuContent.attr('data-row', params.rowIndex);
 
             }
 
