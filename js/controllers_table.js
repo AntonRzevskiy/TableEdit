@@ -145,6 +145,58 @@ jQuery(document).ready(function($){
         },
 
         /**
+         * Get cell data.
+         * This wrap function for @_getDataCell.
+         *
+         * @since    0.0.2
+         *
+         * @param    string   group     Name of data section.
+         * @param    int      rowIndex  Index of row in front table.
+         * @param    int      colIndex  Index of col in front table.
+         *
+         * @return   object   {
+         *
+         *   @type   object   cell      Cell object.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *
+         * }
+         */
+        'getDataCell': function( group, rowIndex, colIndex ) {
+            return this.doMethod('_getDataCell', {
+                'rowIndex': rowIndex,
+                'colIndex': colIndex,
+                'group': group
+            });
+        },
+
+        /**
+         * Get cell data.
+         * This function call @getParent for get cell object.
+         *
+         * @since    0.0.2
+         *
+         * @param    object   params    {
+         *
+         *   @type   string   group     Name of data section.
+         *   @type   int      rowIndex  Index of row in front table.
+         *   @type   int      colIndex  Index of col in front table.
+         *
+         * }
+         *
+         * @return   object   {
+         *
+         *   @type   object   cell      Cell object.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
+         *
+         * }
+         */
+        '_getDataCell': function( params ) {
+            return this.getParent( this.getGroup( params.group ), params.rowIndex, params.colIndex );
+        },
+
+        /**
          * Add new rows into DOM & data.
          * This wrap function for @_addNewRow.
          *
