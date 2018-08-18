@@ -94,7 +94,7 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
-         * @params   object   {
+         * @param    object   params    {
          *
          *   @type   int      rowIndex  Index of row in data.
          *   @type   int      colIndex  Index of col in data.
@@ -182,7 +182,7 @@ jQuery(document).ready(function($){
          *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
-         * @params   object   {
+         * @param    object   params    {
          *
          *   @type   object   cols      Object with the column numbers to merge. Default all.
          *   @type   string   separator Delimiter when merging. Default space.
@@ -280,7 +280,7 @@ jQuery(document).ready(function($){
          *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
-         * @params   object   {
+         * @param    object   params    {
          *
          *   @type   object   regexp    Regular expression for search.
          *   @type   object   cols      Columns that are involved in the search. Default undefined (All).
@@ -338,7 +338,7 @@ jQuery(document).ready(function($){
          *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
-         * @params   object   {
+         * @param    object   params    {
          *
          *   @type   int      index     Finding index of data.
          *   @type   int      start     Start position of find. Default undefined.
@@ -359,7 +359,7 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
-         * @params   object   {
+         * @param    object   params    {
          *
          *   @type   string   value     Search query.
          *
