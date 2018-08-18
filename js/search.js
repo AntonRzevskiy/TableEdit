@@ -11,7 +11,7 @@
  * Functions providing search and filtering of table rows.
  *
  * @link       https://github.com/AntonRzevskiy/TableEdit/blob/master/js/search.js
- * @since      0.0.1
+ * @since      0.0.2
  *
  * @package    TableEdit
  * @subpackage TableEdit/js
@@ -109,6 +109,15 @@ jQuery(document).ready(function($){
 
         },
 
+        /**
+         * Get Vocabulary.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_createVocabulary
+         *
+         * @return   array    Vocabulary array of tbody section.
+         */
         '_getVocabulary': function() {
 
             return this.vocabulary.length ? this.vocabulary :
@@ -116,6 +125,15 @@ jQuery(document).ready(function($){
 
         },
 
+        /**
+         * Create Vocabulary.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_setVocabulary
+         *
+         * @return   array    Vocabulary array of tbody section.
+         */
         '_createVocabulary': function() {
 
             var dataBody = this.getGroup('B'),
@@ -142,6 +160,17 @@ jQuery(document).ready(function($){
             }
 
             return this.vocabulary;
+        },
+
+        /**
+         * Flush Vocabulary.
+         *
+         * @since    0.0.2
+         */
+        '_flushVocabulary': function() {
+
+            this.vocabulary = [];
+
         },
 
         /**
@@ -355,6 +384,13 @@ jQuery(document).ready(function($){
 
     if( $.TableEdit.plugin.hasOwnProperty( '_skippedCell' ) === false ) {
 
+        /**
+         * Add empty method for skipped cells.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_createRow
+         */
         $.TableEdit.plugin._skippedCell = function() {};
 
     }
@@ -487,7 +523,7 @@ jQuery(document).ready(function($){
         },
 
         /**
-         * Normalize params for inline edit.
+         * Normalize params for inline edit & flush vocabulary.
          *
          * @since    0.0.2
          *
@@ -503,6 +539,7 @@ jQuery(document).ready(function($){
 
                 params.rowIndex = this.taxonomy[ params.rowIndex ];
 
+                this.doMethod('_flushVocabulary');
             }
 
             return true;
@@ -528,11 +565,10 @@ jQuery(document).ready(function($){
             }
 
             return true;
-
         },
 
         /**
-         * Normalize params for global edit.
+         * Normalize params for global edit & flush vocabulary.
          *
          * @since    0.0.2
          *
@@ -548,10 +584,10 @@ jQuery(document).ready(function($){
 
                 params.rowIndex = this.taxonomy[ params.rowIndex ];
 
+                this.doMethod('_flushVocabulary');
             }
 
             return true;
-
         },
 
     };
