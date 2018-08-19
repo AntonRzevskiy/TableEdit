@@ -246,7 +246,7 @@ jQuery(document).ready(function($){
 
                 $( this.tbody ).empty();
 
-                return this.doMethod('_createPage');
+                return this.doMethod('_createPage', {});
             }
 
             var params = {
