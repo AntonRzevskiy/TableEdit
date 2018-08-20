@@ -371,11 +371,11 @@ jQuery(document).ready(function($){
 
             params.matcher = params.matcher || function( match ) {
 
-                return '\\\\\\' + match;
+                return '\\' + match;
 
             };
 
-            params.regexp = params.regexp || /\^|\(|\)|\[|\]|\{|\}|\.|\$|\*|\+|\?/gmi;
+            params.regexp = params.regexp || /\^|\(|\)|\[|\]|\{|\}|\.|\$|\*|\+|\?|\\/gmi;
 
             return params.filtered = params.value.replace( params.regexp, params.matcher );
         },
