@@ -380,6 +380,59 @@ jQuery(document).ready(function($){
             return params.filtered = params.value.replace( params.regexp, params.matcher );
         },
 
+        /**
+         * Unmerge cell (rowspan) & copy each.
+         *
+         * @since    0.0.2
+         *
+         * @param    object   params    {
+         *
+         *   @type   string   group     Name of data section.
+         *   @type   int      rowIndex  Index of row in front table.
+         *   @type   int      colIndex  Index of col in front table.
+         *
+         * }
+         */
+        '_unmergeCellVerticalCopy': function( params ) {
+
+            var ind, length;
+
+            if( ! params.parent ) params.parent = this.getDataCell( params.group, params.rowIndex, params.colIndex );
+            if( ! params.copies ) {
+
+                params.copies = [];
+
+                ind = params.parent.rowIndex + 1; // next row!
+                length = ind + ( this.getProp( params.parent.cell, 'attr.rowspan' ) || 1 ) - 1;
+
+                for( ; ind < length; ind++ ) {
+
+                    params.copies.push({
+                        'rowIndex': ind,
+                        'colIndex': params.parent.colIndex,
+                        'group': params.group
+                    });
+                }
+            }
+
+            this.saveBackCell( params.parent.rowIndex, params.parent.colIndex, 'attr.rowspan', 1, params.group );
+
+            for( ind = 0; ind < params.copies.length; ind++ ) {
+
+                this.getGroup( params.group )[ params.copies[ ind ].rowIndex ][ params.copies[ ind ].colIndex ] = this.newCell( params.parent.cell, {'copy': true} );
+
+                length = params.copies[ ind ].colIndex; // use length as colIndex
+
+                while( this.getGroup( params.group )[ params.copies[ ind ].rowIndex ][ ++length ] &&
+                       this.getGroup( params.group )[ params.copies[ ind ].rowIndex ][ length ].mx === 4
+                ) {
+
+                    this.saveBackCell( params.copies[ ind ].rowIndex, length, 'mx', 2, params.group );
+                }
+            }
+
+        },
+
     };
 
     if( $.TableEdit.plugin.hasOwnProperty( '_skippedCell' ) === false ) {
@@ -396,6 +449,40 @@ jQuery(document).ready(function($){
     }
 
     $.TableEdit.callbacks.refresh();
+
+    $.TableEdit.callbacks = {
+
+        /**
+         * Unmerge cell & copy.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_cellEditingStop::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'cellEditingStopBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            var parentCell = this.getDataCell( params.group, params.rowIndex, params.colIndex ).cell;
+
+            if( this.provideGroup( params.group ) === 'tbody' &&
+                this.getProp( parentCell, 'attr.rowspan' ) > 1 &&
+                this.getProp( parentCell, 'val' ) !== params.newValue
+            ) {
+
+                this.doMethod('_unmergeCellVerticalCopy', {
+                    'group': params.group,
+                    'rowIndex': params.rowIndex,
+                    'colIndex': params.colIndex,
+                });
+            }
+
+            return true;
+        },
+
+    };
 
     $.TableEdit.callbacks = {
 
