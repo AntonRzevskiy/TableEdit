@@ -385,11 +385,13 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
+         * @see      this::saveBackCell
+         *
          * @param    object   params    {
          *
          *   @type   string   group     Name of data section.
-         *   @type   int      rowIndex  Index of row in front table.
-         *   @type   int      colIndex  Index of col in front table.
+         *   @type   int      rowIndex  Index of row in data.
+         *   @type   int      colIndex  Index of col in data.
          *
          * }
          */
@@ -397,7 +399,7 @@ jQuery(document).ready(function($){
 
             var ind, length;
 
-            if( ! params.parent ) params.parent = this.getDataCell( params.group, params.rowIndex, params.colIndex );
+            if( ! params.parent ) params.parent = this.getParent( this.getGroup( params.group ), params.rowIndex, params.colIndex );
             if( ! params.copies ) {
 
                 params.copies = [];
@@ -449,40 +451,6 @@ jQuery(document).ready(function($){
     }
 
     $.TableEdit.callbacks.refresh();
-
-    $.TableEdit.callbacks = {
-
-        /**
-         * Unmerge cell & copy.
-         *
-         * @since    0.0.2
-         *
-         * @see      this::_cellEditingStop::callbacks
-         *
-         * @global   object   this      $.TableEdit.plugin — object context.
-         */
-        'cellEditingStopBefore': function( params ) {
-
-            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
-
-            var parentCell = this.getDataCell( params.group, params.rowIndex, params.colIndex ).cell;
-
-            if( this.provideGroup( params.group ) === 'tbody' &&
-                this.getProp( parentCell, 'attr.rowspan' ) > 1 &&
-                this.getProp( parentCell, 'val' ) !== params.newValue
-            ) {
-
-                this.doMethod('_unmergeCellVerticalCopy', {
-                    'group': params.group,
-                    'rowIndex': params.rowIndex,
-                    'colIndex': params.colIndex,
-                });
-            }
-
-            return true;
-        },
-
-    };
 
     $.TableEdit.callbacks = {
 
@@ -667,11 +635,155 @@ jQuery(document).ready(function($){
 
             if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
 
-            if( this.provideGroup( params.group ) === 'tbody' && this.doMethod('_inTaxonomy', {index: params.rowIndex}) ) {
+            if( this.provideGroup( params.group ) === 'tbody' ) {
 
                 params.rowIndex = this.taxonomy[ params.rowIndex ];
+                params.cell = this.getGroup( params.group )[ params.rowIndex ][ params.colIndex ];
 
                 this.doMethod('_flushVocabulary');
+            }
+
+            return true;
+        },
+
+        /**
+         * Deny action.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_addNewRow::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'addNewRowBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            if( this.provideGroup( params.group ) === 'tbody' ) {
+
+                params.condition = false;
+            }
+
+            return true;
+        },
+
+        /**
+         * Deny action.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_deleteRow::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'deleteRowBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            if( this.provideGroup( params.group ) === 'tbody' ) {
+
+                params.condition = false;
+            }
+
+            return true;
+        },
+
+        /**
+         * Deny action.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_addNewColumn::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'addNewColumnBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            params.condition = false;
+
+            return true;
+        },
+
+        /**
+         * Deny action.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_deleteColumn::callbacks
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'deleteColumnBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            params.condition = false;
+
+            return true;
+        },
+
+    };
+
+    $.TableEdit.callbacks = {
+
+        /**
+         * Unmerge cell & copy.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_cellEditingStop::callbacks
+         * @see      this::_unmergeCellVerticalCopy
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'cellEditingStopBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            var parentCell = this.getParent( this.getGroup( params.group ), params.rowIndex, params.colIndex ).cell;
+
+            if( this.provideGroup( params.group ) === 'tbody' &&
+                this.getProp( parentCell, 'attr.rowspan' ) > 1 &&
+                this.getProp( parentCell, 'val' ) !== params.newValue
+            ) {
+
+                this.doMethod('_unmergeCellVerticalCopy', {
+                    'group': params.group,
+                    'rowIndex': params.rowIndex,
+                    'colIndex': params.colIndex,
+                });
+            }
+
+            return true;
+        },
+
+        /**
+         * Unmerge cell & copy.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_change::callbacks
+         * @see      this::_unmergeCellVerticalCopy
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'changeBefore': function( params ) {
+
+            if( ! this.getProp( this, 'cache.isSearchedPage' ) ) return true;
+
+            var parentCell = this.getParent( this.getGroup( params.group ), params.rowIndex, params.colIndex ).cell;
+
+            if( this.provideGroup( params.group ) === 'tbody' &&
+                this.getProp( parentCell, 'attr.rowspan' ) > 1
+            ) {
+
+                this.doMethod('_unmergeCellVerticalCopy', {
+                    'group': params.group,
+                    'rowIndex': params.rowIndex,
+                    'colIndex': params.colIndex,
+                });
             }
 
             return true;
