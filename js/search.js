@@ -301,6 +301,7 @@ jQuery(document).ready(function($){
 
             console.log( value );
             console.log( this.taxonomy );
+            console.log( this.doMethod('_generateAvailableValues', {column: 5}) );
 
         },
 
@@ -325,7 +326,7 @@ jQuery(document).ready(function($){
          */
         '_iSearch': function( params ) {
 
-            var rows = this.doMethod('_joinVocabulary', params.cols ),
+            var rows = this.doMethod('_joinVocabulary', {'cols': params.cols} ),
                 row, length;
 
             if( params.reset ) this.doMethod('_flushTaxonomy');
@@ -444,6 +445,24 @@ jQuery(document).ready(function($){
                 }
             }
 
+        },
+
+        '_generateAvailableValues': function( params ) {
+
+            params.join = {'cols': {}};
+            params.join.cols[ params.column ] = true;
+
+            var col = this.doMethod('_joinVocabulary', params.join );
+
+            var result = {};
+
+            for( var i = 0; i < col.length; i++ ) {
+
+                result[ col[i] ] = 1;
+
+            }
+
+            return ( params.result || Object.keys( result ) );
         },
 
     };
