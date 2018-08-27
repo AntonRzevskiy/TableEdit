@@ -186,6 +186,41 @@ jQuery(document).ready(function($){
 
         /**
          * Join dictionary cells to strings for searching.
+         * This wrap function for @_joinVocabulary.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_joinVocabulary
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    arr/str  cols      Optional. Array or String with column indexes to merge. Default all.
+         * @param    string   separator Optional. Delimiter when merging. Default space.
+         *
+         * @return   array    Array of strings suitable for searching.
+         */
+        'joinVocabulary': function( cols, separator ) {
+
+            var columns = (typeof cols === 'string') ? cols.split(',') :
+                          (typeof cols === 'number') ? [ cols ] : cols,
+                whiteCols = {};
+
+            if( columns ) {
+
+                for( var i = 0; i < columns.length; i++ ) {
+
+                    whiteCols[ columns[i] ] = true;
+                }
+            }
+
+            return this.doMethod('_joinVocabulary', {
+                'cols': cols ? whiteCols : cols,
+                'separator': separator
+            });
+        },
+
+        /**
+         * Join dictionary cells to strings for searching.
          *
          * @since    0.0.2
          *
@@ -268,7 +303,7 @@ jQuery(document).ready(function($){
             this.doMethod('_iSearch', {
 
                 'value': value,
-                'cols': cols || {},
+                'cols': cols,
                 'regexp': new RegExp( this.doMethod('_prepareSearchingValue', {'value': value}), 'im' ),
                 'reset': true
 
@@ -310,23 +345,22 @@ jQuery(document).ready(function($){
          *
          * @since    0.0.2
          *
-         * @see      this::_joinVocabulary
-         * @see      this::_createRow
-         * @see      this::_createEmptySearchPage
+         * @see      this::joinVocabulary
+         * @see      this::_flushTaxonomy
          *
          * @global   object   this      $.TableEdit.plugin — object context.
          *
          * @param    object   params    {
          *
          *   @type   object   regexp    Regular expression for search.
-         *   @type   object   cols      Columns that are involved in the search. Default undefined (All).
+         *   @type   mixed    cols      Columns that are involved in the search. Default undefined (All).
          *   @type   bool     reset     Reset previous search result. Default TRUE.
          *
          * }
          */
         '_iSearch': function( params ) {
 
-            var rows = this.doMethod('_joinVocabulary', {'cols': params.cols} ),
+            var rows = this.joinVocabulary( params.cols ),
                 row, length;
 
             if( params.reset ) this.doMethod('_flushTaxonomy');
@@ -399,6 +433,8 @@ jQuery(document).ready(function($){
          *
          * @see      this::saveBackCell
          *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
          * @param    object   params    {
          *
          *   @type   string   group     Name of data section.
@@ -447,14 +483,29 @@ jQuery(document).ready(function($){
 
         },
 
+        /**
+         * Generate available values for filter select.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::joinVocabulary
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         *
+         * @param    object   params    {
+         *
+         *   @type   mixed    column    Column number that are involved in the filter.
+         *
+         * }
+         *
+         * @return   array    Available values for selection in the filter.
+         */
         '_generateAvailableValues': function( params ) {
 
-            params.join = {'cols': {}};
-            params.join.cols[ params.column ] = true;
+            if( params.result ) return params.result;
 
-            var col = this.doMethod('_joinVocabulary', params.join );
-
-            var result = {};
+            var col = this.joinVocabulary( params.column ),
+                result = {};
 
             for( var i = 0; i < col.length; i++ ) {
 
@@ -462,7 +513,7 @@ jQuery(document).ready(function($){
 
             }
 
-            return ( params.result || Object.keys( result ) );
+            return Object.keys( result );
         },
 
     };
