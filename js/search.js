@@ -74,6 +74,26 @@ jQuery(document).ready(function($){
             return [];
         },
 
+        /**
+         * Filter the table.
+         *
+         * @since    0.0.2
+         *
+         * @var      bool    filter    Filter the table. Default false.
+         */
+        'filter': false,
+
+        /**
+         * DOM element for filter.
+         *
+         * @since    0.0.2
+         *
+         * @var      Node    filterElement HTML Node. Default @select.
+         */
+        'filterElement': function(){
+            return document.createElement('select');
+        },
+
     };
 
     $.TableEdit.plugin = {
@@ -329,7 +349,10 @@ jQuery(document).ready(function($){
 
             else {
                 // if the search fails
-                this.doMethod('_createEmptySearchPage', params);
+                this.doMethod('_createEmptySearchPage', {
+                    'value': value,
+                    'cols': cols
+                });
             }
 
             console.timeEnd( 'iSearch' );
