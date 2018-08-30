@@ -90,9 +90,7 @@ jQuery(document).ready(function($){
          *
          * @var      Node    filterElement HTML Node. Default @select.
          */
-        'filterElement': function(){
-            return document.createElement('select');
-        },
+        'filterElement': '<select></select>',
 
     };
 
@@ -889,6 +887,37 @@ jQuery(document).ready(function($){
                     'colIndex': params.colIndex,
                 });
             }
+
+            return true;
+        },
+
+    };
+
+    $.TableEdit.callbacks = {
+
+        /**
+         * Unmerge cell & copy.
+         *
+         * @since    0.0.2
+         *
+         * @see      this::_cellEditingStop::callbacks
+         * @see      this::_unmergeCellVerticalCopy
+         *
+         * @global   object   this      $.TableEdit.plugin — object context.
+         */
+        'createTopControlsBefore': function( params ) {
+
+            if( ! this.filter ) return true;
+
+            var tr = this.attr( this.createEL('tr'), 'data-controls', true );
+
+            for( var i = 0; i < this.getNumOfCols(); i++ ) {
+                tr.appendChild(
+                    this.html( this.createEL('td'), this.filterElement )
+                );
+            }
+            this.doMethod('_addStub', {'tr': tr});
+            $( this.thead ).prepend( tr );
 
             return true;
         },
